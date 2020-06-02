@@ -1,13 +1,15 @@
+import 'dart:io';
+
 import 'package:flutter/material.dart';
+import 'package:plasma_bank/app_utils/app_constants.dart';
+import 'package:plasma_bank/widgets/home_page.dart';
+import 'package:plasma_bank/widgets/launch_screen.dart';
+import 'package:plasma_bank/widgets/patient_info.dart';
 
 
-import 'package:flutter/material.dart';
-import 'package:flutter/scheduler.dart';
-
-import 'package:animations/animations.dart';
 
 
-
+//https://www.fda.gov/vaccines-blood-biologics/investigational-new-drug-ind-or-device-exemption-ide-process-cber/recommendations-investigational-covid-19-convalescent-plasma#Recordkeeping
 void main() => runApp(PlasmaBank());
 
 class PlasmaBank extends StatelessWidget {
@@ -15,29 +17,46 @@ class PlasmaBank extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     return MaterialApp(
-      theme: ThemeData.from(
-        colorScheme: const ColorScheme.light(),
-      ).copyWith(
-        pageTransitionsTheme: const PageTransitionsTheme(
-          builders: <TargetPlatform, PageTransitionsBuilder>{
-            TargetPlatform.android: ZoomPageTransitionsBuilder(),
-          },
-        ),
-      ),
-      home: Page1(),
+//      theme: ThemeData.from(
+//        colorScheme: const ColorScheme.light(),
+//      ).copyWith(
+//        pageTransitionsTheme: const PageTransitionsTheme(
+//          builders: <TargetPlatform, PageTransitionsBuilder>{
+//            TargetPlatform.android: ZoomPageTransitionsBuilder(),
+//          },
+//        ),
+//      ),
+      home: LaunchScreenWidget(),
       onGenerateRoute: getGenerateRoute,
     );
   }
 
   Route getGenerateRoute(RouteSettings settings) {
 
-    return this._createRoute(settings);
+    Widget _widget;
+
+    if (settings.name == AppRoutes.pageRouteDonor){
+      _widget = PatientInfoWidget();
+    } else if (settings.name == AppRoutes.pageRouteHome){
+      _widget = HomePageWidget();
+    }
+    if (Platform.isIOS){
+
+      return MaterialPageRoute(
+          builder: (context) {
+            return _widget;
+          },
+          settings: RouteSettings(
+              name: settings.name, arguments: settings.arguments),
+      );
+    }
+    return this._createRoute(settings, _widget);
   }
 
-  Route _createRoute(final RouteSettings _settings) {
+  Route _createRoute(final RouteSettings _settings, final _widget) {
     return PageRouteBuilder(
       settings: _settings,
-      pageBuilder: (context, animation, secondaryAnimation) => Page2(),
+      pageBuilder: (context, animation, secondaryAnimation) => _widget,
       transitionsBuilder: (context, animation, secondaryAnimation, child) {
         var begin = Offset(1.0, 0.0);
         var end = Offset.zero;
@@ -52,29 +71,33 @@ class PlasmaBank extends StatelessWidget {
   }
 }
 
-class Page1 extends StatelessWidget {
+
+
+
+class Page2 extends StatefulWidget {
+
+
+
+  @override
+  State<StatefulWidget> createState() {
+    // TODO: implement createState
+    return _State();
+  }
+}
+
+class _State extends State<Page2> {
+  @override
   Widget build(BuildContext context) {
+    // TODO: implement build
     return Scaffold(
       appBar: AppBar(),
       body: Center(
         child: RaisedButton(
           child: Text('Go!'),
           onPressed: () {
-            Navigator.of(context).pushNamed("/home", arguments: {"name" : "mostafizur"} );
+            Navigator.pushNamed(context, "/root", arguments:{"name" : "mostafizur"});
           },
         ),
-      ),
-    );
-  }
-}
-
-
-class Page2 extends StatelessWidget {
-  Widget build(BuildContext context) {
-    return Scaffold(
-      appBar: AppBar(),
-      body: Center(
-        child: Text('Page 2'),
       ),
     );
   }
