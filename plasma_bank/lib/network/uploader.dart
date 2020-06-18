@@ -2,7 +2,7 @@ import 'dart:convert';
 import 'dart:io';
 
 import 'package:plasma_bank/network/api_client.dart';
-import 'package:plasma_bank/network/auth.dart';
+import 'package:plasma_bank/network/authentication.dart';
 
 class ImageUploader {
   final _client = ApiClient();
