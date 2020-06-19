@@ -1,5 +1,7 @@
 
 
+import 'dart:ui';
+
 class AppConstants{
 
 
@@ -24,4 +26,8 @@ class AppConfig{
   static const double FONT_SIZE_XXL = 18;
 
 
+}
+
+class AppStyle {
+  static const Color colorHighlight =  Color.fromARGB(255, 255, 20, 80);
 }
