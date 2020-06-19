@@ -29,13 +29,16 @@ class _HomePageState extends State<HomePageWidget> {
             child: RaisedButton(
               child: Text('Go!'),
               onPressed: () {
-                final _channel = MethodChannel("flutter.plasma.com.imgpath");
-                _channel.invokeMethod("getImagePath").then((value) {
+                Navigator.pushNamed(context, AppRoutes.pageRouteCamera);
 
-                  final String _imagePath = value['image_path'];
-                  final String _strImage = ImageUploader.getBase64(_imagePath);
-                  ImageUploader().uploadImage(_strImage);
-                });
+
+//                final _channel = MethodChannel("flutter.plasma.com.imgpath");
+//                _channel.invokeMethod("getImagePath").then((value) {
+//
+//                  final String _imagePath = value['image_path'];
+//                  final String _strImage = ImageUploader.getBase64(_imagePath);
+//                  ImageUploader().uploadImage(_strImage);
+//                });
 //                Navigator.pushNamed(context, AppRoutes.pageRouteDonor,
 //                    arguments:{"name" : "mostafizur"});
               },

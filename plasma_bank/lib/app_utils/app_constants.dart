@@ -10,7 +10,8 @@ class AppRoutes{
   static const String pageRouteHome = "/home";
   static const String pageRouteDonor = "/home/donor";
   static const String pageRouteEntry = "/home/entry";
-  static const String pageRouteImage = "/home/image";
+  static const String pageRouteImage = "/home/camera/image";
+  static const String pageRouteCamera = "/home/camera";
 
 }
 
