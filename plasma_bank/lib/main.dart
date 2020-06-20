@@ -2,6 +2,7 @@ import 'dart:io';
 
 import 'package:flutter/material.dart';
 import 'package:plasma_bank/app_utils/app_constants.dart';
+import 'package:plasma_bank/media/preview_widget.dart';
 import 'package:plasma_bank/widgets/home_page.dart';
 import 'package:plasma_bank/widgets/launch_screen.dart';
 import 'package:plasma_bank/widgets/patient_info.dart';
@@ -41,7 +42,17 @@ class PlasmaBank extends StatelessWidget {
       _widget = PatientInfoWidget();
     } else if (settings.name == AppRoutes.pageRouteHome) {
       _widget = HomePageWidget();
+    } else if (settings.name == AppRoutes.pageRouteImage){
+
+      if (settings.arguments is Map<String, dynamic>){
+
+        final  Map<String, dynamic> _args = settings.arguments;
+        final imageType = _args["type"];
+        final imagePath = _args["image"];
+        _widget = PreviewWidget(imageType, imagePath);
+      }
     }
+
     if (Platform.isIOS) {
       return MaterialPageRoute(
         builder: (context) {
