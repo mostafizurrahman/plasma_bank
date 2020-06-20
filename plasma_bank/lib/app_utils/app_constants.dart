@@ -31,3 +31,9 @@ class AppConfig{
 class AppStyle {
   static const Color colorHighlight =  Color.fromARGB(255, 255, 20, 80);
 }
+
+enum ImageType {
+  profile,
+  prescription,
+  document
+}
