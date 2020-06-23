@@ -1,0 +1,83 @@
+
+import 'package:cloud_firestore/cloud_firestore.dart';
+import 'dart:convert';
+
+class Address{
+
+  String country;
+  String state;
+  String street;
+  String house;
+  String postalCode;
+
+  Address({this.country, this.state, this.street, this.house, this.postalCode});
+
+  Address.fromMap(Map<String, String> json){
+    this.country = json['country'];
+    this.street = json['street'];
+    this.state = json['state'];
+    this.postalCode = json['zip'];
+    this.house = json['house'];
+  }
+
+  Map<String, String> toJson(){
+    return {
+      'country' : this.country ?? "",
+      'street' : this.street ?? "",
+      'state' : this.state ?? "",
+      'zip' : this.postalCode ?? "",
+      'house' : this.house ?? "",
+    };
+  }
+}
+
+abstract class  Person {
+  String bloodGroup; //db :: blood_group
+  String emailAddress;//  "mostafizur.cse@gmail.com"
+  String fullName;
+  String profilePicture;
+  String mobileNumber;
+  Address address;
+  DateTime birthDate;
+  DocumentReference reference;
+  Person(
+      this.fullName,
+      this.mobileNumber,
+      this.bloodGroup,
+      this.address,
+      {this.profilePicture, this.emailAddress}
+      );
+
+//  final String name;
+//  final int votes;
+//  final DocumentReference reference;
+
+  Person.fromMap(Map<String, dynamic> map, {this.reference})
+      : assert(map['name'] != null),
+        assert(map['mobile'] != null),
+        fullName = map['name'],
+        mobileNumber = map['mobile'],
+        bloodGroup = map['blood_group'],
+        this.birthDate = map['birth_date'] == null ? null : (map['birth_date'] as Timestamp).toDate(),
+        address = Address.fromMap(map['address'] ?? {});
+
+  Person.fromSnapshot(DocumentSnapshot snapshot)
+      : this.fromMap(snapshot.data, reference: snapshot.reference);
+
+
+   Map<String, dynamic> toJson(){return _personToJson(this);
+   }
+
+  static _personToJson(final Person _person){
+    return {
+      'name' : _person.fullName,
+      'mobile' : _person.mobileNumber,
+      'blood_group' : _person.bloodGroup,
+      'birth_date' : _person.birthDate,
+      'address' : _person.address.toJson(),
+    };
+  }
+
+  @override
+  String toString() => "Record<$fullName:$mobileNumber>";
+}

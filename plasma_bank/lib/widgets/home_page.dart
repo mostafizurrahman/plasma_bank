@@ -5,6 +5,7 @@ import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
 import 'package:plasma_bank/app_utils/location_provider.dart';
 import 'package:plasma_bank/app_utils/app_constants.dart';
+import 'package:plasma_bank/network/firebase_repositories.dart';
 import 'package:plasma_bank/network/uploader.dart';
 
 class HomePageWidget extends StatefulWidget {
@@ -18,6 +19,7 @@ class HomePageWidget extends StatefulWidget {
 
 class _HomePageState extends State<HomePageWidget> {
 
+  final _db = FirebaseRepositories();
 
   @override
   Widget build(BuildContext context) {
@@ -27,10 +29,24 @@ class _HomePageState extends State<HomePageWidget> {
         child: Scaffold(
           backgroundColor: Colors.grey.withAlpha(100),
           body: Center(
-            child: RaisedButton(
-              child: Text('Go!'),
-              onPressed: () {
-                locationProvider.updateLocation();
+            child: Column(
+              children: [
+                StreamBuilder(
+                  stream: _db.getPatientStream(),
+                  builder: (_context, _snap){
+
+                    return CircularProgressIndicator();
+                  },
+                ),
+                RaisedButton(
+                  child: Text('Go!'),
+                  onPressed: () {
+                    locationProvider.updateLocation();
+                    _db.getPatientStream().listen((event) {
+
+                      debugPrint("this_is _data");
+                    });
+
 //                Navigator.pushNamed(context, AppRoutes.pageRouteCamera);
 
 
@@ -43,7 +59,9 @@ class _HomePageState extends State<HomePageWidget> {
 //                });
 //                Navigator.pushNamed(context, AppRoutes.pageRouteDonor,
 //                    arguments:{"name" : "mostafizur"});
-              },
+                  },
+                ),
+              ],
             ),
           ),
         ),
