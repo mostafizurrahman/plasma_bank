@@ -10,6 +10,10 @@ import Flutter
   ) -> Bool {
     GeneratedPluginRegistrant.register(with: self)
     if  let controller = window?.rootViewController as? FlutterViewController{
+        
+        controller.navigationController?
+            .interactivePopGestureRecognizer?.isEnabled = false;
+        
         let nativeChannel = FlutterMethodChannel.init(name: "flutter.plasma.com.imgpath",
         binaryMessenger: controller.binaryMessenger);
         nativeChannel.setMethodCallHandler( {
