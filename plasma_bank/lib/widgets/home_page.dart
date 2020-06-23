@@ -3,6 +3,7 @@
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
+import 'package:plasma_bank/app_utils/location_provider.dart';
 import 'package:plasma_bank/app_utils/app_constants.dart';
 import 'package:plasma_bank/network/uploader.dart';
 
@@ -29,7 +30,8 @@ class _HomePageState extends State<HomePageWidget> {
             child: RaisedButton(
               child: Text('Go!'),
               onPressed: () {
-                Navigator.pushNamed(context, AppRoutes.pageRouteCamera);
+                locationProvider.updateLocation();
+//                Navigator.pushNamed(context, AppRoutes.pageRouteCamera);
 
 
 //                final _channel = MethodChannel("flutter.plasma.com.imgpath");

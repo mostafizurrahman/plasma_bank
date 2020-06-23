@@ -79,7 +79,8 @@ class _CameraState extends State<CameraWidget> with WidgetsBindingObserver {
       child: SafeArea(
         child: Scaffold(
           body: Padding(
-            padding: const EdgeInsets.only(left: 24, right: 24, top:  24, bottom: 24),
+            padding:
+                const EdgeInsets.only(left: 24, right: 24, top: 24, bottom: 24),
             child: Stack(
               alignment: Alignment.topLeft,
               children: [
@@ -142,10 +143,9 @@ class _CameraState extends State<CameraWidget> with WidgetsBindingObserver {
                         BorderRadius.all(Radius.circular(keyWidth / 2.0)),
                   ),
                 ),
-
                 Positioned(
                   bottom: 12,
-                  left:  (MediaQuery.of(context).size.width - 48 )/ 2 - 30,
+                  left: (MediaQuery.of(context).size.width - 48) / 2 - 30,
                   child: Center(
                     child: StreamBuilder(
                       stream: this._captureBehavior.stream,
@@ -156,12 +156,14 @@ class _CameraState extends State<CameraWidget> with WidgetsBindingObserver {
                             color: _snap.data
                                 ? Colors.cyan.withAlpha(150)
                                 : Colors.white.withAlpha(200),
-                            borderRadius: new BorderRadius.all(Radius.circular(30)),
+                            borderRadius:
+                                new BorderRadius.all(Radius.circular(30)),
                           ),
                           height: 60,
                           width: 60,
                           child: ClipRRect(
-                            borderRadius: new BorderRadius.all(Radius.circular(30)),
+                            borderRadius:
+                                new BorderRadius.all(Radius.circular(30)),
                             child: new Material(
                               child: new InkWell(
                                 onTapCancel: () {
@@ -196,7 +198,6 @@ class _CameraState extends State<CameraWidget> with WidgetsBindingObserver {
               ],
             ),
           ),
-
         ),
       ),
     );
@@ -279,8 +280,7 @@ class _CameraState extends State<CameraWidget> with WidgetsBindingObserver {
   Widget _getCameraPreviewWidget() {
 //    if (this._cameraController == null || !this._cameraController.value.isInitialized){
 //      this._cameraBehavior.sink.add(false);
-//    }
-    final _ratio = this._cameraController.value.aspectRatio;
+//    }final _ratio = this._cameraController.value.aspectRatio;
     final _width = MediaQuery.of(context).size.width - 48;
     return ClipRRect(
       borderRadius: new BorderRadius.all(Radius.circular(20)),
