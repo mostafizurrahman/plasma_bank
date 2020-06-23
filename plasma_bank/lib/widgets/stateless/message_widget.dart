@@ -16,8 +16,16 @@ class MessageWidget extends StatelessWidget {
       {this.dialogTitle,
       this.onTapped,
       this.actionTitle,
-        this.titleIcon = const Icon(Icons.info, color: Colors.blueAccent, size: 30,),
-        this.actionIcon = const Icon(Icons.check_circle, size: 25, color: Colors.green,),
+      this.titleIcon = const Icon(
+        Icons.info,
+        color: Colors.blueAccent,
+        size: 30,
+      ),
+      this.actionIcon = const Icon(
+        Icons.check_circle,
+        size: 25,
+        color: Colors.green,
+      ),
       this.headerColor = Colors.green,
       this.messageColor = Colors.black54});
 
@@ -32,8 +40,8 @@ class MessageWidget extends StatelessWidget {
           backgroundColor: Colors.transparent,
           body: Ink(
             child: InkWell(
-              onTap: (){
-                if (this.onTapped != null){
+              onTap: () {
+                if (this.onTapped != null) {
                   this.onTapped();
                 } else {
                   Navigator.pop(context);
@@ -61,24 +69,22 @@ class MessageWidget extends StatelessWidget {
                         ),
                       ),
 //                      height: 210,
-                      child:
-
-
-                        Column(
-                          crossAxisAlignment: CrossAxisAlignment.start,
-                          mainAxisAlignment: MainAxisAlignment.start,
-                          children: <Widget>[
-                            Padding(
-                              padding: const EdgeInsets.fromLTRB(0, 16, 0, 12),
-                              child: this.dialogTitle != null ?
-                                  Row(
-                                    crossAxisAlignment: CrossAxisAlignment.center,
+                      child: Column(
+                        crossAxisAlignment: CrossAxisAlignment.start,
+                        mainAxisAlignment: MainAxisAlignment.start,
+                        children: <Widget>[
+                          Padding(
+                            padding: const EdgeInsets.fromLTRB(0, 16, 0, 12),
+                            child: this.dialogTitle != null
+                                ? Row(
+                                    crossAxisAlignment:
+                                        CrossAxisAlignment.center,
                                     children: [
                                       Padding(
-                                        padding: EdgeInsets.only(left: 24, right: 8),
+                                        padding:
+                                            EdgeInsets.only(left: 24, right: 8),
                                         child: this.titleIcon,
                                       ),
-
                                       Text(
                                         this.dialogTitle,
                                         style: TextStyle(
@@ -89,31 +95,26 @@ class MessageWidget extends StatelessWidget {
                                       ),
                                     ],
                                   )
-                                  : SizedBox(),
-                            ),
-                            Padding(
-                              padding: EdgeInsets.only(left: 24, right: 24),
-                              child: RichText(
-                                softWrap: true,
-                                textAlign: TextAlign.left,
-                                text: TextSpan(
-                                  children: this.getFormattedTextSpan(_message),
-                                  style: TextStyle(
-                                    color: this.messageColor,
-                                    fontSize: 14,
-                                      height: 1.5,
-                                  ),
+                                : SizedBox(),
+                          ),
+                          Padding(
+                            padding: EdgeInsets.only(left: 24, right: 24),
+                            child: RichText(
+                              softWrap: true,
+                              textAlign: TextAlign.left,
+                              text: TextSpan(
+                                children: this.getFormattedTextSpan(_message),
+                                style: TextStyle(
+                                  color: this.messageColor,
+                                  fontSize: 14,
+                                  height: 1.5,
                                 ),
                               ),
                             ),
-
-                            this._getActionWidget(context)
-                          ],
-                        ),
-
-
-
-
+                          ),
+                          this._getActionWidget(context)
+                        ],
+                      ),
                     ),
                   ],
                 ),
@@ -152,11 +153,15 @@ class MessageWidget extends StatelessWidget {
 
   Widget _getActionWidget(BuildContext context) {
     return Padding(
-      padding: const EdgeInsets.only(left: 24, right:  24, top: 16, bottom:  16),
+      padding: const EdgeInsets.only(left: 24, right: 24, top: 16, bottom: 16),
       child: Container(
         height: 45,
         child: RaisedButton(
-          onPressed: this.onTapped ?? (){debugPrint("DONE");Navigator.pop(context);},
+          onPressed: this.onTapped ??
+              () {
+                debugPrint("DONE");
+                Navigator.pop(context);
+              },
           elevation: 0.5,
           color: Colors.blueAccent,
           shape: RoundedRectangleBorder(
@@ -167,14 +172,12 @@ class MessageWidget extends StatelessWidget {
             mainAxisAlignment: MainAxisAlignment.center,
             crossAxisAlignment: CrossAxisAlignment.center,
             children: [
-
               Text(
                 this.actionTitle ?? "DONE",
                 style: TextStyle(
-                  fontSize: 18,
-                  fontWeight: FontWeight.w500,
-                  color: Colors.white
-                ),
+                    fontSize: 18,
+                    fontWeight: FontWeight.w500,
+                    color: Colors.white),
               ),
               Padding(
                 padding: const EdgeInsets.all(8.0),
