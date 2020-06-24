@@ -1,36 +1,42 @@
-
-
-
 import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:plasma_bank/network/models/blood_donor.dart';
 import 'package:plasma_bank/network/models/blood_hunter.dart';
 
-class FirebaseRepositories{
-
-
+class FirebaseRepositories {
   CollectionReference _patientCollection;
   CollectionReference _plasmaCollection;
   DocumentReference _documentCollection;
   final String country;
   final String district;
-  FirebaseRepositories( {this.country,this.district}){
-    this._documentCollection = Firestore.instance.collection('patient').document('bangladesh').collection('dhaka').document('mohammadpur');
+  FirebaseRepositories({this.country, this.district}) {
+    this._documentCollection = Firestore.instance
+        .collection('patient')
+        .document('bangladesh')
+        .collection('dhaka')
+        .document('mohammadpur');
 //    this._documentCollection.snapshots()
-    this._patientCollection =  this._documentCollection.collection('01675876752');
+    this._patientCollection =
+        this._documentCollection.collection('01675876752');
   }
 
-  Stream<DocumentSnapshot> getPatientStream() {
-    return this._documentCollection.snapshots();
+  Stream<QuerySnapshot> getPatientStream() {
+    return this._patientCollection.snapshots();
   }
 
-  Future<DocumentReference> addPet(BloodHunter bloodHunter) {
-    final _json = bloodHunter.toJson();
-    final _data = {bloodHunter.mobileNumber : _json};
-    return _patientCollection.add(_data);
+  Future<DocumentReference> addBloodHunter(dynamic bloodHunter) async {
+    if(bloodHunter is BloodHunter){
+      final _json = bloodHunter.toJson();
+      final _data = {bloodHunter.mobileNumber: _json};
+      return await _patientCollection.add(_data);
+    } else {
+//      final _data = {bloodHunter['mobile']: bloodHunter};
+      return await _patientCollection.add(bloodHunter);
+    }
   }
 
   updatePatient(BloodHunter bloodHunter) async {
-  await _patientCollection.document(bloodHunter.reference.documentID).updateData(bloodHunter.toJson());
-
+    await _patientCollection
+        .document(bloodHunter.reference.documentID)
+        .updateData(bloodHunter.toJson());
   }
 }
