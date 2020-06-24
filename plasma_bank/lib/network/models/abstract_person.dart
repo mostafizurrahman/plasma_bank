@@ -12,7 +12,7 @@ class Address{
 
   Address({this.country, this.state, this.street, this.house, this.postalCode});
 
-  Address.fromMap(Map<String, String> json){
+  Address.fromMap(Map<String, dynamic> json){
     this.country = json['country'];
     this.street = json['street'];
     this.state = json['state'];
@@ -40,13 +40,16 @@ abstract class  Person {
   Address address;
   DateTime birthDate;
   DocumentReference reference;
-  Person(
-      this.fullName,
-      this.mobileNumber,
-      this.bloodGroup,
-      this.address,
-      {this.profilePicture, this.emailAddress}
-      );
+
+
+  Person(final Map<String, dynamic> _map){
+    this.fullName = _map['name'];
+    this.mobileNumber = _map['mobile'];
+    this.bloodGroup = _map['blood_group'];
+    this.address = Address.fromMap(_map['address']);
+    this.emailAddress = _map['email'];
+    this.profilePicture = _map['profile'];
+  }
 
 //  final String name;
 //  final int votes;
