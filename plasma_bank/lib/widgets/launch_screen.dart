@@ -2,6 +2,7 @@ import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
 import 'package:plasma_bank/app_utils/app_constants.dart';
 import 'package:plasma_bank/app_utils/image_helper.dart';
+import 'package:plasma_bank/app_utils/localization_helper.dart';
 import 'package:plasma_bank/widgets/widget_templates.dart';
 
 class LaunchScreenWidget extends StatefulWidget {
@@ -41,13 +42,13 @@ class _LaunchScreenState extends State<LaunchScreenWidget> {
                   mainAxisAlignment: MainAxisAlignment.center,
                   children: [
                     Text(
-                      'PLASMA',
-                      style: TextStyle(color: Colors.redAccent, fontSize: 16),
+                      localization.getText('plasma'),//'PLASMA',
+                      style: TextStyle(color: Colors.redAccent, fontSize: 28),
                     ),
                     SizedBox(width: 16,),
                     Text(
-                      'BANK',
-                      style: TextStyle(color: Colors.cyan, fontSize: 16),
+                      localization.getText('bank'),//'BANK',
+                      style: TextStyle(color: Colors.cyan, fontSize: 28, fontWeight: FontWeight.w100),
                     ),
                   ],
                 ),
@@ -89,7 +90,7 @@ class _LaunchScreenState extends State<LaunchScreenWidget> {
                     WidgetTemplates.indicator(),
                     SizedBox(width: 12,),
                     Text(
-                      'DONATE PLASMA, SAVE LIFE...',
+                      localization.getText('moto'),
                       softWrap: true,
                     ),
                   ],

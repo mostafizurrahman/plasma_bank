@@ -22,6 +22,7 @@ class PlasmaBank extends StatelessWidget {
         // ... app-specific localization delegate[s] here
         GlobalMaterialLocalizations.delegate,
         GlobalWidgetsLocalizations.delegate,
+        GlobalCupertinoLocalizations.delegate,
       ],
       supportedLocales: [
         const Locale('en', ''), // English, no country code
