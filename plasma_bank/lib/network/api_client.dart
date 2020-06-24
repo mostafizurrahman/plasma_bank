@@ -4,6 +4,7 @@
 import 'dart:convert';
 
 import 'package:http/http.dart';
+import 'package:plasma_bank/app_utils/location_provider.dart';
 abstract class Authentication {
 
   /// Apply authentication settings to header and query params.
@@ -325,5 +326,33 @@ class ApiClient {
               .timeout(const Duration(seconds: 150));
       }
     }
+  }
+
+
+  Future<List<dynamic>> getGlobList(final _url, {region = false, city = false}) async {
+
+    final response = await get(_url);
+    if (response.statusCode == 200) {
+      List _locations = List();
+      final List<Map<dynamic, dynamic>> _list = json.decode(response.body);
+      if(region){
+        for(final _data in _list){
+          final _region = Region.fromJson(_data);
+          _locations.add(_region);
+        }
+      } else if (city){
+        for(final _data in _list){
+          final _city = City.fromJson(_data);
+          _locations.add(_city);
+        }
+      } else {
+        for(final _data in _list){
+          final _country = Country.fromJson(_data);
+          _locations.add(_country);
+        }
+      }
+      return _locations;
+    }
+    return null;
   }
 }
