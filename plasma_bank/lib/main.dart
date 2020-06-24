@@ -8,7 +8,7 @@ import 'package:plasma_bank/widgets/launch_screen.dart';
 import 'package:plasma_bank/widgets/patient_info.dart';
 import 'package:flutter_statusbarcolor/flutter_statusbarcolor.dart';
 import 'media/camera_widget.dart';
-
+import 'package:flutter_localizations/flutter_localizations.dart';
 //https://www.fda.gov/vaccines-blood-biologics/investigational-new-drug-ind-or-device-exemption-ide-process-cber/recommendations-investigational-covid-19-convalescent-plasma#Recordkeeping
 void main() => runApp(PlasmaBank());
 
@@ -18,15 +18,20 @@ class PlasmaBank extends StatelessWidget {
   Widget build(BuildContext context) {
     FlutterStatusbarcolor.setStatusBarColor(Colors.white);
     return MaterialApp(
-//      theme: ThemeData.from(
-//        colorScheme: const ColorScheme.light(),
-//      ).copyWith(
-//        pageTransitionsTheme: const PageTransitionsTheme(
-//          builders: <TargetPlatform, PageTransitionsBuilder>{
-//            TargetPlatform.android: ZoomPageTransitionsBuilder(),
-//          },
-//        ),
-//      ),
+      localizationsDelegates: [
+        // ... app-specific localization delegate[s] here
+        GlobalMaterialLocalizations.delegate,
+        GlobalWidgetsLocalizations.delegate,
+      ],
+      supportedLocales: [
+        const Locale('en', ''), // English, no country code
+        const Locale('he', ''), // Hebrew, no country code
+        const Locale('zh', ''), // Chinese, no country code
+        // ... other locales the app supports
+      ],
+      theme: ThemeData(
+        fontFamily: 'SF_UIFont',
+      ),
       home: LaunchScreenWidget(),
       onGenerateRoute: getGenerateRoute,
     );

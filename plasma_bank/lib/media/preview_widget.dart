@@ -31,16 +31,17 @@ class _PreviewState extends State<PreviewWidget> {
             child: Center(
               child: Container(
                 decoration: new BoxDecoration(
-                    color: Colors.grey.withAlpha(170),
-                    borderRadius: new BorderRadius.all(Radius.circular(12)),
-                    boxShadow: [
-                      BoxShadow(
-                        color: Color.fromRGBO(0, 0, 0, 0.15),
-                        offset: Offset(0, 0),
-                        blurRadius: 12,
-                        spreadRadius: 8,
-                      ),
-                    ]),
+                  color: Colors.grey.withAlpha(170),
+                  borderRadius: new BorderRadius.all(Radius.circular(12)),
+                  boxShadow: [
+                    BoxShadow(
+                      color: Color.fromRGBO(0, 0, 0, 0.15),
+                      offset: Offset(0, 0),
+                      blurRadius: 12,
+                      spreadRadius: 8,
+                    ),
+                  ],
+                ),
                 child: ClipRRect(
                   borderRadius: new BorderRadius.all(Radius.circular(12)),
                   child: Image.file(
@@ -75,8 +76,7 @@ class _PreviewState extends State<PreviewWidget> {
       Navigator.pop(context);
       WidgetTemplates.message(context,
           "Your profile picture uploaded successfully! You need to check other registration information",
-          dialogTitle: "Upload Success!",
-          onTapped: () {
+          dialogTitle: "Upload Success!", onTapped: () {
         Navigator.pop(context);
       });
     });

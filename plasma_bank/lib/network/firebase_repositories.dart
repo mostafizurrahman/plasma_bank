@@ -3,6 +3,15 @@ import 'package:plasma_bank/network/models/blood_donor.dart';
 import 'package:plasma_bank/network/models/blood_hunter.dart';
 
 class FirebaseRepositories {
+
+  //  Future<List<Country>> getCountries() async {
+//    return await this._globeAPI.getCountries();
+//  }
+
+//  Future<List<Region>> getRegion(final Country country){
+//
+//  }
+
   CollectionReference _patientCollection;
   CollectionReference _plasmaCollection;
   DocumentReference _documentCollection;
