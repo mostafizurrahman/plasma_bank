@@ -22,6 +22,7 @@ class AppConfig {
 }
 
 class AppStyle {
+  static const fontBold = 'SF_UIFont_Bold';
   static const Color colorHighlight = Color.fromARGB(255, 255, 20, 80);
   static const BoxDecoration shadowDecoration = BoxDecoration(
     color: Colors.white,
@@ -41,6 +42,24 @@ class AppStyle {
   static String format(final int number){
     final _formatter = new NumberFormat("###,###,###", "en_US");
     return _formatter.format(number).toString();
+  }
+
+  static BoxDecoration getLightBox(){
+    return BoxDecoration(
+      color: Colors.white,
+      boxShadow: [
+        BoxShadow(
+          color:
+          Color.fromRGBO(0, 0, 0, 0.1),
+          offset: Offset(0, 0),
+          blurRadius: 6,
+          spreadRadius: 3,
+        ),
+      ],
+      borderRadius: const BorderRadius.all(
+        const Radius.circular(5),
+      ),
+    );
   }
 }
 

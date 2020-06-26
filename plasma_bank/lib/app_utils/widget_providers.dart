@@ -104,7 +104,7 @@ class WidgetProvider{
                     crossAxisAlignment: CrossAxisAlignment.center,
                     children: <Widget>[
                       Center(
-                        child: WidgetTemplates.indicator(),
+                        child: WidgetTemplate.indicator(),
                       ),
                       Padding(
                         padding: const EdgeInsets.only(top: 8),
@@ -121,6 +121,20 @@ class WidgetProvider{
           ),
         ),
       ),
+    );
+  }
+
+  static circledIcon(final Widget _icon){
+    return Container(
+      decoration: BoxDecoration(
+          borderRadius: BorderRadius.all(
+            Radius.circular(1000),
+          ),
+          border: Border.all(
+              width: 0.85,
+              color: Colors.red,
+              style: BorderStyle.solid)),
+      child: _icon,
     );
   }
 }

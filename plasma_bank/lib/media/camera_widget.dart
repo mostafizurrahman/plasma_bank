@@ -212,7 +212,7 @@ class _CameraState extends State<CameraWidget> with WidgetsBindingObserver {
 
       this._captureBehavior.sink.add(false);
     } else {
-      WidgetTemplates.message(context,
+      WidgetTemplate.message(context,
           "Fail to capture image! Facing some technical difficulties. Please! Try again later",
           dialogTitle: "Capture Fail!");
     }
@@ -292,6 +292,6 @@ class _CameraState extends State<CameraWidget> with WidgetsBindingObserver {
   }
 
   Widget _getLoader() {
-    return WidgetTemplates.progressIndicator();
+    return WidgetTemplate.progressIndicator();
   }
 }

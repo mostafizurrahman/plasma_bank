@@ -21,6 +21,7 @@ class PlasmaBank extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     FlutterStatusbarcolor.setStatusBarColor(Colors.white);
+    FlutterStatusbarcolor.setStatusBarWhiteForeground(false);
     return MaterialApp(
       localizationsDelegates: [
         // ... app-specific localization delegate[s] here
@@ -105,29 +106,3 @@ class PlasmaBank extends StatelessWidget {
   }
 }
 
-class Page2 extends StatefulWidget {
-  @override
-  State<StatefulWidget> createState() {
-    // TODO: implement createState
-    return _State();
-  }
-}
-
-class _State extends State<Page2> {
-  @override
-  Widget build(BuildContext context) {
-    // TODO: implement build
-    return Scaffold(
-      appBar: AppBar(),
-      body: Center(
-        child: RaisedButton(
-          child: Text('Go!'),
-          onPressed: () {
-            Navigator.pushNamed(context, "/root",
-                arguments: {"name": "mostafizur"});
-          },
-        ),
-      ),
-    );
-  }
-}

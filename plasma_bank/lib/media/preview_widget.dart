@@ -74,7 +74,7 @@ class _PreviewState extends State<PreviewWidget> {
     WidgetProvider.loading(context);
     Future.delayed(Duration(seconds: 4), () {
       Navigator.pop(context);
-      WidgetTemplates.message(context,
+      WidgetTemplate.message(context,
           "Your profile picture uploaded successfully! You need to check other registration information",
           dialogTitle: "Upload Success!", onTapped: () {
         Navigator.pop(context);
