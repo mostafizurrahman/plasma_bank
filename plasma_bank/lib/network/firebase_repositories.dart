@@ -1,5 +1,4 @@
 import 'package:cloud_firestore/cloud_firestore.dart';
-import 'package:plasma_bank/network/models/blood_donor.dart';
 import 'package:plasma_bank/network/models/blood_hunter.dart';
 
 class FirebaseRepositories {
@@ -12,12 +11,15 @@ class FirebaseRepositories {
 //
 //  }
 
+  CollectionReference _globalCovidData;
+
   CollectionReference _patientCollection;
   CollectionReference _plasmaCollection;
   DocumentReference _documentCollection;
   final String country;
   final String district;
   FirebaseRepositories({this.country, this.district}) {
+    this._globalCovidData = Firestore.instance.collection('coronavirus');
     this._documentCollection = Firestore.instance
         .collection('patient')
         .document('bangladesh')
@@ -26,6 +28,11 @@ class FirebaseRepositories {
 //    this._documentCollection.snapshots()
     this._patientCollection =
         this._documentCollection.collection('01675876752');
+  }
+
+
+  Stream<QuerySnapshot> getGlobalCovidData(){
+    return this._globalCovidData.snapshots();
   }
 
   Stream<QuerySnapshot> getPatientStream() {

@@ -10,9 +10,13 @@ import 'package:flutter_statusbarcolor/flutter_statusbarcolor.dart';
 import 'media/camera_widget.dart';
 import 'package:flutter_localizations/flutter_localizations.dart';
 //https://www.fda.gov/vaccines-blood-biologics/investigational-new-drug-ind-or-device-exemption-ide-process-cber/recommendations-investigational-covid-19-convalescent-plasma#Recordkeeping
-void main() => runApp(PlasmaBank());
+void main() {
+
+  runApp(PlasmaBank());
+}
 
 class PlasmaBank extends StatelessWidget {
+
   // This widget is the root of your application.
   @override
   Widget build(BuildContext context) {

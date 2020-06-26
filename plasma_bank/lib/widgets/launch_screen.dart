@@ -56,20 +56,7 @@ class _LaunchScreenState extends State<LaunchScreenWidget> {
 
                   width: keyWidth,
                   height: keyWidth,
-                  decoration: new BoxDecoration(
-                    color: Colors.white,
-                    boxShadow: [
-                      BoxShadow(
-                        color: Color.fromRGBO(0, 0, 0, 0.15),
-                        offset: Offset(0, 0),
-                        blurRadius: 12,
-                        spreadRadius: 8,
-                      ),
-                    ],
-                    borderRadius: new BorderRadius.all(
-                      Radius.circular(16),
-                    ),
-                  ),
+                  decoration: AppStyle.shadowDecoration,
                   child: ClipRRect(
                     child: new Container(
 
