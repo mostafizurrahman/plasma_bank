@@ -41,7 +41,11 @@ class LocalizationHelper {
   }
 
   String _getEN(final String _lanKey) {
-    return {'plasma': 'PLASMA', 'bank': 'BANK'}[_lanKey];
+    return {
+      'plasma': 'PLASMA',
+      'bank': 'BANK',
+      'moto': 'DONATE PLASMA, SAVE LIFE...'
+    }[_lanKey];
   }
 
 //  banco de plasma

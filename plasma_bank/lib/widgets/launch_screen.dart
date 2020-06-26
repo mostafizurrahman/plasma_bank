@@ -17,9 +17,9 @@ class _LaunchScreenState extends State<LaunchScreenWidget> {
   @override
   void initState() {
     super.initState();
-//    Future.delayed(const Duration(seconds: 3), () {
-////      Navigator.pushNamed(context, AppRoutes.pageRouteHome);
-////    });
+    Future.delayed(const Duration(seconds: 3), () {
+      Navigator.pushNamed(context, AppRoutes.pageRouteHome);
+    });
   }
 
   @override
