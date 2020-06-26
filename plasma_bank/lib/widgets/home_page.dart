@@ -128,6 +128,7 @@ class _HomePageState extends State<HomePageWidget> {
 
   _onProgress(File _dataFile){
 
+    this._downloader.readCovidJSON(_dataFile);
   }
 
 }

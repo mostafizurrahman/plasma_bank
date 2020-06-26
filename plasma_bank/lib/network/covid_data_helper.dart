@@ -8,32 +8,7 @@ import 'dart:typed_data';
 import 'dart:io';
 import 'package:path_provider/path_provider.dart';
 import 'package:shared_preferences/shared_preferences.dart';
-//{
-//"continent": "Asia",
-//"location": "Afghanistan",
-//"date": "2020-06-25",
-//"total_cases": 29715.0,
-//"new_cases": 234.0,
-//"total_deaths": 639.0,
-//"new_deaths": 21.0,
-//"total_cases_per_million": 763.326,
-//"new_cases_per_million": 6.011,
-//"total_deaths_per_million": 16.415,
-//"new_deaths_per_million": 0.539,
-//
-//
-//"population": 38928341.0,
-//"population_density": 54.422,
-//"median_age": 18.6,
-//"aged_65_older": 2.581,
-//"aged_70_older": 1.337,
-//"gdp_per_capita": 1803.987,
-//"cvd_death_rate": 597.029,
-//"diabetes_prevalence": 9.59,
-//"handwashing_facilities": 37.746,
-//"hospital_beds_per_thousand": 0.5,
-//"life_expectancy": 64.83
-//}
+
 
 class CovidData {
   final String date;
@@ -50,39 +25,66 @@ class CovidData {
 }
 
 class CovidCountry {
-  final String continent;
-  final String countryCode;
-  final String countryName;
-  final double population;
-  final double aged65older;
-  final double aged70older;
-  final double gdpPerCapita;
-  final double bedsPerThousand;
-  final double handWashFacility;
-  final double lifeExpectancy;
-  final double totalDeathsPerMillion;
-  final double totalCasesPerMillion;
+  String continent;
+  double deathRate;
+  double population;
+  String countryCode;
+  String countryName;
+  double aged65older;
+  double aged70older;
+  double gdpPerCapita;
+  double lifeExpectancy;
+  double bedsPerThousand;
+  double handWashFacility;
+  double populationDensity;
+  double totalCasesPerMillion;
+  double totalDeathsPerMillion;
 
-  List<CovidData> _dateList;
-  CovidCountry(
-    this.countryCode, {
-    this.continent,
-    this.countryName,
-    this.population,
-    this.aged65older,
-    this.aged70older,
-    this.gdpPerCapita,
-    this.lifeExpectancy,
-    this.bedsPerThousand,
-    this.handWashFacility,
-    this.totalCasesPerMillion,
-    this.totalDeathsPerMillion,
-  });
+  List<CovidData> _dateList = List();
+  CovidCountry(this.countryCode);
+
+  setMap(final Map<String, dynamic> _data){
+
+
+//    "location": "Afghanistan",
+//    "date": "2019-12-31",
+//    "total_cases": 0.0,
+//    "new_cases": 0.0,
+//    "total_deaths": 0.0,
+//    "new_deaths": 0.0,
+//    "total_cases_per_million": 0.0,
+//    "new_cases_per_million": 0.0,
+//    "total_deaths_per_million": 0.0,
+//    "new_deaths_per_million": 0.0,
+//    "population": 38928341.0,
+//    "population_density": 54.422,
+//    "median_age": 18.6,
+//    "aged_65_older": 2.581,
+//    "aged_70_older": 1.337,
+//    "gdp_per_capita": 1803.987,
+//    "cvd_death_rate": 597.029,
+//    "diabetes_prevalence": 9.59,
+//    "handwashing_facilities": 37.746,
+//    "hospital_beds_per_thousand": 0.5,
+//    "life_expectancy": 64.83
+    this.continent = _data["continent"];
+    this.countryName =  _data["location"];
+    this.population = _data["population"];
+    this.aged65older = _data["aged_65_older"];
+    this.aged70older = _data["aged_70_older"];
+    this.deathRate = _data["cvd_death_rate"];
+    this.gdpPerCapita = _data["gdp_per_capita"];
+    this.lifeExpectancy = _data["life_expectancy"];
+    this.populationDensity = _data["population_density"];
+    this.handWashFacility = _data['handwashing_facilities'];
+    this.bedsPerThousand = _data["hospital_beds_per_thousand"];
+    this.totalCasesPerMillion =  _data["total_cases_per_million"];
+    this.totalDeathsPerMillion = _data["total_deaths_per_million"];
+
+  }
 }
 
 class CovidDataHelper {
-
-
   List<CovidCountry> _globalList = List();
 
 //  bool _initDownload = false;
@@ -143,10 +145,10 @@ class CovidDataHelper {
         },
         onDone: () async {
           nativeFile.closeSync();
+          _preference.setString('json_file_date', _covidFileName);
           this._isDownloading = false;
           this._didDownloadEnd(file);
           _streamedResponse = null;
-          _preference.setString('json_file_date', _covidFileName);
         },
         onError: (_error) {
           _streamedResponse = null;
@@ -163,16 +165,37 @@ class CovidDataHelper {
     return true;
   }
 
-  readCovidJSON(final File file) {
+  readCovidJSON(final File file) async {
     if (file != null) {
-      final Map<String, dynamic> jsonMap = json.decode(file.readAsStringSync());
-      jsonMap.forEach(
-        (key, value) {
-          debugPrint(key);
-          final List<Map<String, dynamic>> dataArray = jsonMap.remove(key);
-          debugPrint(dataArray[0]['location']);
-        },
-      );
+      try {
+        this._globalList.clear();
+
+        final Map<String, dynamic> jsonMap =
+            await json.decode(file.readAsStringSync());
+        final _keyArray = List.castFrom(jsonMap.keys.toList());
+        for (String _key in _keyArray) {
+          final List<dynamic> _dataArray = jsonMap.remove(_key);
+          final _covidCountry = CovidCountry(_key);
+          final Map<String, dynamic> _dataMap = _dataArray.last;
+          if (_dataMap != null){
+            _covidCountry.setMap(_dataMap);
+          }
+          for (final Map<String, dynamic> _covid in _dataArray) {
+            final CovidData _covidData = CovidData(
+              date: _covid['date'],
+              newCases: _covid['new_cases'],
+              totalCases: _covid['total_cases'],
+              newDeaths: _covid['new_deaths'],
+              totalDeaths: _covid['total_deaths'],
+            );
+            _covidCountry._dateList.add(_covidData);
+          }
+          this._globalList.add(_covidCountry);
+        }
+        debugPrint('total_countries : ' + this._globalList.length.toString());
+      } catch (e) {
+        print(e);
+      }
     }
   }
 }
