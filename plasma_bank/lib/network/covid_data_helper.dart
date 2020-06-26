@@ -7,6 +7,7 @@ import 'package:http/http.dart';
 import 'dart:typed_data';
 import 'dart:io';
 import 'package:path_provider/path_provider.dart';
+import 'package:shared_preferences/shared_preferences.dart';
 //{
 //"continent": "Asia",
 //"location": "Afghanistan",
@@ -40,10 +41,12 @@ class CovidData {
   final double newCases;
   final double totalDeaths;
   final double newDeaths;
-  CovidData({this.date, this.totalCases, this.newCases, this.totalDeaths,
+  CovidData(
+      {this.date,
+      this.totalCases,
+      this.newCases,
+      this.totalDeaths,
       this.newDeaths});
-
-
 }
 
 class CovidCountry {
@@ -62,32 +65,32 @@ class CovidCountry {
 
   List<CovidData> _dateList;
   CovidCountry(
-  this.countryCode,
-      {this.continent,
-      this.countryName,
-      this.population,
-      this.aged65older,
-      this.aged70older,
-      this.gdpPerCapita,
-      this.lifeExpectancy,
-      this.bedsPerThousand,
-      this.handWashFacility,
-      this.totalCasesPerMillion,
-      this.totalDeathsPerMillion,});
+    this.countryCode, {
+    this.continent,
+    this.countryName,
+    this.population,
+    this.aged65older,
+    this.aged70older,
+    this.gdpPerCapita,
+    this.lifeExpectancy,
+    this.bedsPerThousand,
+    this.handWashFacility,
+    this.totalCasesPerMillion,
+    this.totalDeathsPerMillion,
+  });
 }
 
 class CovidDataHelper {
+
+
+  List<CovidCountry> _globalList = List();
+
 //  bool _initDownload = false;
   bool _isDownloading = false;
   bool _skipMonkey = false;
   Future<StreamedResponse> _streamedResponse;
-//  double _contentLength;
-  String _sourceUrl;
-  String _fileName;
-  Function(File) _didDownloadEnd;
 
-//  final _sourceURL =
-//      'https://covid.ourworldindata.org/data/owid-covid-data.json';
+  Function(File) _didDownloadEnd;
 
   //https://covid.ourworldindata.org/data/ecdc/total_deaths.csv
   //https://covid.ourworldindata.org/data/ecdc/new_deaths.csv
@@ -96,43 +99,57 @@ class CovidDataHelper {
   CovidDataHelper();
 
   Future<bool> downloadRemoteFile(
-
-
       String sourceUrl, String fileName, Function(File) didCompleted) async {
-
-
-    if (this._isDownloading || this._skipMonkey){
+    if (this._isDownloading || this._skipMonkey) {
       return false;
+    }
+    String _currentDate =
+        DateTime.now().toString().split(" ").first ?? DateTime.now().toString();
+    final _covidFileName = _currentDate + '_' + fileName;
+    final _preference = await SharedPreferences.getInstance();
+    final _savedFileName = _preference.getString('json_file_date') ?? 'NONE';
+    final _lastFileDate = _savedFileName.split("_").first ?? "";
+    final _documentDir = await getApplicationDocumentsDirectory();
+    final _savedFile = File(_documentDir.path + '/$_savedFileName');
+    if (_lastFileDate == _currentDate) {
+      didCompleted(_savedFile);
+      return true;
     }
     this._skipMonkey = true;
     this._didDownloadEnd = didCompleted;
     final http.Client httpClient = http.Client();
     final httpRequest = new http.Request('GET', Uri.parse(sourceUrl));
     _streamedResponse = httpClient.send(httpRequest);
-    String filePath =
-        (await getApplicationDocumentsDirectory()).path + '/$fileName';
+    String filePath = _documentDir.path + '/$_covidFileName';
     final file = File(filePath);
     if (await file.exists()) {
       await file.delete(recursive: true);
     }
-    Future.delayed(Duration(seconds: 25), (){
+    if (await _savedFile.exists()) {
+      await _savedFile.delete(recursive: true);
+    }
+    Future.delayed(Duration(seconds: 25), () {
       this._skipMonkey = false;
     });
     RandomAccessFile nativeFile = await file.open(mode: FileMode.write);
     _streamedResponse.asStream().listen(
         (http.StreamedResponse _streamResponse) async {
-
-          this._isDownloading = true;
+      debugPrint("starting.......");
+      this._isDownloading = true;
       _streamResponse.stream.listen(
         (List<int> chunk) async {
           nativeFile.writeFromSync(chunk);
+          debugPrint(chunk.length.toString());
         },
         onDone: () async {
           nativeFile.closeSync();
           this._isDownloading = false;
           this._didDownloadEnd(file);
+          _streamedResponse = null;
+          _preference.setString('json_file_date', _covidFileName);
         },
         onError: (_error) {
+          _streamedResponse = null;
           debugPrint(_error);
           this._isDownloading = false;
           this._didDownloadEnd(null);
@@ -146,15 +163,16 @@ class CovidDataHelper {
     return true;
   }
 
-  readCovidJSON(final File file){
-    if (file != null){
+  readCovidJSON(final File file) {
+    if (file != null) {
       final Map<String, dynamic> jsonMap = json.decode(file.readAsStringSync());
-      jsonMap.forEach((key, value) {
-        debugPrint(key);
-        if (value is List<Map<String, dynamic>>){
-          debugPrint(value[0]['location']);
-        }
-      });
+      jsonMap.forEach(
+        (key, value) {
+          debugPrint(key);
+          final List<Map<String, dynamic>> dataArray = jsonMap.remove(key);
+          debugPrint(dataArray[0]['location']);
+        },
+      );
     }
   }
 }
