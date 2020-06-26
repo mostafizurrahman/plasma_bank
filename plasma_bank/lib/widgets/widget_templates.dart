@@ -2,13 +2,13 @@ import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
 import 'package:plasma_bank/widgets/stateless/message_widget.dart';
 
-class WidgetTemplates {
+class WidgetTemplate {
   static Widget progressIndicator() {
     return Center(
       child: Column(
         mainAxisAlignment: MainAxisAlignment.center,
         children: [
-          WidgetTemplates.indicator(),
+          WidgetTemplate.indicator(),
           Padding(
             padding: EdgeInsets.all(12),
             child: Text(
@@ -29,18 +29,27 @@ class WidgetTemplates {
     return CircularProgressIndicator(
       strokeWidth: 1.75,
       backgroundColor: Colors.red,
-      valueColor: AlwaysStoppedAnimation<Color>(Colors.white),
+      valueColor: AlwaysStoppedAnimation<Color>(
+        Color.fromARGB(255, 220, 220, 200),
+      ),
       semanticsLabel: "LOADING...",
     );
   }
 
   static message(BuildContext context, String message,
-
       {String dialogTitle,
       Function onTapped,
       String actionTitle,
-      Icon titleIcon = const Icon(Icons.info, color: Colors.blueAccent, size: 30,),
-      Icon actionIcon = const Icon(Icons.check_circle, size: 25, color: Colors.white,),
+      Icon titleIcon = const Icon(
+        Icons.info,
+        color: Colors.blueAccent,
+        size: 30,
+      ),
+      Icon actionIcon = const Icon(
+        Icons.check_circle,
+        size: 25,
+        color: Colors.white,
+      ),
       Color headerColor = Colors.green,
       Color messageColor = Colors.black}) {
     MessageWidget _overlayWidget = MessageWidget(

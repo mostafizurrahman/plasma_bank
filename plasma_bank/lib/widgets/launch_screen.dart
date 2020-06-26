@@ -74,7 +74,7 @@ class _LaunchScreenState extends State<LaunchScreenWidget> {
                   crossAxisAlignment: CrossAxisAlignment.center,
                   mainAxisAlignment: MainAxisAlignment.center,
                   children: [
-                    WidgetTemplates.indicator(),
+                    WidgetTemplate.indicator(),
                     SizedBox(width: 12,),
                     Text(
                       localization.getText('moto'),

@@ -2,6 +2,7 @@ import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
 import 'package:plasma_bank/app_utils/app_constants.dart';
+import 'package:plasma_bank/app_utils/widget_providers.dart';
 import 'package:plasma_bank/media/dash_painter.dart';
 
 import '../widget_templates.dart';
@@ -152,16 +153,8 @@ class CoronavirusWidget extends StatelessWidget {
                               height: 50,
                               child: Row(
                                 children: [
-                                  Container(
-                                    decoration: BoxDecoration(
-                                        borderRadius: BorderRadius.all(
-                                          Radius.circular(40),
-                                        ),
-                                        border: Border.all(
-                                            width: 0.85,
-                                            color: Colors.red,
-                                            style: BorderStyle.solid)),
-                                    child: Icon(
+                                  WidgetProvider.circledIcon(
+                                    Icon(
                                       Icons.airline_seat_flat,
                                       color: Colors.red,
                                     ),
@@ -240,7 +233,7 @@ class CoronavirusWidget extends StatelessWidget {
               ),
             );
           }
-          return WidgetTemplates.progressIndicator();
+          return WidgetTemplate.progressIndicator();
         },
       ),
     );
