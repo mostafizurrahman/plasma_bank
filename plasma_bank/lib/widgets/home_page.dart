@@ -71,7 +71,10 @@ class _HomePageState extends State<HomePageWidget> {
                 RaisedButton(
                   child: Text('Go!'),
                   onPressed: () {
-                    this.dataBehavior.sink.add(0.0);
+
+                    String now = DateTime.now().toLocal().toString();
+                    debugPrint(now);
+//                    this.dataBehavior.sink.add(0.0);
 
                     _downloader.downloadRemoteFile(
                         'https://covid.ourworldindata.org/data/owid-covid-data.json',
