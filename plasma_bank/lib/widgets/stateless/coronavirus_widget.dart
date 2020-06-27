@@ -22,6 +22,15 @@ class CoronavirusWidget extends StatelessWidget {
         builder: (_context, _snap) {
           if (_snap.hasData) {
             final QuerySnapshot _data = _snap.data;
+            if(_data.documents.length == 0){
+              return Center(
+                child: Text(
+                  'INTERNET ERROR',
+
+                style: TextStyle(color: Colors.pinkAccent, fontFamily: AppStyle.fontBold),
+                ),
+              );
+            }
             final Map<dynamic, dynamic> _mapData = _data.documents.first.data;
             if (_mapData == null) {
               return Center(
