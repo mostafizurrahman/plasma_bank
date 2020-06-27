@@ -18,7 +18,8 @@ class _LaunchScreenState extends State<LaunchScreenWidget> {
   void initState() {
     super.initState();
     Future.delayed(const Duration(seconds: 3), () {
-      Navigator.pushNamed(context, AppRoutes.pageRouteHome);
+//      context, AppRoutes.pageRouteHome)
+      Navigator.popAndPushNamed(context, AppRoutes.pageRouteHome);
     });
   }
 

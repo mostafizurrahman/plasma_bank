@@ -3,6 +3,7 @@ import 'dart:ui';
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
 import 'package:intl/intl.dart';
+
 class AppConstants {}
 
 class AppRoutes {
@@ -39,18 +40,17 @@ class AppStyle {
     ),
   );
 
-  static String format(final int number){
+  static String format(final int number) {
     final _formatter = new NumberFormat("###,###,###", "en_US");
     return _formatter.format(number).toString();
   }
 
-  static BoxDecoration getLightBox(){
+  static BoxDecoration getLightBox() {
     return BoxDecoration(
       color: Colors.white,
       boxShadow: [
         BoxShadow(
-          color:
-          Color.fromRGBO(0, 0, 0, 0.1),
+          color: Color.fromRGBO(0, 0, 0, 0.15),
           offset: Offset(0, 0),
           blurRadius: 6,
           spreadRadius: 3,
@@ -60,6 +60,37 @@ class AppStyle {
         const Radius.circular(5),
       ),
     );
+  }
+
+  static BoxDecoration bottomNavigatorBox() {
+    return BoxDecoration(
+      color: Colors.white,
+      boxShadow: [
+        BoxShadow(
+          color: Color.fromRGBO(0, 0, 0, 0.15),
+          offset: Offset(0, 0),
+          blurRadius: 12,
+          spreadRadius: 8,
+        ),
+      ],
+      borderRadius: const BorderRadius.only(
+        topLeft: const Radius.circular(12),
+        topRight: const Radius.circular(12),
+      ),
+    );
+//    BoxDecoration(
+//      color: Colors.white,
+//      boxShadow: [
+//        BoxShadow(
+//          color: Colors.black.withAlpha(20),
+//          offset: Offset(0, 0),
+//          blurRadius: 4,
+//          spreadRadius: 2,
+//        ),
+//      ],
+//      borderRadius: const BorderRadius.only( topLeft: const Radius.circular(12), topRight: const Radius.circular(12),),
+//
+//    );
   }
 }
 
