@@ -24,6 +24,7 @@ class AppConfig {
 
 class AppStyle {
   static const fontBold = 'SF_UIFont_Bold';
+  static const fontNormal = 'SF_UIFont';
   static const Color colorHighlight = Color.fromARGB(255, 255, 20, 80);
   static const BoxDecoration shadowDecoration = BoxDecoration(
     color: Colors.white,

@@ -5,6 +5,7 @@ import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
 import 'package:http/http.dart';
+import 'package:plasma_bank/app_utils/image_helper.dart';
 import 'package:plasma_bank/app_utils/location_provider.dart';
 import 'package:plasma_bank/app_utils/app_constants.dart';
 import 'package:plasma_bank/app_utils/widget_providers.dart';
@@ -34,7 +35,7 @@ class _HomePageState extends State<HomePageWidget> {
   @override
   void dispose() {
     super.dispose();
-    if(_bottomNavigationBehavior != null) {
+    if (_bottomNavigationBehavior != null) {
       _bottomNavigationBehavior.close();
     }
   }
@@ -55,60 +56,109 @@ class _HomePageState extends State<HomePageWidget> {
               child: StreamBuilder(
                 stream: this._bottomNavigationBehavior.stream,
                 initialData: 2,
-                builder: (_context, _snap){
-                  if(_snap.data == 2){
+                builder: (_context, _snap) {
+                  if (_snap.data == 2) {
                     return _getHomeScreen(_context);
                   }
-                  return Container(color: Colors.blue,);
+                  return Container(
+                    color: Colors.blue,
+                  );
                 },
               ),
             ),
           ),
-          bottomNavigationBar: Container(
-            height: 60,
+          bottomNavigationBar: StreamBuilder(
+            stream: this._bottomNavigationBehavior.stream,
+            initialData: 2,
+            builder: (_context, _snap) {
+              return Container(
+                height: 65,
 
 //            color: Colors.grey.withAlpha(15),
-            decoration: AppStyle.bottomNavigatorBox(),
-            child: Row(
-              mainAxisAlignment: MainAxisAlignment.spaceEvenly,
-              children: [
-
-              ],
-            ),
+                decoration: AppStyle.bottomNavigatorBox(),
+                child: Row(
+                  mainAxisAlignment: MainAxisAlignment.spaceEvenly,
+                  children: _getNavigationItems(_context, _snap.data),
+                ),
+              );
+            },
           ),
         ),
       ),
     );
   }
 
-  Widget _getNavigationItems(final BuildContext _context){
+//theme color #FF006C
+  List<Widget> _getNavigationItems(
+      final BuildContext _context, final int _selectedIndex) {
+    final List<String> _icons = [
+      'donate_n.png',
+      'collect_n.png',
+      'home_n.png',
+      'chat_n.png',
+      'option_n.png'
+    ];
 
     final int _buttonCount = 5;
-    final _width = (MediaQuery.of(_context).size.width - 48) / _buttonCount;
+    final _width = (MediaQuery.of(_context).size.width) / _buttonCount;
     List _widgets = List<Widget>();
 
-    for( int i = 0; i < _buttonCount; i++){
-
+    for (int i = 0; i < _buttonCount; i++) {
+      final _iconName =
+          _selectedIndex == i ? _icons[i].replaceAll('_n', '_h') : _icons[i];
       final _widget = Container(
-        width: _width,
-        height: 52,
-        child: RaisedButton(
-          elevation: 0.4,
-          child: Row(children: [
 
-          ],),
+        width: _width - 5,
+        height: _width - 5,
+        child: ClipRRect(
+          borderRadius: BorderRadius.all(Radius.circular(_width)),
+          child: Material(
+            color: Colors.white,
+            child: Ink(
+              child: InkWell(
+                onTap: () => this._bottomNavigationBehavior.sink.add(i),
+                child: Column(
+                  mainAxisAlignment: MainAxisAlignment.center,
+                  crossAxisAlignment: CrossAxisAlignment.center,
+                  children: [
+                    Padding(
+                      padding: EdgeInsets.all(2),
+                      child: Container(
+                        width: 24,
+                        height: 24,
+                        child: Image(
+                          image: ImageHelper.getImageAsset(_iconName),
+                        ),
+                      ),
+                    ),
+                    Text(
+                      _iconName.split('_')[0].toUpperCase(),
+                      style: TextStyle(
+                        fontFamily: i == _selectedIndex
+                            ? AppStyle.fontBold
+                            : AppStyle.fontNormal,
+                        fontSize: 10,
+                        color: i == _selectedIndex
+                            ? Color.fromARGB(255, 255, 0, 74)
+                            : Colors.black,
+                      ),
+                    )
+                  ],
+                ),
+              ),
+            ),
+          ),
         ),
       );
+      _widgets.add(_widget);
     }
 
-
+    return _widgets;
   }
 
-  _onTapDonor(final bool _isBloodDonor){
+  _onTapDonor(final bool _isBloodDonor) {}
 
-  }
-
-  _getHomeScreen(BuildContext _context){
+  _getHomeScreen(BuildContext _context) {
     final _height = 1300.0;
     final _width = MediaQuery.of(_context).size.width;
     final _profileWidth = _width * 0.2;
@@ -124,7 +174,11 @@ class _HomePageState extends State<HomePageWidget> {
           children: [
             CoronavirusWidget(this._db.getGlobalCovidData(), _width),
             HomePlasmaWidget(_profileHeight, _onTapDonor),
-            HomePlasmaWidget(_profileHeight, _onTapDonor, isBloodDonor: true,),
+            HomePlasmaWidget(
+              _profileHeight,
+              _onTapDonor,
+              isBloodDonor: true,
+            ),
           ],
         ),
       ),
