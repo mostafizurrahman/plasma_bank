@@ -8,25 +8,36 @@ import 'package:plasma_bank/widgets/launch_screen.dart';
 import 'package:plasma_bank/widgets/patient_info.dart';
 import 'package:flutter_statusbarcolor/flutter_statusbarcolor.dart';
 import 'media/camera_widget.dart';
-
+import 'package:flutter_localizations/flutter_localizations.dart';
 //https://www.fda.gov/vaccines-blood-biologics/investigational-new-drug-ind-or-device-exemption-ide-process-cber/recommendations-investigational-covid-19-convalescent-plasma#Recordkeeping
-void main() => runApp(PlasmaBank());
+void main() {
+
+  runApp(PlasmaBank());
+}
 
 class PlasmaBank extends StatelessWidget {
+
   // This widget is the root of your application.
   @override
   Widget build(BuildContext context) {
     FlutterStatusbarcolor.setStatusBarColor(Colors.white);
+    FlutterStatusbarcolor.setStatusBarWhiteForeground(false);
     return MaterialApp(
-//      theme: ThemeData.from(
-//        colorScheme: const ColorScheme.light(),
-//      ).copyWith(
-//        pageTransitionsTheme: const PageTransitionsTheme(
-//          builders: <TargetPlatform, PageTransitionsBuilder>{
-//            TargetPlatform.android: ZoomPageTransitionsBuilder(),
-//          },
-//        ),
-//      ),
+      localizationsDelegates: [
+        // ... app-specific localization delegate[s] here
+        GlobalMaterialLocalizations.delegate,
+        GlobalWidgetsLocalizations.delegate,
+        GlobalCupertinoLocalizations.delegate,
+      ],
+      supportedLocales: [
+        const Locale('en', ''), // English, no country code
+        const Locale('he', ''), // Hebrew, no country code
+        const Locale('zh', ''), // Chinese, no country code
+        // ... other locales the app supports
+      ],
+      theme: ThemeData(
+        fontFamily: 'SF_UIFont',
+      ),
       home: LaunchScreenWidget(),
       onGenerateRoute: getGenerateRoute,
     );
@@ -95,29 +106,3 @@ class PlasmaBank extends StatelessWidget {
   }
 }
 
-class Page2 extends StatefulWidget {
-  @override
-  State<StatefulWidget> createState() {
-    // TODO: implement createState
-    return _State();
-  }
-}
-
-class _State extends State<Page2> {
-  @override
-  Widget build(BuildContext context) {
-    // TODO: implement build
-    return Scaffold(
-      appBar: AppBar(),
-      body: Center(
-        child: RaisedButton(
-          child: Text('Go!'),
-          onPressed: () {
-            Navigator.pushNamed(context, "/root",
-                arguments: {"name": "mostafizur"});
-          },
-        ),
-      ),
-    );
-  }
-}
