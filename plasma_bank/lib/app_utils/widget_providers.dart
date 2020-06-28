@@ -6,6 +6,9 @@ import 'dart:ui' as ui;
 
 import 'package:plasma_bank/widgets/widget_templates.dart';
 
+import 'app_constants.dart';
+import 'image_helper.dart';
+
 class WidgetProvider{
 
   static Widget getAppBar(BuildContext context, {title}) {
@@ -137,4 +140,73 @@ class WidgetProvider{
       child: _icon,
     );
   }
+
+
+  //theme color #FF006C
+  static List<Widget> navigators(
+      final BuildContext _context, final int _selectedIndex, _onTap) {
+    final List<String> _icons = [
+      'donate_n.png',
+      'collect_n.png',
+      'home_n.png',
+      'chat_n.png',
+      'option_n.png'
+    ];
+
+    final int _buttonCount = 5;
+    final _width = (MediaQuery.of(_context).size.width) / _buttonCount;
+    List _widgets = List<Widget>();
+
+    for (int i = 0; i < _buttonCount; i++) {
+      final _iconName =
+      _selectedIndex == i ? _icons[i].replaceAll('_n', '_h') : _icons[i];
+      final _widget = Container(
+        color: Colors.transparent,
+        width: _width - 5,
+        height: _width - 5,
+        child: ClipRRect(
+          borderRadius: BorderRadius.all(Radius.circular(_width)),
+          child: Material(
+            color: Colors.white,
+            child: Ink(
+              child: InkWell(
+                onTap: ()=>_onTap(i),
+                child: Column(
+                  mainAxisAlignment: MainAxisAlignment.center,
+                  crossAxisAlignment: CrossAxisAlignment.center,
+                  children: [
+                    Padding(
+                      padding: EdgeInsets.all(2),
+                      child: Container(
+                        width: 24,
+                        height: 24,
+                        child: Image(
+                          image: ImageHelper.getImageAsset(_iconName),
+                        ),
+                      ),
+                    ),
+                    Text(
+                      _iconName.split('_')[0].toUpperCase(),
+                      style: TextStyle(
+                        fontFamily: i == _selectedIndex
+                            ? AppStyle.fontBold
+                            : AppStyle.fontNormal,
+                        fontSize: 10,
+                        color: i == _selectedIndex
+                            ? Color.fromARGB(255, 255, 0, 74)
+                            : Colors.black,
+                      ),
+                    )
+                  ],
+                ),
+              ),
+            ),
+          ),
+        ),
+      );
+      _widgets.add(_widget);
+    }
+    return _widgets;
+  }
+
 }

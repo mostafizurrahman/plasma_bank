@@ -1,6 +1,7 @@
 import 'dart:io';
 
 import 'package:flutter/material.dart';
+import 'package:flutter/services.dart';
 import 'package:plasma_bank/app_utils/app_constants.dart';
 import 'package:plasma_bank/media/preview_widget.dart';
 import 'package:plasma_bank/widgets/home_page.dart';
@@ -20,7 +21,8 @@ class PlasmaBank extends StatelessWidget {
   // This widget is the root of your application.
   @override
   Widget build(BuildContext context) {
-    FlutterStatusbarcolor.setStatusBarColor(Colors.white);
+    SystemChrome.setEnabledSystemUIOverlays(SystemUiOverlay.values);
+    FlutterStatusbarcolor.setStatusBarColor(Colors.transparent);
     FlutterStatusbarcolor.setStatusBarWhiteForeground(false);
     return MaterialApp(
       localizationsDelegates: [

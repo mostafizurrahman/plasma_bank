@@ -3,6 +3,7 @@ import 'dart:io';
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
 import 'package:plasma_bank/app_utils/app_constants.dart';
+import 'package:plasma_bank/app_utils/image_helper.dart';
 import 'package:plasma_bank/app_utils/widget_providers.dart';
 import 'package:plasma_bank/widgets/widget_templates.dart';
 
@@ -81,4 +82,6 @@ class _PreviewState extends State<PreviewWidget> {
       });
     });
   }
+
+
 }
