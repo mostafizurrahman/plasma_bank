@@ -23,6 +23,12 @@ class AppConfig {
 }
 
 class AppStyle {
+
+  static Color greyBackground({ alpha = 255}){
+
+    final _background = (0.9 * 255).toInt();
+    return Color.fromARGB(alpha, _background, _background, _background);
+  }
   static const fontBold = 'SF_UIFont_Bold';
   static const fontNormal = 'SF_UIFont';
   static const Color colorHighlight = Color.fromARGB(255, 255, 20, 80);
