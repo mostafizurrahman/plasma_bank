@@ -52,6 +52,10 @@ class AppStyle {
     return _formatter.format(number).toString();
   }
 
+  static Color theme(){
+    return Color.fromARGB(255, 240, 10, 80);
+  }
+
   static BoxDecoration getLightBox() {
     return BoxDecoration(
       color: Colors.white,

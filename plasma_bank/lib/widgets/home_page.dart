@@ -2,9 +2,11 @@ import 'dart:io';
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
 import 'package:plasma_bank/app_utils/app_constants.dart';
+import 'package:plasma_bank/app_utils/image_helper.dart';
 import 'package:plasma_bank/app_utils/widget_providers.dart';
 import 'package:plasma_bank/network/covid_data_helper.dart';
 import 'package:plasma_bank/network/firebase_repositories.dart';
+import 'package:plasma_bank/widgets/stateless/collector_widget.dart';
 import 'package:plasma_bank/widgets/stateless/coronavirus_widget.dart';
 import 'package:plasma_bank/widgets/stateless/donor_widget.dart';
 import 'package:plasma_bank/widgets/stateless/home_plasma_widget.dart';
@@ -18,7 +20,6 @@ class HomePageWidget extends StatefulWidget {
 }
 
 class _HomePageState extends State<HomePageWidget> {
-
   bool visible = false;
   final _db = FirebaseRepositories();
   final _downloader = CovidDataHelper();
@@ -118,7 +119,14 @@ class _HomePageState extends State<HomePageWidget> {
   }
 
   Widget _getCollectScreen(BuildContext _context) {
-    return Container();
+
+    if (!this.visible) {
+      Future.delayed(Duration(microseconds: 600), () {
+        this.visible = true;
+        this._bottomNavigationBehavior.sink.add(1);
+      });
+    }
+    return CollectorWidget(this.visible, _onCollectTap);
   }
 
   Widget _getDonateScreen(BuildContext _context) {
@@ -148,5 +156,12 @@ class _HomePageState extends State<HomePageWidget> {
   _onNavigationButtonTap(int i) {
     visible = false;
     this._bottomNavigationBehavior.sink.add(i);
+  }
+  _onCollectTap(bool isCollection){
+    if(isCollection){
+      //register collection
+    } else {
+      //show previous list
+    }
   }
 }
