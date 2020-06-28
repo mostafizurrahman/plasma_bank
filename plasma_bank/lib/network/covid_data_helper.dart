@@ -94,10 +94,6 @@ class CovidDataHelper {
 
   Function(File) _didDownloadEnd;
 
-  //https://covid.ourworldindata.org/data/ecdc/total_deaths.csv
-  //https://covid.ourworldindata.org/data/ecdc/new_deaths.csv
-  //https://covid.ourworldindata.org/data/ecdc/total_cases.csv
-  //https://covid.ourworldindata.org/data/ecdc/new_cases.csv
   CovidDataHelper();
 
   Future<bool> downloadRemoteFile(

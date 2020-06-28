@@ -7,16 +7,16 @@ import 'package:plasma_bank/media/dash_painter.dart';
 class HomePlasmaWidget extends StatelessWidget {
   final double _profileHeight;
   final bool isBloodDonor;
-  HomePlasmaWidget(this._profileHeight, {this.isBloodDonor = false});
+  final Function(bool) _onTapDonor;
+  HomePlasmaWidget(this._profileHeight, this._onTapDonor, {this.isBloodDonor = false});
 
   @override
   Widget build(BuildContext context) {
-    // TODO: implement build
     return Padding(
       padding: const EdgeInsets.only(top: 48, ),
       child: Container(
         decoration: AppStyle.shadowDecoration,
-        height: 350,
+        height: 365,
         child: ClipRRect(
           borderRadius: BorderRadius.all(
             Radius.circular(16),
@@ -27,6 +27,7 @@ class HomePlasmaWidget extends StatelessWidget {
               child: InkWell(
                 onTap: (){
                   debugPrint("DONE");
+                  this._onTapDonor(this.isBloodDonor);
                 },
                 child: Column(
                   children: [
@@ -142,6 +143,7 @@ class HomePlasmaWidget extends StatelessWidget {
                             crossAxisAlignment: CrossAxisAlignment.center,
                             children: [
 
+                              SizedBox(height: 8,),
                               Text('+8801675876752',
                                 style: TextStyle(
                                     fontSize: 16,
