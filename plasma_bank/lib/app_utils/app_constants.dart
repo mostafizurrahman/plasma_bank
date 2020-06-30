@@ -12,6 +12,7 @@ class AppRoutes {
   static const String pageRouteEntry = "/home/entry";
   static const String pageRouteImage = "/home/camera/image";
   static const String pageRouteCamera = "/home/camera";
+  static const String pageLocateTerms = '/home/locationTerms';
 }
 
 class AppConfig {
