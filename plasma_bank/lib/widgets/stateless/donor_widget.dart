@@ -67,35 +67,48 @@ class DonorWidget extends StatelessWidget {
                       crossAxisAlignment: CrossAxisAlignment.end,
                       mainAxisAlignment: MainAxisAlignment.end,
                       children: [
-                        RaisedButton(
-                          onPressed: (){
-                            this._onTap(false);
-                          },
-                          color: Colors.white,
-                          child: Icon(
-                            Icons.group,
-                            color: AppStyle.theme(), //Color.fromARGB(255, 240, 10, 80),
-                            size: 35,
-                          ),
+                        Row(
+                          crossAxisAlignment: CrossAxisAlignment.end,
+                          mainAxisAlignment: MainAxisAlignment.end,
+                          children: [
+                            FloatingActionButton(
+                              heroTag: '__hero',
+                              onPressed: (){
+                                this._onTap(false);
+                              },
+                              backgroundColor: Colors.white,
+                              child: Icon(
+                                Icons.group,
+                                color: AppStyle.theme(), //Color.fromARGB(255, 240, 10, 80),
+                                size: 35,
+                              ),
+                            ),
+                          ],
                         ),
                         SizedBox(
                           height: 12,
                         ),
-                        RaisedButton(
-                          onPressed: (){
-                            this._onTap(false);
-                          },
-                          color: Colors.white,
-                          child: Icon(
-                            Icons.add,
-                            color: AppStyle.theme(),
-                            size: 50,
-                          ),
+                        Row(
+                          crossAxisAlignment: CrossAxisAlignment.end,
+                          mainAxisAlignment: MainAxisAlignment.end,
+                          children: [
+                            FloatingActionButton(
+                              onPressed: (){
+                                this._onTap(false);
+                              },
+                              backgroundColor: Colors.white,
+                              child: Icon(
+                                Icons.add,
+                                color: AppStyle.theme(),
+                                size: 50,
+                              ),
+                            ),
+                          ],
                         ),
                       ],
                     ),
                   ),
-                )
+                ),
               ],
             ),
           ),
