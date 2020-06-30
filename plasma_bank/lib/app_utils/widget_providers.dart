@@ -209,4 +209,25 @@ class WidgetProvider{
     return _widgets;
   }
 
+
+  static button(Function _onTap, final String txt, BuildContext context){
+    return Container(
+      height: 50,
+      width: MediaQuery.of(context).size.width - 64,
+      child: RaisedButton(
+        color: AppStyle.theme(),
+        onPressed: () {
+          debugPrint('this is done');
+          if(_onTap != null){
+            _onTap();
+          }
+        },
+        child: Text(
+          txt,
+          style: TextStyle(fontSize: 18, color: Colors.white),
+        ),
+      ),
+    );
+  }
+
 }
