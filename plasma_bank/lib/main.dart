@@ -6,6 +6,7 @@ import 'package:plasma_bank/app_utils/app_constants.dart';
 import 'package:plasma_bank/media/preview_widget.dart';
 import 'package:plasma_bank/widgets/home_page.dart';
 import 'package:plasma_bank/widgets/launch_screen.dart';
+import 'package:plasma_bank/widgets/location_terms.dart';
 import 'package:plasma_bank/widgets/patient_info.dart';
 import 'package:flutter_statusbarcolor/flutter_statusbarcolor.dart';
 import 'media/camera_widget.dart';
@@ -48,6 +49,9 @@ class PlasmaBank extends StatelessWidget {
   Route getGenerateRoute(RouteSettings settings) {
     Widget _widget;
 
+    if(settings.name == AppRoutes.pageLocateTerms){
+      _widget = LocationTerms();
+    }
     if (settings.name == AppRoutes.pageRouteCamera) {
       _widget = CameraWidget();
     }

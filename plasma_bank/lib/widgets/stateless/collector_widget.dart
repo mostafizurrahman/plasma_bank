@@ -28,7 +28,7 @@ class CollectorWidget extends StatelessWidget {
         duration: Duration(seconds: 1),
         child: Container(
           width: _width,
-          height: MediaQuery.of(context).size.height - 60 - _bottom,
+          height: MediaQuery.of(context).size.height - (_top > 0 ? 43  : 60 )- _bottom - _top,
           //color: Color.fromARGB(255, _background, _background, _background),
           decoration: BoxDecoration(
             image: DecorationImage(
@@ -53,7 +53,7 @@ class CollectorWidget extends StatelessWidget {
                     ),
                   ),
                   Padding(
-                    padding: EdgeInsets.only(top: 32, bottom: 200),
+                    padding: EdgeInsets.only(top: 12, bottom: 125),
                     child: Text(
                       'collect a beg of blood for a reason, let the reason to be life. there is no great joy than saving a life.',
                       style: TextStyle(fontSize: 16, height: 1.3, color: Colors.black.withAlpha(200)),
@@ -65,25 +65,27 @@ class CollectorWidget extends StatelessWidget {
               floatingActionButton: Column(
                 mainAxisAlignment: MainAxisAlignment.end,
                 children: [
-                  FloatingActionButton(
-                    onPressed: (){
-                      this._onCollectTap(false);
-                    },
-                    backgroundColor: AppStyle.theme(),
-                    child: Icon(
-                      Icons.group,
-                      color: Colors.white, //Color.fromARGB(255, 240, 10, 80),
-                      size: 35,
-                    ),
-                  ),
+//                  FloatingActionButton(
+//                    heroTag: "btn2",
+//                    onPressed: (){
+//                      this._onCollectTap(false);
+//                    },
+//                    backgroundColor: AppStyle.theme(),
+//                    child: Icon(
+//                      Icons.group,
+//                      color: Colors.white, //Color.fromARGB(255, 240, 10, 80),
+//                      size: 35,
+//                    ),
+//                  ),
                   SizedBox(
                     height: 12,
                   ),
-                  FloatingActionButton(
+                  RaisedButton(
+
                     onPressed: (){
                       this._onCollectTap(false);
                     },
-                    backgroundColor: AppStyle.theme(),
+                    color: AppStyle.theme(),
                     child: Icon(
                       Icons.add,
                       color: Colors.white,

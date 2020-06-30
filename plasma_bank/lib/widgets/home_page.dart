@@ -25,6 +25,9 @@ class _HomePageState extends State<HomePageWidget> {
   final _downloader = CovidDataHelper();
   final _bottomNavigationBehavior = BehaviorSubject<int>();
 
+
+
+
   @override
   void initState() {
     // TODO: implement initState
@@ -139,10 +142,23 @@ class _HomePageState extends State<HomePageWidget> {
     return DonorWidget(this.visible, _registerDonorTap);
   }
 
+  Widget _getMessageWidget(){
+    if (!this.visible) {
+      Future.delayed(Duration(microseconds: 600), () {
+        this.visible = true;
+        this._bottomNavigationBehavior.sink.add(0);
+      });
+    }
+
+
+  }
+
   _registerDonorTap(final bool isRegistration) {
     if (isRegistration) {
+      Navigator.pushNamed(context, AppRoutes.pageLocateTerms);
       //star registration
     } else {
+      Navigator.pushNamed(context, AppRoutes.pageLocateTerms);
       //display donor list
     }
   }
