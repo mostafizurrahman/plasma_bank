@@ -45,7 +45,7 @@ class CollectorWidget extends StatelessWidget {
                 Padding(
                   padding: const EdgeInsets.only(left: 24, right: 24),
                   child: Text(
-                    'BECOME A BLOOD DONOR TODAY',
+                    'BLOOD IS LIFE,\nPASS IT ON',
                     style: TextStyle(
                       fontSize: 28,
                       fontFamily: AppStyle.fontBold,
@@ -54,13 +54,10 @@ class CollectorWidget extends StatelessWidget {
                 ),
                 Padding(
                   padding: EdgeInsets.only(
-                      top: 32, bottom: 115, left: 24, right: 24),
+                      top: 28, bottom: 110, left: 24, right: 24),
                   child: Text(
-                    'life saving heroes come in all types and sizes, a single pint can save three lives, a single gesture can create a million smiles',
-                    style: TextStyle(
-                        fontSize: 16,
-                        height: 1.3,
-                        color: Colors.black.withAlpha(200)),
+                    'collect a beg of blood for a reason, let the reason to be life. there is no great joy than saving a life.',
+                    style: TextStyle(fontSize: 16, height: 1.3, color: Colors.black.withAlpha(175)),
                   ),
                 ),
               ],
