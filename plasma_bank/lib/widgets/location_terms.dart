@@ -8,7 +8,7 @@ import 'package:geolocator/geolocator.dart';
 import 'package:plasma_bank/app_utils/app_constants.dart';
 import 'package:plasma_bank/app_utils/location_provider.dart';
 import 'package:plasma_bank/app_utils/widget_providers.dart';
-import 'package:plasma_bank/widgets/widget_templates.dart';
+import 'package:plasma_bank/app_utils/widget_templates.dart';
 import 'package:rxdart/rxdart.dart';
 import 'package:webview_flutter/webview_flutter.dart';
 
@@ -43,22 +43,25 @@ class LocationTermsState extends State<LocationTerms> {
     _webPublisher.close();
   }
 
-
   _onAgree() async {
     WidgetProvider.loading(context);
     final _status = await locationProvider.updateLocation();
-    Navigator.pop(context);
-    Future.delayed(Duration(milliseconds: 100), (){
-      if (_status == GeolocationStatus.denied){
-        AppSettings.openAppSettings();
-      } else {
-        Navigator.pushNamed(context, AppRoutes.pageAddressData);
-      }
-    });
+    if (_status == GeolocationStatus.denied) {
+      Navigator.pop(context);
+      AppSettings.openAppSettings();
+    } else {
+      final _countryList = await locationProvider.getCountryList();
+      Navigator.pop(context);
+      Future.delayed(Duration(milliseconds: 100), () {
+        Navigator.pushNamed(context, AppRoutes.pageAddressData,
+            arguments: {'country_list': _countryList});
+      });
+    }
   }
 
   @override
   Widget build(BuildContext context) {
+//    Navigator.pop(context);
     return Scaffold(
       backgroundColor: AppStyle.greyBackground(),
       floatingActionButtonLocation: FloatingActionButtonLocation.centerFloat,

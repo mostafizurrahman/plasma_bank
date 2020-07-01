@@ -107,7 +107,7 @@ class _PlasmaState extends State<PlasmaBank> {
     Widget _widget;
 
     if (settings.name == AppRoutes.pageAddressData) {
-      _widget = AddressWidget();
+      _widget = AddressWidget(settings.arguments);
     }
     if (settings.name == AppRoutes.pageLocateTerms) {
       _widget = LocationTerms();

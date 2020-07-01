@@ -6,7 +6,7 @@ import 'package:flutter/material.dart';
 import 'package:path_provider/path_provider.dart';
 import 'package:plasma_bank/app_utils/app_constants.dart';
 
-import 'package:plasma_bank/widgets/widget_templates.dart';
+import 'package:plasma_bank/app_utils/widget_templates.dart';
 import 'package:rxdart/rxdart.dart';
 
 class CameraWidget extends StatefulWidget {

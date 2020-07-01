@@ -1,13 +1,19 @@
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
+import '../widgets/base_widget.dart';
 import 'package:plasma_bank/app_utils/app_constants.dart';
 import 'package:plasma_bank/app_utils/location_provider.dart';
 import 'package:plasma_bank/app_utils/widget_providers.dart';
 import 'package:plasma_bank/widgets/stateful/data_picker_widget.dart';
 
-class AddressWidget extends StatefulWidget {
+class AddressWidget extends BaseWidget {
+  AddressWidget(Map arguments) : super(arguments) {
+    debugPrint('what happened');
+  }
+
   @override
   State<StatefulWidget> createState() {
+    final _countryList = this.getData('country_list');
     return _AddressState();
   }
 }
@@ -17,9 +23,9 @@ class _AddressState extends State<AddressWidget> {
   void initState() {
     super.initState();
     Future.delayed(
-        Duration(
-          milliseconds: 1100,
-        ), () {
+        Duration(seconds: 4,), () {
+      final _countryList = this.widget.getData('country_list');
+      debugPrint('_done');
       showDialog(
         context: context,
         barrierDismissible: false,
@@ -30,7 +36,7 @@ class _AddressState extends State<AddressWidget> {
             onWillPop: () async {
               return Future<bool>.value(false);
             },
-            child: DataPickerWidget(List(), _onLocationSelected),
+            child: DataPickerWidget(_countryList, _onLocationSelected),
           ),
         ),
       );
@@ -50,9 +56,5 @@ class _AddressState extends State<AddressWidget> {
     );
   }
 
-  _onLocationSelected(final _data){
-
-  }
-
-
+  _onLocationSelected(final _data) {}
 }

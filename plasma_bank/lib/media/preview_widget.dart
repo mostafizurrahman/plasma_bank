@@ -5,7 +5,7 @@ import 'package:flutter/material.dart';
 import 'package:plasma_bank/app_utils/app_constants.dart';
 import 'package:plasma_bank/app_utils/image_helper.dart';
 import 'package:plasma_bank/app_utils/widget_providers.dart';
-import 'package:plasma_bank/widgets/widget_templates.dart';
+import 'package:plasma_bank/app_utils/widget_templates.dart';
 
 class PreviewWidget extends StatefulWidget {
   final ImageType imageType;

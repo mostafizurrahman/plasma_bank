@@ -4,8 +4,12 @@ import 'package:flutter/material.dart';
 import 'dart:ui' as ui;
 
 import 'package:plasma_bank/app_utils/app_constants.dart';
+import 'package:plasma_bank/app_utils/location_provider.dart';
 import 'package:plasma_bank/app_utils/widget_providers.dart';
 import 'package:plasma_bank/media/dash_painter.dart';
+import 'package:rxdart/rxdart.dart';
+
+import 'country_picker_item.dart';
 
 class DataPickerWidget extends StatefulWidget {
   final bool hasDoneButton;
@@ -79,15 +83,40 @@ class _DataPickerState extends State<DataPickerWidget> {
                     size: Size(MediaQuery.of(context).size.width, 1.0),
                     painter: DashLinePainter(),
                   ),
+                  Expanded(
+                    child: StreamBuilder<Object>(
+                      stream: _tempSubject.stream,
+                      builder: (context, snapshot) {
+                        return ListView.builder(
+                            scrollDirection: Axis.vertical,
+                            itemCount: this.widget.dataList.length + 1,
+                            itemExtent: 75,
+                            itemBuilder: (_context, _index) {
+                              if(_index == this.widget.dataList.length){
+                                return Container(
+                                  height: 90,
+                                );
+                              }
+                              final _data = this.widget.dataList[_index];
+                              bool isSelected = _data == this._tempSubject.value;
+                              return CountryWidget(_data, this._onSubjectSelected, isSelected);
+
+//                            this.getCountryItem(_data);
+                            },);
+                      }
+                    ),
+                  )
                 ],
               ),
               floatingActionButtonLocation:
                   FloatingActionButtonLocation.centerDocked,
-              floatingActionButton: this.widget.hasDoneButton ? WidgetProvider.button(
-                _onDataPicked,
-                "DONE",
-                context,
-              ) : SizedBox(),
+              floatingActionButton: this.widget.hasDoneButton
+                  ? WidgetProvider.button(
+                      _onDataPicked,
+                      "DONE",
+                      context,
+                    )
+                  : SizedBox(),
             ),
           ),
         ),
@@ -95,5 +124,52 @@ class _DataPickerState extends State<DataPickerWidget> {
     );
   }
 
+  final BehaviorSubject _tempSubject = BehaviorSubject();
   _onDataPicked() {}
+
+  _onSubjectSelected(final _data){
+
+    this._tempSubject.sink.add(_data);
+//    if(_tempSubject !=null ){
+//
+//      _tempSubject.sink.add(false);
+//    }
+//    _tempSubject = _subject;
+  }
+
+  Widget getCountryItem(final Country _country) {
+    return Card(
+      elevation: 0.1,
+      child: Container(
+        height: 90,
+        child: Row(
+          mainAxisAlignment: MainAxisAlignment.start,
+          crossAxisAlignment: CrossAxisAlignment.center,
+          children: [
+            Padding(
+              padding: EdgeInsets.only(left: 8, right: 8),
+              child: Text(
+                _country.flag,
+                style: TextStyle(fontSize: 35),
+              ),
+            ),
+            Center(
+              child: Text(
+                _country.countryName,
+              ),
+            )
+          ],
+        ),
+      ),
+    );
+  }
+
+  @override
+  void dispose() {
+    // TODO: implement dispose
+    super.dispose();
+    if(_tempSubject != null){
+      _tempSubject.close();
+    }
+  }
 }

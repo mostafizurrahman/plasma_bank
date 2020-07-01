@@ -5,7 +5,7 @@ import 'package:plasma_bank/app_utils/app_constants.dart';
 import 'package:plasma_bank/app_utils/widget_providers.dart';
 import 'package:plasma_bank/media/dash_painter.dart';
 
-import '../widget_templates.dart';
+import '../../app_utils/widget_templates.dart';
 
 class CoronavirusWidget extends StatelessWidget {
   final Stream<QuerySnapshot> _queryStream;
