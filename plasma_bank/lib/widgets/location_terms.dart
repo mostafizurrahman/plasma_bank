@@ -45,12 +45,16 @@ class LocationTermsState extends State<LocationTerms> {
 
 
   _onAgree() async {
-
-
+    WidgetProvider.loading(context);
     final _status = await locationProvider.updateLocation();
-    if (_status == GeolocationStatus.denied){
-      AppSettings.openAppSettings();
-    }
+    Navigator.pop(context);
+    Future.delayed(Duration(milliseconds: 100), (){
+      if (_status == GeolocationStatus.denied){
+        AppSettings.openAppSettings();
+      } else {
+        Navigator.pushNamed(context, AppRoutes.pageAddressData);
+      }
+    });
   }
 
   @override
@@ -59,17 +63,7 @@ class LocationTermsState extends State<LocationTerms> {
       backgroundColor: AppStyle.greyBackground(),
       floatingActionButtonLocation: FloatingActionButtonLocation.centerFloat,
       floatingActionButton: WidgetProvider.button(_onAgree, "I AGREE", context),
-      appBar: AppBar(
-        centerTitle: false,
-        backgroundColor: AppStyle.greyBackground(),
-        title: Text(
-          'Terms & Conditions',
-          style: TextStyle(color: AppStyle.titleTxtColor()),
-        ),
-        iconTheme: IconThemeData(color: AppStyle.theme()),
-        titleSpacing: 0,
-
-      ),
+      appBar: WidgetProvider.appBar('Terms & Conditions'),
       body: StreamBuilder(
         stream: _webPublisher.stream,
         initialData: true,

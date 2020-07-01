@@ -13,6 +13,7 @@ class AppRoutes {
   static const String pageRouteImage = "/home/camera/image";
   static const String pageRouteCamera = "/home/camera";
   static const String pageLocateTerms = '/home/locationTerms';
+  static const String pageAddressData = '/home/address';
 }
 
 class AppConfig {
@@ -21,6 +22,8 @@ class AppConfig {
   static const double FONT_SIZE_SML = 10;
   static const double FONT_SIZE_XL = 15;
   static const double FONT_SIZE_XXL = 18;
+  AppConfig();
+  bool hasInternet = true;
 }
 
 class AppStyle {

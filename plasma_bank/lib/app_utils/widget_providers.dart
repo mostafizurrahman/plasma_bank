@@ -211,23 +211,46 @@ class WidgetProvider{
 
 
   static button(Function _onTap, final String txt, BuildContext context){
-    return Container(
-      height: 50,
-      width: MediaQuery.of(context).size.width - 64,
-      child: RaisedButton(
-        color: AppStyle.theme(),
-        onPressed: () {
-          debugPrint('this is done');
-          if(_onTap != null){
-            _onTap();
-          }
-        },
-        child: Text(
-          txt,
-          style: TextStyle(fontSize: 18, color: Colors.white),
+    return Padding(
+      padding: const EdgeInsets.all(12.0),
+      child: Container(
+        decoration: BoxDecoration(
+          borderRadius: BorderRadius.all(Radius.circular(100)),
+        ),
+        height: 50,
+        width: MediaQuery.of(context).size.width - 96,
+        child: RaisedButton(
+          shape:RoundedRectangleBorder(
+              borderRadius: BorderRadius.circular(120.0),
+          ) ,
+          color: AppStyle.theme(),
+          onPressed: () {
+            debugPrint('this is done');
+            if(_onTap != null){
+              _onTap();
+            }
+          },
+          child: Text(
+            txt,
+            style: TextStyle(fontSize: 18, color: Colors.white),
+          ),
         ),
       ),
     );
   }
 
+  static AppBar appBar(String _title){
+    assert(_title != null, 'TITLE IS NULL');
+    return AppBar(
+      centerTitle: false,
+      backgroundColor: AppStyle.greyBackground(),
+      title: Text(
+        _title,
+        style: TextStyle(color: AppStyle.titleTxtColor()),
+      ),
+      iconTheme: IconThemeData(color: AppStyle.theme()),
+      titleSpacing: 0,
+
+    );
+  }
 }
