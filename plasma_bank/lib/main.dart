@@ -24,7 +24,6 @@ class PlasmaBank extends StatelessWidget {
   Widget build(BuildContext context) {
     SystemChrome.setEnabledSystemUIOverlays(SystemUiOverlay.values);
     FlutterStatusbarcolor.setStatusBarColor(Colors.transparent);
-    FlutterStatusbarcolor.setStatusBarWhiteForeground(false);
     return MaterialApp(
       localizationsDelegates: [
         // ... app-specific localization delegate[s] here

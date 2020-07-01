@@ -57,6 +57,10 @@ class AppStyle {
     return Color.fromARGB(255, 240, 10, 80);
   }
 
+  static Color titleTxtColor(){
+    return Color.fromARGB(255, 60, 50, 70);
+  }
+
   static BoxDecoration getLightBox() {
     return BoxDecoration(
       color: Colors.white,
