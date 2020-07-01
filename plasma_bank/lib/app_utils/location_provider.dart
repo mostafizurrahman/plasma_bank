@@ -11,11 +11,10 @@ class LocationProvider {
   GeolocationStatus get status => _geolocationStatus;
   Placemark _place;
   Placemark get place => _place;
-//  set Position(final _value){
-//    this._position = _value;
-//  }
-  updateLocation() async {
-//    final _globe = RestCountries.setup(Auth.RegionKey);
+
+  City gpsCity;
+
+  Future<GeolocationStatus> updateLocation() async {
     var _status = await _geoLocator.checkGeolocationPermissionStatus();
     this._geolocationStatus = _status;
     if (_status == GeolocationStatus.granted ||
@@ -25,8 +24,23 @@ class LocationProvider {
       if (_position != null) {
         List<Placemark> _placeMark = await _geoLocator.placemarkFromCoordinates(
             _position.latitude, _position.longitude);
+
         for (var _mark in _placeMark) {
           this._place = _mark;
+          final _map = {
+            'country': _mark.isoCountryCode ?? 'bd',
+            'region': _mark.administrativeArea ?? '',
+            'city': _mark.subAdministrativeArea ?? '',
+            'latitude': _mark.position.latitude,
+            'longitude': _mark.position.longitude,
+          };
+
+          final _city = City.fromJson(_map);
+          _city.postalCode = _mark.postalCode;
+          _city.fullName = _mark.country;
+          _city.street = _mark.thoroughfare;
+          _city.subStreet = _mark.subThoroughfare;
+          this.gpsCity = _city;
           debugPrint(_mark.country);
           debugPrint(_mark.postalCode);
           debugPrint(_mark.name);
@@ -38,6 +52,8 @@ class LocationProvider {
         }
       }
     }
+
+    return _status;
   }
 
   static final _location = LocationProvider._internal();
@@ -106,6 +122,10 @@ class Region {
 }
 
 class City {
+  String street;
+  String subStreet;
+  String postalCode;
+  String fullName;
   final String countryName;
   final String regionName;
   final String cityName;

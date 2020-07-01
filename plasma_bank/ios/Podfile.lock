@@ -212,6 +212,8 @@ PODS:
     - abseil/base/base_internal
     - abseil/base/config
     - abseil/meta/type_traits
+  - "app_settings (3.0.0+1)":
+    - Flutter
   - BoringSSL-GRPC (0.0.7):
     - BoringSSL-GRPC/Implementation (= 0.0.7)
     - BoringSSL-GRPC/Interface (= 0.0.7)
@@ -380,6 +382,7 @@ PODS:
     - Flutter
 
 DEPENDENCIES:
+  - app_settings (from `.symlinks/plugins/app_settings/ios`)
   - camera (from `.symlinks/plugins/camera/ios`)
   - cloud_firestore (from `.symlinks/plugins/cloud_firestore/ios`)
   - cloud_firestore_web (from `.symlinks/plugins/cloud_firestore_web/ios`)
@@ -425,6 +428,8 @@ SPEC REPOS:
     - PromisesObjC
 
 EXTERNAL SOURCES:
+  app_settings:
+    :path: ".symlinks/plugins/app_settings/ios"
   camera:
     :path: ".symlinks/plugins/camera/ios"
   cloud_firestore:
@@ -466,6 +471,7 @@ EXTERNAL SOURCES:
 
 SPEC CHECKSUMS:
   abseil: 6c8eb7892aefa08d929b39f9bb108e5367e3228f
+  app_settings: d103828c9f5d515c4df9ee754dabd443f7cedcf3
   BoringSSL-GRPC: 8edf627ee524575e2f8d19d56f068b448eea3879
   camera: 38cc83ae9a5667bb5a71c7d9edaf60a91920fd4e
   cloud_firestore: 2a4f8f802fb0b701cf809b283b6bec7477ebaa6f

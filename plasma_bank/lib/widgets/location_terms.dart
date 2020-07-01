@@ -1,8 +1,12 @@
 import 'dart:convert';
 
+import 'package:app_settings/app_settings.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
+import 'package:flutter_statusbarcolor/flutter_statusbarcolor.dart';
+import 'package:geolocator/geolocator.dart';
 import 'package:plasma_bank/app_utils/app_constants.dart';
+import 'package:plasma_bank/app_utils/location_provider.dart';
 import 'package:plasma_bank/app_utils/widget_providers.dart';
 import 'package:plasma_bank/widgets/widget_templates.dart';
 import 'package:rxdart/rxdart.dart';
@@ -26,7 +30,8 @@ class LocationTermsState extends State<LocationTerms> {
   void initState() {
     // TODO: implement initState
     super.initState();
-    Future.delayed(Duration(milliseconds: 50), () {
+    Future.delayed(Duration(milliseconds: 50), () async {
+      await FlutterStatusbarcolor.setStatusBarWhiteForeground(false);
       this._webPublisher.sink.add(false);
     });
   }
@@ -39,8 +44,13 @@ class LocationTermsState extends State<LocationTerms> {
   }
 
 
-  _onAgree(){
+  _onAgree() async {
 
+
+    final _status = await locationProvider.updateLocation();
+    if (_status == GeolocationStatus.denied){
+      AppSettings.openAppSettings();
+    }
   }
 
   @override
@@ -54,11 +64,11 @@ class LocationTermsState extends State<LocationTerms> {
         backgroundColor: AppStyle.greyBackground(),
         title: Text(
           'Terms & Conditions',
-          style: TextStyle(color: AppStyle.theme()),
+          style: TextStyle(color: AppStyle.titleTxtColor()),
         ),
         iconTheme: IconThemeData(color: AppStyle.theme()),
         titleSpacing: 0,
-        
+
       ),
       body: StreamBuilder(
         stream: _webPublisher.stream,
@@ -92,8 +102,9 @@ class LocationTermsState extends State<LocationTerms> {
     _controller.loadUrl(Uri.dataFromString(fileText,
             mimeType: 'text/html', encoding: Encoding.getByName('utf-8'))
         .toString());
-    Future.delayed(Duration(milliseconds: 200), () {
+    Future.delayed(Duration(milliseconds: 200), () async {
       this._webPublisher.sink.add(true);
+      await FlutterStatusbarcolor.setStatusBarWhiteForeground(false);
     });
   }
 }
