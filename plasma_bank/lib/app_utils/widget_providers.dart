@@ -4,7 +4,7 @@ import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
 import 'dart:ui' as ui;
 
-import 'package:plasma_bank/widgets/widget_templates.dart';
+import 'package:plasma_bank/app_utils/widget_templates.dart';
 
 import 'app_constants.dart';
 import 'image_helper.dart';

@@ -1,3 +1,5 @@
+import 'dart:typed_data';
+
 import 'package:flutter/cupertino.dart';
 import 'package:geolocator/geolocator.dart';
 import 'package:plasma_bank/network/api_client.dart';
@@ -68,10 +70,18 @@ class LocationProvider {
     return _location;
   }
 
+  final List<Country> _response = List();
   Future<List<Country>> getCountryList() async {
+    if(_response.length > 0){
+      return _response;
+    }
     final _client = ApiClient();
     final String _url = this.getUrl();
-    final _response = await _client.getGlobList(_url);
+    final List _data = await _client.getGlobList(_url);
+    for(final _item in _data){
+      Country _c = tryCast(_item);
+      _response.add(_c);
+    }
     return _response;
   }
 
@@ -80,6 +90,16 @@ class LocationProvider {
     final String _url = this.getUrl(country: country);
     final _response = await _client.getGlobList(_url, region: true);
     return _response;
+  }
+
+  T tryCast<T>(dynamic x, {T fallback}){
+    try{
+      return (x as T);
+    }
+    on CastError catch(e){
+      print('CastError when trying to cast $x to $T!');
+      return fallback;
+    }
   }
 
   Future<List<Country>> getCityList(final Region region) async {
@@ -106,14 +126,30 @@ final LocationProvider locationProvider = LocationProvider();
 class Country {
   final String countryName;
   final String countryCode;
+  String flag = '';
   Country({this.countryName, this.countryCode});
   factory Country.fromJson(Map<String, dynamic> _json) {
-    return Country(
+    final _country = Country(
       countryCode: _json['code'],
       countryName: _json['name'],
     );
+    _country._setFlag();
+    return _country;
+  }
+
+  _setFlag(){
+    int base = 127397;
+    List<int> units = List();
+    
+    for(final _data in this.countryCode.toUpperCase().codeUnits){
+      units.add(_data + base);
+    }
+    this.flag = String.fromCharCodes(units);
+    debugPrint(this.flag);
   }
 }
+
+
 
 class Region {
   final String countryName;
