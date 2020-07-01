@@ -1,4 +1,5 @@
 import 'dart:io';
+import 'package:connectivity/connectivity.dart';
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
 import 'package:plasma_bank/app_utils/app_constants.dart';
@@ -27,6 +28,7 @@ class _HomePageState extends State<HomePageWidget> {
 
 
 
+  final Connectivity _connectivity = Connectivity();
 
   @override
   void initState() {

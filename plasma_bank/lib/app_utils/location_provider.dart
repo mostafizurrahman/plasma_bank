@@ -23,7 +23,13 @@ class LocationProvider {
           desiredAccuracy: LocationAccuracy.medium);
       if (_position != null) {
         List<Placemark> _placeMark = await _geoLocator.placemarkFromCoordinates(
-            _position.latitude, _position.longitude);
+            _position.latitude, _position.longitude).catchError((final _error){
+              debugPrint('why');
+              return null;
+        });
+        if (_placeMark == null){
+          return GeolocationStatus.unknown;
+        }
 
         for (var _mark in _placeMark) {
           this._place = _mark;
