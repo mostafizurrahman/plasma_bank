@@ -28,11 +28,21 @@ class AppConfig {
 
 class AppStyle {
 
+  static const double PADDING = 24;
+  static const double PADDING_M = 12;
+  static const double PADDING_S = 8;
+
   static Color greyBackground({ alpha = 255}){
 
     final _background = (0.9 * 255).toInt();
     return Color.fromARGB(alpha, _background, _background, _background);
   }
+
+
+  static Color txtLine(){
+    return Color.fromARGB(255, 150, 150, 150);
+  }
+
   static const fontBold = 'SF_UIFont_Bold';
   static const fontNormal = 'SF_UIFont';
   static const Color colorHighlight = Color.fromARGB(255, 255, 20, 80);
@@ -111,6 +121,14 @@ class AppStyle {
 //
 //    );
   }
+}
+
+class TextConfig{
+
+  final TextEditingController controller = TextEditingController();
+  final FocusNode focusNode = FocusNode();
+  final String labelText;
+  TextConfig(this.labelText);
 }
 
 enum ImageType { profile, prescription, document }

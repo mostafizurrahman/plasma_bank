@@ -7,6 +7,7 @@ import 'package:plasma_bank/app_utils/app_constants.dart';
 import 'package:plasma_bank/app_utils/location_provider.dart';
 import 'package:plasma_bank/app_utils/widget_providers.dart';
 import 'package:plasma_bank/media/dash_painter.dart';
+import 'package:plasma_bank/widgets/stateful/region_picker_item.dart';
 import 'package:rxdart/rxdart.dart';
 
 import 'country_picker_item.dart';
@@ -16,8 +17,9 @@ class DataPickerWidget extends StatefulWidget {
   final String picketTitle;
   final List dataList;
   final Function(dynamic) onSelectedData;
+  final Function onClosed;
 
-  DataPickerWidget(this.dataList, this.onSelectedData,
+  DataPickerWidget(this.dataList, this.onSelectedData, this.onClosed,
       {this.picketTitle = 'PICK A DATA', this.hasDoneButton = true});
   @override
   State<StatefulWidget> createState() {
@@ -64,6 +66,8 @@ class _DataPickerState extends State<DataPickerWidget> {
                               child: InkWell(
                                 onTap: () {
                                   debugPrint('this is the end');
+                                  if (this.widget.onClosed != null)
+                                    this.widget.onClosed();
                                   Navigator.pop(context);
                                 },
                                 child: Icon(
@@ -88,22 +92,23 @@ class _DataPickerState extends State<DataPickerWidget> {
                       stream: _tempSubject.stream,
                       builder: (context, snapshot) {
                         return ListView.builder(
-                            scrollDirection: Axis.vertical,
-                            itemCount: this.widget.dataList.length + 1,
-                            itemExtent: 75,
-                            itemBuilder: (_context, _index) {
-                              if(_index == this.widget.dataList.length){
-                                return Container(
-                                  height: 90,
-                                );
-                              }
-                              final _data = this.widget.dataList[_index];
-                              bool isSelected = _data == this._tempSubject.value;
-                              return CountryWidget(_data, this._onSubjectSelected, isSelected);
+                          scrollDirection: Axis.vertical,
+                          itemCount: this.widget.dataList.length + 1,
+                          itemExtent: 75,
+                          itemBuilder: (_context, _index) {
+                            if (_index == this.widget.dataList.length) {
+                              return Container(
+                                height: 90,
+                              );
+                            }
+                            final _data = this.widget.dataList[_index];
+                            bool isSelected = _data == this._tempSubject.value;
+                            return _getItemWidget(_data, isSelected);
 
 //                            this.getCountryItem(_data);
-                            },);
-                      }
+                          },
+                        );
+                      },
                     ),
                   )
                 ],
@@ -113,7 +118,7 @@ class _DataPickerState extends State<DataPickerWidget> {
               floatingActionButton: this.widget.hasDoneButton
                   ? WidgetProvider.button(
                       _onDataPicked,
-                      "DONE",
+                      "SELECT",
                       context,
                     )
                   : SizedBox(),
@@ -124,17 +129,26 @@ class _DataPickerState extends State<DataPickerWidget> {
     );
   }
 
+  Widget _getItemWidget(final _data, final bool _isSelected){
+
+    if(_data is Region || _data is City) {
+      return RegionWidget(_data, this._onSubjectSelected, _isSelected);
+    }
+
+    return CountryWidget(
+        _data, this._onSubjectSelected, _isSelected);
+  }
+
   final BehaviorSubject _tempSubject = BehaviorSubject();
-  _onDataPicked() {}
+  _onDataPicked() {
+    if(this.widget.onSelectedData != null){
+      this.widget.onSelectedData(this._tempSubject.value);
+      Navigator.pop(context);
+    }
+  }
 
-  _onSubjectSelected(final _data){
-
+  _onSubjectSelected(final _data) {
     this._tempSubject.sink.add(_data);
-//    if(_tempSubject !=null ){
-//
-//      _tempSubject.sink.add(false);
-//    }
-//    _tempSubject = _subject;
   }
 
   Widget getCountryItem(final Country _country) {
@@ -168,7 +182,7 @@ class _DataPickerState extends State<DataPickerWidget> {
   void dispose() {
     // TODO: implement dispose
     super.dispose();
-    if(_tempSubject != null){
+    if (_tempSubject != null) {
       _tempSubject.close();
     }
   }

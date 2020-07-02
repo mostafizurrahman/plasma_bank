@@ -85,11 +85,16 @@ class LocationProvider {
     return _response;
   }
 
-  Future<List<Country>> getRegionList(final Country country) async {
+  Future<List<Region>> getRegionList(final Country country) async {
     final _client = ApiClient();
     final String _url = this.getUrl(country: country);
     final _response = await _client.getGlobList(_url, region: true);
-    return _response;
+    final List<Region> _data = List();
+    for(final _item in _response){
+      Region _c = tryCast(_item);
+      _data.add(_c);
+    }
+    return _data;
   }
 
   T tryCast<T>(dynamic x, {T fallback}){
@@ -102,11 +107,17 @@ class LocationProvider {
     }
   }
 
-  Future<List<Country>> getCityList(final Region region) async {
+  Future<List<City>> getCityList(final Region region) async {
     final _client = ApiClient();
     final String _url = this.getUrl(region: region);
     final _response = await _client.getGlobList(_url, city: true);
-    return _response;
+    //check the list empty or not
+    final _cityList = List<City>();
+    for(final _item in _response){
+      City _c = tryCast(_item);
+      _cityList.add(_c);
+    }
+    return _cityList;
   }
 
   String getUrl({Region region, Country country}) {
