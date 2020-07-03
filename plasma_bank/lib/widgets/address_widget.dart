@@ -21,12 +21,13 @@ class AddressWidget extends BaseWidget {
 class _AddressState extends State<AddressWidget> {
   bool skipPopup = false;
 
+  final TextEditingController _zipController = TextEditingController();
   final TextConfig _countryConfig = TextConfig('country');
 
   final TextConfig _countryCodeConfig = TextConfig('code');
   final TextConfig _regionConfig = TextConfig('region/state');
-  final TextConfig _cityConfig = TextConfig('city');
-  final TextConfig _streetConfig = TextConfig('street');
+  final TextConfig _cityConfig = TextConfig('city/county/division');
+  final TextConfig _streetConfig = TextConfig('street/locality');
 
   @override
   void initState() {
@@ -37,6 +38,8 @@ class _AddressState extends State<AddressWidget> {
     this._countryCodeConfig.controller.text = _city.countryName;
     this._regionConfig.controller.text = _city.regionName;
     this._cityConfig.controller.text = _city.cityName;
+    this._streetConfig.controller.text = _city.street + ", " + _city.subStreet;
+    this._zipController.text = _city.postalCode;
   }
 
   @override
@@ -90,6 +93,7 @@ class _AddressState extends State<AddressWidget> {
                     _getCountry(),
                     _getRegion(),
                     _getCity(),
+                    _geStreet(),
                   ],
                 ),
               ),
@@ -97,6 +101,72 @@ class _AddressState extends State<AddressWidget> {
           ),
         ),
       ),
+    );
+  }
+
+  _onChangedStreet(String value) {}
+
+  _onChangedZip(String value){}
+
+  Widget _geStreet() {
+//    _streetConfig
+    return Row(
+      children: [
+        Expanded(
+          child: Padding(
+            padding: EdgeInsets.only(top: 8, bottom: 8),
+            child: new TextField(
+              controller: _streetConfig.controller,
+              focusNode: _streetConfig.focusNode,
+              onChanged: _onChangedStreet,
+              maxLength: 50,
+              decoration: InputDecoration(
+                  focusedBorder: UnderlineInputBorder(
+                    borderSide:
+                        BorderSide(color: AppStyle.theme(), width: 0.75),
+                  ),
+                  enabledBorder: UnderlineInputBorder(
+                    borderSide:
+                        BorderSide(color: AppStyle.txtLine(), width: 0.75),
+                  ),
+                  labelText: _streetConfig.labelText.toLowerCase(),
+                  counterText: ""),
+              textInputAction: TextInputAction.done,
+              onEditingComplete: () =>
+                  FocusScope.of(context).requestFocus(FocusNode()),
+            ),
+          ),
+        ),
+        SizedBox(
+          width: AppStyle.PADDING_S,
+        ),
+
+        //locationProvider.gpsCity
+        Container(
+          width: 60,
+          child: new TextField(
+            controller: _zipController,
+            onChanged: _onChangedStreet,
+            maxLength: 6,
+            inputFormatters: [WhitelistingTextInputFormatter.digitsOnly],
+            keyboardType: TextInputType.number,
+            decoration: InputDecoration(
+                focusedBorder: UnderlineInputBorder(
+                  borderSide:
+                  BorderSide(color: AppStyle.theme(), width: 0.75),
+                ),
+                enabledBorder: UnderlineInputBorder(
+                  borderSide:
+                  BorderSide(color: AppStyle.txtLine(), width: 0.75),
+                ),
+                labelText: 'zip/po',
+                counterText: ""),
+            textInputAction: TextInputAction.done,
+            onEditingComplete: () =>
+                FocusScope.of(context).requestFocus(FocusNode()),
+          ),
+        ),
+      ],
     );
   }
 
@@ -115,20 +185,21 @@ class _AddressState extends State<AddressWidget> {
           child: WidgetTemplate.getTextField(
             this._countryConfig,
             onTap: () {
-              if (this._countryConfig.focusNode.hasFocus) {
-                _openCountryList();
-              }
+//              if (this._countryConfig.focusNode.hasFocus) {
+              _openCountryList();
+//              }
             },
           ),
         ),
         SizedBox(
           width: AppStyle.PADDING_S,
         ),
+
         Container(
           width: 60,
           child: WidgetTemplate.getTextField(this._countryCodeConfig,
               isReadOnly: true),
-        )
+        ),
       ],
     );
   }
@@ -141,7 +212,6 @@ class _AddressState extends State<AddressWidget> {
         _countryList, _onCountrySelected, _onPopupClosed, 'PICK YOUR COUNTRY');
   }
 
-
   _openRegionList() async {
     WidgetProvider.loading(context);
     final _name = this._countryConfig.controller.text;
@@ -149,52 +219,35 @@ class _AddressState extends State<AddressWidget> {
     final Country _country = Country(countryName: _name, countryCode: _code);
     final _originList = await locationProvider.getRegionList(_country);
     Navigator.pop(context);
-    if(_originList != null) {
+    if (_originList != null) {
       Future.delayed(
         Duration(milliseconds: 100),
-            () {
-          this._openPopUp(
-              _originList, _onRegionSelected, _onPopupClosed, "PLACE OF $_name");
+        () {
+          this._openPopUp(_originList, _onRegionSelected, _onPopupClosed,
+              "PLACE OF $_name");
         },
       );
     }
   }
-
 
   _openCityList() async {
     WidgetProvider.loading(context);
     final _code = this._countryCodeConfig.controller.text;
     String _state = this._regionConfig.controller.text.toLowerCase();
-    if(_state.contains('union state of')){
-      _state = _state.toLowerCase().replaceAll('union state of', '');
-    }
-    if(_state.contains('state of')){
-      _state = _state.toLowerCase().replaceAll('state of', '');
-    }
-    if(_state.contains('division')){
-      _state = _state.replaceAll('division', '');
-    }
-    if(_state.contains('district')){
-      _state = _state.replaceAll('district', '');
-    }
-
-
-    final _regionName = this._regionConfig.controller.text.split(" ")[0];
-    final _region = Region(countryName:_code, regionName:_state);
+    _state = this._clearPlace(_state);
+    final _region = Region(countryName: _code, regionName: _state);
     final _dataList = await locationProvider.getCityList(_region);
     Navigator.pop(context);
-    if (_dataList != null){
+    if (_dataList != null) {
       Future.delayed(
         Duration(milliseconds: 100),
-            () {
+        () {
           this._openPopUp(
-              _dataList, _onCitySelected, _onPopupClosed, "PLACE OF $_regionName");
+              _dataList, _onCitySelected, _onPopupClosed, "PLACE OF $_state");
         },
       );
     }
   }
-
-
 
   _onRegionSelected(final _data) {
     if (_data is Region) {
@@ -202,8 +255,8 @@ class _AddressState extends State<AddressWidget> {
     }
   }
 
-  _onCitySelected(final _data){
-    if(_data is City){
+  _onCitySelected(final _data) {
+    if (_data is City) {
       this._cityConfig.controller.text = _data.cityName;
     }
   }
@@ -248,5 +301,22 @@ class _AddressState extends State<AddressWidget> {
         );
       },
     );
+  }
+
+  String _clearPlace(String _place) {
+    String _state = _place;
+    if (_state.contains('union state of')) {
+      _state = _state.toLowerCase().replaceAll('union state of', '');
+    }
+    if (_state.contains('state of')) {
+      _state = _state.toLowerCase().replaceAll('state of', '');
+    }
+    if (_state.contains('division')) {
+      _state = _state.replaceAll('division', '');
+    }
+    if (_state.contains('district')) {
+      _state = _state.replaceAll('district', '');
+    }
+    return _state;
   }
 }

@@ -33,11 +33,17 @@ class LocationProvider {
           return GeolocationStatus.unknown;
         }
         final _mark = _placeMark.first;
+        String _state = _mark.administrativeArea ?? "";
+        if(_state != null){
+          if(_state.length == 2){
+            _state = Region._getUSState(_state, (_mark.isoCountryCode ?? "bd").toUpperCase());
+          }
+        }
         if(_mark != null){
           this._place = _mark;
           final _map = {
             'country': _mark.isoCountryCode ?? 'bd',
-            'region': _mark.administrativeArea ?? '',
+            'region': _state,
             'city': _mark.subAdministrativeArea ?? '',
             'latitude': _mark.position.latitude ?? '0',
             'longitude': _mark.position.longitude ?? '0',
@@ -77,7 +83,7 @@ class LocationProvider {
     final _client = ApiClient();
     final String _url = this.getUrl();
     final List _data = await _client.getGlobList(_url);
-    if( _data == null || _data.isEmpty){
+    if( _data == null){
       return  List<Country>();
     }
     for(final _item in _data){
@@ -92,7 +98,7 @@ class LocationProvider {
     final String _url = this.getUrl(country: country);
     final _response = await _client.getGlobList(_url, region: true);
     final List<Region> _data = List();
-    if(_response == null || _response.isEmpty){
+    if(_response == null){
       return _data;
     }
     for(final _item in _response){
@@ -118,12 +124,13 @@ class LocationProvider {
     final _response = await _client.getGlobList(_url, city: true);
     //check the list empty or not
     final _cityList = List<City>();
-    if(_response.isEmpty){
+    if(_response == null || _response.isEmpty){
       return _cityList;
-    }
-    for(final _item in _response){
-      City _c = tryCast(_item);
-      _cityList.add(_c);
+    } else {
+      for(final _item in _response){
+        City _c = tryCast(_item);
+        _cityList.add(_c);
+      }
     }
     return _cityList;
   }
@@ -174,11 +181,84 @@ class Region {
   final String countryName;
   final String regionName;
   Region({this.countryName, this.regionName});
+
   factory Region.fromJson(Map<String, dynamic> _json) {
+
+    String _region = _json['region'];
+    String _country = _json['country'];
+
+
+    if(_region.length == 2){
+      _region = Region._getUSState(_region, _country);
+    }
     return Region(
-      regionName: _json['region'],
-      countryName: _json['country'],
+      regionName: _region,
+      countryName: _country,
     );
+  }
+
+  static String _getUSState(final regionName, final String country){
+    if(country.toUpperCase() == 'US') {
+      final _map =
+      {'Alabama': 'AL',
+        'Alaska': 'AK',
+        'Arizona': 'AZ',
+        'Arkansas': 'AR',
+        'California': 'CA',
+        'Colorado': 'CO',
+        'Connecticut': 'CT',
+        'Delaware': 'DE',
+        'Florida': 'FL',
+        'Georgia': 'GA',
+        'Hawaii': 'HI',
+        'Idaho': 'ID',
+        'Illinois': 'IL',
+        'Indiana': 'IN',
+        'Iowa': 'IA',
+        'Kansas': 'KS',
+        'Kentucky': 'KY',
+        'Louisiana': 'LA',
+        'Maine': 'ME',
+        'Maryland': 'MD',
+        'Massachusetts': 'MA',
+        'Michigan': 'MI',
+        'Minnesota': 'MN',
+        'Mississippi': 'MS',
+        'Missouri': 'MO',
+        'Montana': 'MT',
+        'Nebraska': 'NE',
+        'Nevada': 'NV',
+        'New Hampshire': 'NH',
+        'New Jersey': 'NJ',
+        'New Mexico': 'NM',
+        'New York': 'NY',
+        'North Carolina': 'NC',
+        'North Dakota': 'ND',
+        'Ohio': 'OH',
+        'Oklahoma': 'OK',
+        'Oregon': 'OR',
+        'Pennsylvania': 'PA',
+        'Rhode Island': 'RI',
+        'South Carolina': 'SC',
+        'South Dakota': 'SD',
+        'Tennessee': 'TN',
+        'Texas': 'TX',
+        'Utah': 'UT',
+        'Vermont': 'VT',
+        'Virginia': 'VA',
+        'Washington': 'WA',
+        'West Virginia': 'WV',
+        'Wisconsin': 'WI',
+        'Wyoming': 'WY',};
+      String _data = regionName;
+      _map.forEach((key, value) {
+        if (value == regionName) {
+          _data = key;
+        }
+      });
+      return _data;
+    }
+    return regionName;
   }
 }
 
@@ -210,3 +290,10 @@ class City {
     return _city;
   }
 }
+
+
+
+
+
+
+
