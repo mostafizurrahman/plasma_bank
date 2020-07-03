@@ -6,16 +6,18 @@ class Address{
 
   String country;
   String state;
+  String city;
   String street;
   String house;
   String postalCode;
 
-  Address({this.country, this.state, this.street, this.house, this.postalCode});
+  Address({this.country, this.state, this.city, this.street, this.house, this.postalCode});
 
   Address.fromMap(Map<String, dynamic> json){
     this.country = json['country'];
     this.street = json['street'];
     this.state = json['state'];
+    this.city = json['city'];
     this.postalCode = json['zip'];
     this.house = json['house'];
   }
@@ -26,6 +28,7 @@ class Address{
       'street' : this.street ?? "",
       'state' : this.state ?? "",
       'zip' : this.postalCode ?? "",
+      'city' : this.city ?? "",
       'house' : this.house ?? "",
     };
   }

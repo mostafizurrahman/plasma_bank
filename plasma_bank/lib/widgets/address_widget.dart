@@ -21,13 +21,15 @@ class AddressWidget extends BaseWidget {
 class _AddressState extends State<AddressWidget> {
   bool skipPopup = false;
 
-  final TextEditingController _zipController = TextEditingController();
+//  final TextEditingController _zipController = TextEditingController();
   final TextConfig _countryConfig = TextConfig('country');
 
   final TextConfig _countryCodeConfig = TextConfig('code');
   final TextConfig _regionConfig = TextConfig('region/state');
   final TextConfig _cityConfig = TextConfig('city/county/division');
   final TextConfig _streetConfig = TextConfig('street/locality');
+  final TextConfig _zipConfig = TextConfig('zip/po');
+  final TextConfig _houseConfig = TextConfig('house/other');
   ScrollController _scrollController;
   @override
   void initState() {
@@ -36,13 +38,17 @@ class _AddressState extends State<AddressWidget> {
       initialScrollOffset: 0.0,
       keepScrollOffset: true,
     );
+    _setLocation();
+  }
+
+  _setLocation() {
     final _city = locationProvider.gpsCity;
     this._countryConfig.controller.text = _city.fullName;
     this._countryCodeConfig.controller.text = _city.countryName;
     this._regionConfig.controller.text = _city.regionName;
     this._cityConfig.controller.text = _city.cityName;
     this._streetConfig.controller.text = _city.street + ", " + _city.subStreet;
-    this._zipController.text = _city.postalCode;
+    this._zipConfig.controller.text = _city.postalCode;
   }
 
   @override
@@ -57,20 +63,31 @@ class _AddressState extends State<AddressWidget> {
       child: Padding(
         padding: EdgeInsets.only(bottom: _padding),
         child: Scaffold(
-          appBar: WidgetProvider.appBar('Address'),
+          appBar: WidgetProvider.appBar('Address', actions: [
+            Padding(
+              padding: EdgeInsets.only(right: 24.0),
+              child: GestureDetector(
+                onTap: _setLocation,
+                child: Icon(
+                  Icons.refresh,
+                  color: AppStyle.theme(),
+                  size: 26.0,
+                ),
+              ),
+            ),
+          ]),
           body: Container(
             width: _width,
 //            color: Colors.red,
             child: Padding(
               padding: const EdgeInsets.only(left: 24, right: 24),
-              child:
-              Container(
-                height: 450,
+              child: Container(
+                height: 470,
                 child: SingleChildScrollView(
                   controller: _scrollController,
                   child: Container(
 //                    color: Colors.blueAccent,
-                    height: 550,
+                    height: 570,
                     width: _width - _padding,
                     child: Column(
                       crossAxisAlignment: CrossAxisAlignment.start,
@@ -105,6 +122,25 @@ class _AddressState extends State<AddressWidget> {
                         _getRegion(),
                         _getCity(),
                         _geStreet(),
+                        WidgetTemplate.getTextField(this._houseConfig,
+                            maxLen: 30,
+                            isReadOnly: false,
+                            showCursor: true, onTap: () {
+                          if(this._scrollController.offset == 0.0){
+                            Future.delayed(Duration(seconds: 1), () {
+                              _scrollController.animateTo(150.0,
+                                  duration: Duration(milliseconds: 500),
+                                  curve: Curves.ease);
+                            });
+                          }
+                        }, onEditingDone: () {
+                          Future.delayed(Duration(seconds: 1), () {
+                            FocusScope.of(context).requestFocus(FocusNode());
+                            _scrollController.animateTo(0.0,
+                                duration: Duration(milliseconds: 500),
+                                curve: Curves.ease);
+                          });
+                        }),
                       ],
                     ),
                   ),
@@ -113,7 +149,7 @@ class _AddressState extends State<AddressWidget> {
             ),
           ),
           floatingActionButtonLocation:
-          FloatingActionButtonLocation.centerFloat,
+              FloatingActionButtonLocation.centerFloat,
           floatingActionButton: WidgetProvider.button(
             _saveAddress,
             "NEXT",
@@ -124,49 +160,37 @@ class _AddressState extends State<AddressWidget> {
     );
   }
 
-  _saveAddress(){
-
-  }
+  _saveAddress() {}
 
   _onChangedStreet(String value) {}
 
-  _onChangedZip(String value){}
+  _onChangedZip(String value) {}
 
   Widget _geStreet() {
-//    _streetConfig
     return Row(
       children: [
         Expanded(
-          child: Padding(
-            padding: EdgeInsets.only(top: 8, bottom: 8),
-            child: new TextField(
-              autocorrect: false,
-              keyboardAppearance: Brightness.light,
-              controller: _streetConfig.controller,
-              focusNode: _streetConfig.focusNode,
-              onChanged: _onChangedStreet,
-              maxLength: 50,
-              onTap: (){
-                Future.delayed(Duration(seconds: 1), (){
+          child: WidgetTemplate.getTextField(
+            this._streetConfig,
+            isReadOnly: false,
+            showCursor: true,
+            maxLen: 50,
+            onTap: () {
+              if(this._scrollController.offset == 0.0){
+                Future.delayed(Duration(seconds: 1), () {
                   _scrollController.animateTo(150.0,
-                      duration: Duration(milliseconds: 500), curve: Curves.ease);
+                      duration: Duration(milliseconds: 500),
+                      curve: Curves.ease);
                 });
-              },
-              decoration: InputDecoration(
-                  focusedBorder: UnderlineInputBorder(
-                    borderSide:
-                        BorderSide(color: AppStyle.theme(), width: 0.75),
-                  ),
-                  enabledBorder: UnderlineInputBorder(
-                    borderSide:
-                        BorderSide(color: AppStyle.txtLine(), width: 0.75),
-                  ),
-                  labelText: _streetConfig.labelText.toLowerCase(),
-                  counterText: ""),
-              textInputAction: TextInputAction.done,
-              onEditingComplete: () =>
-                  FocusScope.of(context).requestFocus(FocusNode()),
-            ),
+              }
+            },
+            onEditingDone: () {
+              Future.delayed(Duration(seconds: 1), () {
+                FocusScope.of(context).requestFocus(FocusNode());
+                _scrollController.animateTo(0.0,
+                    duration: Duration(milliseconds: 500), curve: Curves.ease);
+              });
+            },
           ),
         ),
         SizedBox(
@@ -176,34 +200,26 @@ class _AddressState extends State<AddressWidget> {
         //locationProvider.gpsCity
         Container(
           width: 60,
-          child: new TextField(
-            controller: _zipController,
-            onChanged: _onChangedStreet,
-            autocorrect: false,
-            keyboardAppearance: Brightness.light,
-            maxLength: 6,
-            onTap: (){
-              Future.delayed(Duration(seconds: 1), (){
-                _scrollController.animateTo(150.0,
+          child: WidgetTemplate.getTextField(
+            this._zipConfig,
+            isReadOnly: false,
+            showCursor: true,
+            onTap: () {
+              if(this._scrollController.offset == 0.0){
+                Future.delayed(Duration(seconds: 1), () {
+                  _scrollController.animateTo(150.0,
+                      duration: Duration(milliseconds: 500),
+                      curve: Curves.ease);
+                });
+              }
+            },
+            onEditingDone: () {
+              Future.delayed(Duration(seconds: 1), () {
+                FocusScope.of(context).requestFocus(FocusNode());
+                _scrollController.animateTo(0.0,
                     duration: Duration(milliseconds: 500), curve: Curves.ease);
               });
             },
-            inputFormatters: [WhitelistingTextInputFormatter.digitsOnly],
-            keyboardType: TextInputType.number,
-            decoration: InputDecoration(
-                focusedBorder: UnderlineInputBorder(
-                  borderSide:
-                  BorderSide(color: AppStyle.theme(), width: 0.75),
-                ),
-                enabledBorder: UnderlineInputBorder(
-                  borderSide:
-                  BorderSide(color: AppStyle.txtLine(), width: 0.75),
-                ),
-                labelText: 'zip/po',
-                counterText: ""),
-            textInputAction: TextInputAction.done,
-            onEditingComplete: () =>
-                FocusScope.of(context).requestFocus(FocusNode()),
           ),
         ),
       ],
@@ -225,16 +241,13 @@ class _AddressState extends State<AddressWidget> {
           child: WidgetTemplate.getTextField(
             this._countryConfig,
             onTap: () {
-//              if (this._countryConfig.focusNode.hasFocus) {
               _openCountryList();
-//              }
             },
           ),
         ),
         SizedBox(
           width: AppStyle.PADDING_S,
         ),
-
         Container(
           width: 60,
           child: WidgetTemplate.getTextField(this._countryCodeConfig,
@@ -292,12 +305,17 @@ class _AddressState extends State<AddressWidget> {
   _onRegionSelected(final _data) {
     if (_data is Region) {
       this._regionConfig.controller.text = _data.regionName;
+      this._cityConfig.controller.text = '';
+      this._streetConfig.controller.text = '';
+      this._zipConfig.controller.text = '';
     }
   }
 
   _onCitySelected(final _data) {
     if (_data is City) {
       this._cityConfig.controller.text = _data.cityName;
+      this._streetConfig.controller.text = '';
+      this._zipConfig.controller.text = '';
     }
   }
 
@@ -306,6 +324,10 @@ class _AddressState extends State<AddressWidget> {
     if (_data is Country) {
       this._countryConfig.controller.text = _data.countryName;
       this._countryCodeConfig.controller.text = _data.countryCode.toUpperCase();
+      this._regionConfig.controller.text = '';
+      this._cityConfig.controller.text = '';
+      this._streetConfig.controller.text = '';
+      this._zipConfig.controller.text = '';
     }
   }
 
@@ -350,6 +372,13 @@ class _AddressState extends State<AddressWidget> {
     }
     if (_state.contains('state of')) {
       _state = _state.toLowerCase().replaceAll('state of', '');
+    }
+
+    if (_state.contains('state')) {
+      _state = _state.toLowerCase().replaceAll('state', '');
+    }
+    if (_state.contains('province')) {
+      _state = _state.toLowerCase().replaceAll('province', '');
     }
     if (_state.contains('division')) {
       _state = _state.replaceAll('division', '');

@@ -70,7 +70,8 @@ class WidgetTemplate {
         pageBuilder: (BuildContext context, _, __) => _overlayWidget));
   }
 
-  static Widget getTextField(TextConfig _config, {
+  static Widget getTextField(
+    TextConfig _config, {
     final bool isDigit = false,
     final bool isEnabled = true,
     final bool isReadOnly = true,
@@ -85,7 +86,7 @@ class WidgetTemplate {
     final _inputFormatter = isDigit
         ? [WhitelistingTextInputFormatter.digitsOnly]
         : [
-            new WhitelistingTextInputFormatter(RegExp("[a-zA-Z. 0-9]#-_,?@:")),
+            WhitelistingTextInputFormatter(RegExp("[a-zA-Z0-9,.:@ ]")),
             new LengthLimitingTextInputFormatter(maxLen),
           ];
     return Padding(
@@ -99,32 +100,12 @@ class WidgetTemplate {
         readOnly: isReadOnly,
         showCursor: showCursor,
         maxLength: maxLen,
-        style: TextStyle(height: 0.60),
         obscureText: isPassword,
         inputFormatters: _inputFormatter,
         keyboardType: isDigit ? TextInputType.number : TextInputType.text,
+        autocorrect: false,
+        keyboardAppearance: Brightness.light,
         decoration: InputDecoration(
-
-          contentPadding: EdgeInsets.all(6),
-//            suffix: onIconTap != null ? ClipRRect(
-//              borderRadius: BorderRadius.all(Radius.circular(100)),
-//              child: Container(
-//                decoration: AppStyle.shadowDecoration,
-//                child: Material(
-//                  child: Ink(
-//                    child: InkWell(
-//                      onTap: onIconTap,
-//                      child: WidgetProvider.circledIcon(
-//                        Icon(
-//                          Icons.list,
-//                          color: AppStyle.theme(),
-//                        ),
-//                      ),
-//                    ),
-//                  ),
-//                ),
-//              ),
-//            ) : null,
             focusedBorder: UnderlineInputBorder(
               borderSide: BorderSide(color: AppStyle.theme(), width: 0.75),
             ),
