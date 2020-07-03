@@ -239,9 +239,10 @@ class WidgetProvider{
     );
   }
 
-  static AppBar appBar(String _title){
+  static AppBar appBar(String _title, {List<Widget>actions}){
     assert(_title != null, 'TITLE IS NULL');
     return AppBar(
+      actions: actions != null ? actions : [],
       centerTitle: false,
       backgroundColor: AppStyle.greyBackground(),
       title: Text(
