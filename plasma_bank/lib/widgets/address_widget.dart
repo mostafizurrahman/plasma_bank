@@ -3,6 +3,8 @@ import 'package:flutter/material.dart';
 import 'package:flutter/painting.dart';
 import 'package:flutter/services.dart';
 import 'package:plasma_bank/app_utils/widget_templates.dart';
+import 'package:plasma_bank/network/models/abstract_person.dart';
+import 'package:rxdart/rxdart.dart';
 import '../widgets/base_widget.dart';
 import 'package:plasma_bank/app_utils/app_constants.dart';
 import 'package:plasma_bank/app_utils/location_provider.dart';
@@ -21,8 +23,13 @@ class AddressWidget extends BaseWidget {
 class _AddressState extends State<AddressWidget> {
   bool skipPopup = false;
 
+  final _scrollAdjustment = 350.0;
+  final _txtError = ' is missing.';
 //  final TextEditingController _zipController = TextEditingController();
   final TextConfig _countryConfig = TextConfig('country');
+
+  final BehaviorSubject<String> _errorBehavior = BehaviorSubject<String>();
+  final BehaviorSubject<bool> _scrollBehavior = BehaviorSubject();
 
   final TextConfig _countryCodeConfig = TextConfig('code');
   final TextConfig _regionConfig = TextConfig('region/state');
@@ -42,6 +49,7 @@ class _AddressState extends State<AddressWidget> {
   }
 
   _setLocation() {
+    this._errorBehavior.sink.add('');
     final _city = locationProvider.gpsCity;
     this._countryConfig.controller.text = _city.fullName;
     this._countryCodeConfig.controller.text = _city.countryName;
@@ -52,99 +60,146 @@ class _AddressState extends State<AddressWidget> {
   }
 
   @override
-  Widget build(BuildContext context) {
-    final _padding = MediaQuery.of(context).padding.bottom;
-    final _width = MediaQuery.of(context).size.width;
-    debugPrint(_padding.toString());
+  void dispose() {
+    super.dispose();
+    this._scrollBehavior.close();
+    if (this._errorBehavior != null && !this._errorBehavior.isClosed) {
+      this._errorBehavior.close();
+    }
+  }
 
-//    Navigator.pop(context);
+  @override
+  Widget build(BuildContext context) {
+    final _paddingBottom = MediaQuery.of(context).padding.bottom;
+    final _paddingTop = MediaQuery.of(context).padding.top;
+    final _appBarHeight = 54;
+    final _width = MediaQuery.of(context).size.width;
+    final _height = MediaQuery.of(context).size.height;
+    final _contentHeight =
+        _height - _paddingBottom - _paddingTop - _appBarHeight;
     return Container(
       color: AppStyle.greyBackground(),
       child: Padding(
-        padding: EdgeInsets.only(bottom: _padding),
+        padding: EdgeInsets.only(bottom: _paddingBottom),
         child: Scaffold(
-          appBar: WidgetProvider.appBar('Address', actions: [
-            Padding(
-              padding: EdgeInsets.only(right: 24.0),
-              child: GestureDetector(
-                onTap: _setLocation,
-                child: Icon(
-                  Icons.refresh,
-                  color: AppStyle.theme(),
-                  size: 26.0,
+          appBar: WidgetProvider.appBar(
+            'Address',
+            actions: [
+              Padding(
+                padding: EdgeInsets.only(right: 24.0),
+                child: GestureDetector(
+                  onTap: _setLocation,
+                  child: Icon(
+                    Icons.refresh,
+                    color: AppStyle.theme(),
+                    size: 26.0,
+                  ),
                 ),
               ),
-            ),
-          ]),
+            ],
+          ),
           body: Container(
             width: _width,
 //            color: Colors.red,
             child: Padding(
               padding: const EdgeInsets.only(left: 24, right: 24),
-              child: Container(
-                height: 470,
-                child: SingleChildScrollView(
-                  controller: _scrollController,
-                  child: Container(
-//                    color: Colors.blueAccent,
-                    height: 570,
-                    width: _width - _padding,
-                    child: Column(
-                      crossAxisAlignment: CrossAxisAlignment.start,
-                      children: [
-                        Padding(
-                          padding: EdgeInsets.only(top: 32, bottom: 32),
-                          child: Row(
-                            crossAxisAlignment: CrossAxisAlignment.center,
-                            children: [
-                              WidgetProvider.circledIcon(
-                                Icon(
-                                  Icons.place,
-                                  color: AppStyle.theme(),
-                                  size: 25,
-                                ),
+              child: Column(
+                children: [
+                  StreamBuilder<bool>(
+                      stream: this._scrollBehavior.stream,
+                      initialData: false,
+                      builder: (context, snapshot) {
+                        return Container(
+//                          color: Colors.teal,
+                          height: snapshot.data
+                              ? _contentHeight - this._scrollAdjustment
+                              : _contentHeight,
+                          child: SingleChildScrollView(
+                            controller: _scrollController,
+                            child: Container(
+//                              color: Colors.blueAccent,
+                              height: snapshot.data
+                                  ? _contentHeight - this._scrollAdjustment * 0.35
+                                  : _contentHeight,
+                              width: _width,
+                              child: Column(
+                                crossAxisAlignment: CrossAxisAlignment.start,
+                                children: [
+                                  Padding(
+                                    padding:
+                                        EdgeInsets.only(top: 24, bottom: 12),
+                                    child: Row(
+                                      crossAxisAlignment:
+                                          CrossAxisAlignment.center,
+                                      children: [
+                                        WidgetProvider.circledIcon(
+                                          Icon(
+                                            Icons.place,
+                                            color: AppStyle.theme(),
+                                            size: 25,
+                                          ),
+                                        ),
+                                        SizedBox(
+                                          width: 12,
+                                        ),
+                                        Text(
+                                          'ENTER ADDRESS',
+                                          textAlign: TextAlign.left,
+                                          style: TextStyle(
+                                            fontSize: 24,
+                                            fontFamily: AppStyle.fontBold,
+                                          ),
+                                        ),
+                                      ],
+                                    ),
+                                  ),
+                                  _getCountry(),
+                                  _getRegion(),
+                                  _getCity(),
+                                  _geStreet(),
+                                  WidgetTemplate.getTextField(
+                                    this._houseConfig,
+                                    maxLen: 30,
+                                    isReadOnly: false,
+                                    showCursor: true,
+                                    onTap: () {
+                                      this._errorBehavior.sink.add('');
+                                      _animateTextFields();
+                                      this._scrollBehavior.sink.add(true);
+                                    },
+                                    onEditingDone: () {
+                                      this._scrollBehavior.sink.add(false);
+                                      _animateTextFields(isHide: true);
+                                    },
+                                  ),
+                                ],
                               ),
-                              SizedBox(
-                                width: 12,
-                              ),
-                              Text(
-                                'ENTER ADDRESS',
-                                textAlign: TextAlign.left,
-                                style: TextStyle(
-                                  fontSize: 24,
-                                  fontFamily: AppStyle.fontBold,
-                                ),
-                              ),
-                            ],
+                            ),
                           ),
-                        ),
-                        _getCountry(),
-                        _getRegion(),
-                        _getCity(),
-                        _geStreet(),
-                        WidgetTemplate.getTextField(this._houseConfig,
-                            maxLen: 30,
-                            isReadOnly: false,
-                            showCursor: true, onTap: () {
-                          if(this._scrollController.offset == 0.0){
-                            Future.delayed(Duration(seconds: 1), () {
-                              _scrollController.animateTo(150.0,
-                                  duration: Duration(milliseconds: 500),
-                                  curve: Curves.ease);
-                            });
-                          }
-                        }, onEditingDone: () {
-                          Future.delayed(Duration(seconds: 1), () {
-                            FocusScope.of(context).requestFocus(FocusNode());
-                            _scrollController.animateTo(0.0,
-                                duration: Duration(milliseconds: 500),
-                                curve: Curves.ease);
-                          });
-                        }),
+                        );
+                      }),
+                  Expanded(
+                    child: Column(
+                      mainAxisAlignment: MainAxisAlignment.end,
+                      children: [
+                        StreamBuilder(
+                          stream: this._errorBehavior.stream,
+                          initialData: '',
+                          builder: (_context, _snap) {
+                            return Center(
+                              child: Text(
+                                _snap.data,
+                                style: TextStyle(
+                                  color: AppStyle.theme(),
+                                ),
+                              ),
+                            );
+                          },
+                        )
                       ],
                     ),
-                  ),
-                ),
+                  )
+                ],
               ),
             ),
           ),
@@ -160,7 +215,85 @@ class _AddressState extends State<AddressWidget> {
     );
   }
 
-  _saveAddress() {}
+  _animateTextFields({isHide = false}) {
+    if (isHide) {
+      FocusScope.of(context).requestFocus(FocusNode());
+      Future.delayed(
+        Duration(seconds: 1),
+        () {
+          _scrollController.animateTo(0.0,
+              duration: Duration(milliseconds: 500), curve: Curves.ease);
+        },
+      );
+    } else {
+      if (this._scrollController.offset == 0.0) {
+        Future.delayed(Duration(seconds: 1), () {
+          _scrollController.animateTo(200.0,
+              duration: Duration(milliseconds: 500), curve: Curves.ease);
+        });
+      }
+    }
+  }
+
+  _errorMessage(final TextConfig _config) {
+    final String _msg = '${_config.labelText.toUpperCase()} $_txtError';
+    this._errorBehavior.sink.add(_msg);
+    FocusScope.of(context).requestFocus(_config.focusNode);
+
+    this._scrollBehavior.sink.add(true);
+    _animateTextFields();
+  }
+
+  _saveAddress() {
+    FocusScope.of(context).requestFocus(FocusNode());
+    this._errorBehavior.sink.add('');
+    final _country = this._countryConfig.controller.text;
+    final _state = this._regionConfig.controller.text;
+    final _city = this._cityConfig.controller.text;
+    final _road = this._streetConfig.controller.text;
+    final _zip = this._zipConfig.controller.text;
+    final _house = this._houseConfig.controller.text;
+    if (_country.isEmpty) {
+      _errorMessage(this._countryConfig);
+    } else if (_state.isEmpty) {
+      _errorMessage(this._regionConfig);
+    } else if (_city.isEmpty) {
+      _errorMessage(this._cityConfig);
+    } else if (_road.isEmpty) {
+      _errorMessage(_streetConfig);
+    } else if (_road.isEmpty) {
+      _errorMessage(_streetConfig);
+    } else if (_zip.isEmpty) {
+      _errorMessage(_zipConfig);
+    } else if (_house.isEmpty) {
+      _errorMessage(_houseConfig);
+    } else {
+      final _addressMap = {
+        'country': _country,
+        'code': this._countryCodeConfig.controller.text,
+        'state': _state,
+        'city': _city,
+        'street': _road,
+        'zip': _zip,
+        'house': _house,
+      };
+      if (!this.skipPopup) {
+        skipPopup = true;
+        final _address = Address.fromMap(_addressMap);
+        Future.delayed(
+          Duration(milliseconds: 500),
+          () {
+            Navigator.pushNamed(
+              context,
+              AppRoutes.pagePersonData,
+              arguments: {'address': _address},
+            );
+            skipPopup = false;
+          },
+        );
+      }
+    }
+  }
 
   _onChangedStreet(String value) {}
 
@@ -176,20 +309,13 @@ class _AddressState extends State<AddressWidget> {
             showCursor: true,
             maxLen: 50,
             onTap: () {
-              if(this._scrollController.offset == 0.0){
-                Future.delayed(Duration(seconds: 1), () {
-                  _scrollController.animateTo(150.0,
-                      duration: Duration(milliseconds: 500),
-                      curve: Curves.ease);
-                });
-              }
+              this._errorBehavior.sink.add('');
+              this._scrollBehavior.sink.add(true);
+              _animateTextFields();
             },
             onEditingDone: () {
-              Future.delayed(Duration(seconds: 1), () {
-                FocusScope.of(context).requestFocus(FocusNode());
-                _scrollController.animateTo(0.0,
-                    duration: Duration(milliseconds: 500), curve: Curves.ease);
-              });
+              _animateTextFields(isHide: true);
+              this._scrollBehavior.sink.add(false);
             },
           ),
         ),
@@ -205,20 +331,13 @@ class _AddressState extends State<AddressWidget> {
             isReadOnly: false,
             showCursor: true,
             onTap: () {
-              if(this._scrollController.offset == 0.0){
-                Future.delayed(Duration(seconds: 1), () {
-                  _scrollController.animateTo(150.0,
-                      duration: Duration(milliseconds: 500),
-                      curve: Curves.ease);
-                });
-              }
+              this._errorBehavior.sink.add('');
+              this._scrollBehavior.sink.add(true);
+              _animateTextFields();
             },
             onEditingDone: () {
-              Future.delayed(Duration(seconds: 1), () {
-                FocusScope.of(context).requestFocus(FocusNode());
-                _scrollController.animateTo(0.0,
-                    duration: Duration(milliseconds: 500), curve: Curves.ease);
-              });
+              _animateTextFields(isHide: true);
+              this._scrollBehavior.sink.add(false);
             },
           ),
         ),
@@ -241,6 +360,7 @@ class _AddressState extends State<AddressWidget> {
           child: WidgetTemplate.getTextField(
             this._countryConfig,
             onTap: () {
+              this._errorBehavior.sink.add('');
               _openCountryList();
             },
           ),
@@ -284,10 +404,16 @@ class _AddressState extends State<AddressWidget> {
   }
 
   _openCityList() async {
-    WidgetProvider.loading(context);
     final _code = this._countryCodeConfig.controller.text;
     String _state = this._regionConfig.controller.text.toLowerCase();
+    if (_state.isEmpty) {
+      FocusScope.of(context).requestFocus(this._regionConfig.focusNode);
+      return;
+    }
+
+    WidgetProvider.loading(context);
     _state = this._clearPlace(_state);
+
     final _region = Region(countryName: _code, regionName: _state);
     final _dataList = await locationProvider.getCityList(_region);
     Navigator.pop(context);
