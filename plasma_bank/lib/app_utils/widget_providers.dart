@@ -239,19 +239,25 @@ class WidgetProvider{
     );
   }
 
-  static AppBar appBar(String _title, {List<Widget>actions}){
+  static PreferredSize appBar(String _title, {List<Widget>actions}){
     assert(_title != null, 'TITLE IS NULL');
-    return AppBar(
-      actions: actions != null ? actions : [],
-      centerTitle: false,
-      backgroundColor: AppStyle.greyBackground(),
-      title: Text(
-        _title,
-        style: TextStyle(color: AppStyle.titleTxtColor()),
-      ),
-      iconTheme: IconThemeData(color: AppStyle.theme()),
-      titleSpacing: 0,
+    return  PreferredSize(
+        preferredSize: Size.fromHeight(54.0),
+        child: AppBar(
+          automaticallyImplyLeading: false, // hides leading widget
+          flexibleSpace: AppBar(
+            actions: actions != null ? actions : [],
+            centerTitle: false,
+            backgroundColor: AppStyle.greyBackground(),
+            title: Text(
+              _title,
+              style: TextStyle(color: AppStyle.titleTxtColor()),
+            ),
+            iconTheme: IconThemeData(color: AppStyle.theme()),
+            titleSpacing: 0,
 
+          ),
+        )
     );
   }
 }

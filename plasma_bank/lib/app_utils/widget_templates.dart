@@ -86,7 +86,7 @@ class WidgetTemplate {
     final _inputFormatter = isDigit
         ? [WhitelistingTextInputFormatter.digitsOnly]
         : [
-            WhitelistingTextInputFormatter(RegExp("[a-zA-Z0-9,.:@ ]")),
+            WhitelistingTextInputFormatter(RegExp("[a-zA-Z0-9,.:@ /]")),
             new LengthLimitingTextInputFormatter(maxLen),
           ];
     return Padding(

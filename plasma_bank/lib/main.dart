@@ -11,6 +11,7 @@ import 'package:plasma_bank/widgets/launch_screen.dart';
 import 'package:plasma_bank/widgets/location_terms.dart';
 import 'package:plasma_bank/widgets/patient_info.dart';
 import 'package:flutter_statusbarcolor/flutter_statusbarcolor.dart';
+import 'package:plasma_bank/widgets/profile_widget.dart';
 import 'app_utils/image_helper.dart';
 import 'media/camera_widget.dart';
 import 'package:flutter_localizations/flutter_localizations.dart';
@@ -106,16 +107,19 @@ class _PlasmaState extends State<PlasmaBank> {
   Route getGenerateRoute(RouteSettings settings) {
     Widget _widget;
 
-    if (settings.name == AppRoutes.pageAddressData) {
+    if(settings.name == AppRoutes.pagePersonData){
+      _widget = ProfileWidget(settings.arguments);
+    }
+    else if (settings.name == AppRoutes.pageAddressData) {
       _widget = AddressWidget(settings.arguments);
     }
-    if (settings.name == AppRoutes.pageLocateTerms) {
+    else if (settings.name == AppRoutes.pageLocateTerms) {
       _widget = LocationTerms();
     }
-    if (settings.name == AppRoutes.pageRouteCamera) {
+    else if (settings.name == AppRoutes.pageRouteCamera) {
       _widget = CameraWidget();
     }
-    if (settings.name == AppRoutes.pageRouteDonor) {
+    else if (settings.name == AppRoutes.pageRouteDonor) {
       _widget = PatientInfoWidget();
     } else if (settings.name == AppRoutes.pageRouteHome) {
       _widget = HomePageWidget();
