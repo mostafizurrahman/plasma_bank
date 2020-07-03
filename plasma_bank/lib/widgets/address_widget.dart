@@ -28,11 +28,14 @@ class _AddressState extends State<AddressWidget> {
   final TextConfig _regionConfig = TextConfig('region/state');
   final TextConfig _cityConfig = TextConfig('city/county/division');
   final TextConfig _streetConfig = TextConfig('street/locality');
-
+  ScrollController _scrollController;
   @override
   void initState() {
     super.initState();
-
+    _scrollController = new ScrollController(
+      initialScrollOffset: 0.0,
+      keepScrollOffset: true,
+    );
     final _city = locationProvider.gpsCity;
     this._countryConfig.controller.text = _city.fullName;
     this._countryCodeConfig.controller.text = _city.countryName;
@@ -57,51 +60,72 @@ class _AddressState extends State<AddressWidget> {
           appBar: WidgetProvider.appBar('Address'),
           body: Container(
             width: _width,
+//            color: Colors.red,
             child: Padding(
               padding: const EdgeInsets.only(left: 24, right: 24),
-              child: Container(
-                width: _width - _padding,
-                child: Column(
-                  crossAxisAlignment: CrossAxisAlignment.start,
-                  children: [
-                    Padding(
-                      padding: EdgeInsets.only(top: 32, bottom: 32),
-                      child: Row(
-                        crossAxisAlignment: CrossAxisAlignment.center,
-                        children: [
-                          WidgetProvider.circledIcon(
-                            Icon(
-                              Icons.place,
-                              color: AppStyle.theme(),
-                              size: 25,
-                            ),
+              child:
+              Container(
+                height: 450,
+                child: SingleChildScrollView(
+                  controller: _scrollController,
+                  child: Container(
+//                    color: Colors.blueAccent,
+                    height: 550,
+                    width: _width - _padding,
+                    child: Column(
+                      crossAxisAlignment: CrossAxisAlignment.start,
+                      children: [
+                        Padding(
+                          padding: EdgeInsets.only(top: 32, bottom: 32),
+                          child: Row(
+                            crossAxisAlignment: CrossAxisAlignment.center,
+                            children: [
+                              WidgetProvider.circledIcon(
+                                Icon(
+                                  Icons.place,
+                                  color: AppStyle.theme(),
+                                  size: 25,
+                                ),
+                              ),
+                              SizedBox(
+                                width: 12,
+                              ),
+                              Text(
+                                'ENTER ADDRESS',
+                                textAlign: TextAlign.left,
+                                style: TextStyle(
+                                  fontSize: 24,
+                                  fontFamily: AppStyle.fontBold,
+                                ),
+                              ),
+                            ],
                           ),
-                          SizedBox(
-                            width: 12,
-                          ),
-                          Text(
-                            'ENTER ADDRESS',
-                            textAlign: TextAlign.left,
-                            style: TextStyle(
-                              fontSize: 24,
-                              fontFamily: AppStyle.fontBold,
-                            ),
-                          ),
-                        ],
-                      ),
+                        ),
+                        _getCountry(),
+                        _getRegion(),
+                        _getCity(),
+                        _geStreet(),
+                      ],
                     ),
-                    _getCountry(),
-                    _getRegion(),
-                    _getCity(),
-                    _geStreet(),
-                  ],
+                  ),
                 ),
               ),
             ),
           ),
+          floatingActionButtonLocation:
+          FloatingActionButtonLocation.centerFloat,
+          floatingActionButton: WidgetProvider.button(
+            _saveAddress,
+            "NEXT",
+            context,
+          ),
         ),
       ),
     );
+  }
+
+  _saveAddress(){
+
   }
 
   _onChangedStreet(String value) {}
@@ -116,10 +140,18 @@ class _AddressState extends State<AddressWidget> {
           child: Padding(
             padding: EdgeInsets.only(top: 8, bottom: 8),
             child: new TextField(
+              autocorrect: false,
+              keyboardAppearance: Brightness.light,
               controller: _streetConfig.controller,
               focusNode: _streetConfig.focusNode,
               onChanged: _onChangedStreet,
               maxLength: 50,
+              onTap: (){
+                Future.delayed(Duration(seconds: 1), (){
+                  _scrollController.animateTo(150.0,
+                      duration: Duration(milliseconds: 500), curve: Curves.ease);
+                });
+              },
               decoration: InputDecoration(
                   focusedBorder: UnderlineInputBorder(
                     borderSide:
@@ -147,7 +179,15 @@ class _AddressState extends State<AddressWidget> {
           child: new TextField(
             controller: _zipController,
             onChanged: _onChangedStreet,
+            autocorrect: false,
+            keyboardAppearance: Brightness.light,
             maxLength: 6,
+            onTap: (){
+              Future.delayed(Duration(seconds: 1), (){
+                _scrollController.animateTo(150.0,
+                    duration: Duration(milliseconds: 500), curve: Curves.ease);
+              });
+            },
             inputFormatters: [WhitelistingTextInputFormatter.digitsOnly],
             keyboardType: TextInputType.number,
             decoration: InputDecoration(

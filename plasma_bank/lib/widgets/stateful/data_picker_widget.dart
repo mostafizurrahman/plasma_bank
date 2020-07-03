@@ -120,6 +120,7 @@ class _DataPickerState extends State<DataPickerWidget> {
                       _onDataPicked,
                       "SELECT",
                       context,
+                      padding: 96,
                     )
                   : SizedBox(),
             ),
@@ -129,19 +130,17 @@ class _DataPickerState extends State<DataPickerWidget> {
     );
   }
 
-  Widget _getItemWidget(final _data, final bool _isSelected){
-
-    if(_data is Region || _data is City) {
+  Widget _getItemWidget(final _data, final bool _isSelected) {
+    if (_data is Region || _data is City) {
       return RegionWidget(_data, this._onSubjectSelected, _isSelected);
     }
 
-    return CountryWidget(
-        _data, this._onSubjectSelected, _isSelected);
+    return CountryWidget(_data, this._onSubjectSelected, _isSelected);
   }
 
   final BehaviorSubject _tempSubject = BehaviorSubject();
   _onDataPicked() {
-    if(this.widget.onSelectedData != null){
+    if (this.widget.onSelectedData != null) {
       this.widget.onSelectedData(this._tempSubject.value);
       Navigator.pop(context);
     }

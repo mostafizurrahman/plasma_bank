@@ -210,7 +210,7 @@ class WidgetProvider{
   }
 
 
-  static button(Function _onTap, final String txt, BuildContext context){
+  static button(Function _onTap, final String txt, BuildContext context, {padding = 48.0}){
     return Padding(
       padding: const EdgeInsets.all(12.0),
       child: Container(
@@ -218,7 +218,7 @@ class WidgetProvider{
           borderRadius: BorderRadius.all(Radius.circular(100)),
         ),
         height: 50,
-        width: MediaQuery.of(context).size.width - 96,
+        width: MediaQuery.of(context).size.width - padding,
         child: RaisedButton(
           shape:RoundedRectangleBorder(
               borderRadius: BorderRadius.circular(120.0),
