@@ -32,15 +32,15 @@ class LocationProvider {
         if (_placeMark == null){
           return GeolocationStatus.unknown;
         }
-
-        for (var _mark in _placeMark) {
+        final _mark = _placeMark.first;
+        if(_mark != null){
           this._place = _mark;
           final _map = {
             'country': _mark.isoCountryCode ?? 'bd',
             'region': _mark.administrativeArea ?? '',
             'city': _mark.subAdministrativeArea ?? '',
-            'latitude': _mark.position.latitude,
-            'longitude': _mark.position.longitude,
+            'latitude': _mark.position.latitude ?? '0',
+            'longitude': _mark.position.longitude ?? '0',
           };
 
           final _city = City.fromJson(_map);
@@ -56,7 +56,6 @@ class LocationProvider {
           debugPrint(_mark.isoCountryCode);
           debugPrint(_mark.administrativeArea);
           debugPrint(_mark.subLocality);
-          break;
         }
       }
     }
@@ -78,6 +77,9 @@ class LocationProvider {
     final _client = ApiClient();
     final String _url = this.getUrl();
     final List _data = await _client.getGlobList(_url);
+    if( _data == null || _data.isEmpty){
+      return  List<Country>();
+    }
     for(final _item in _data){
       Country _c = tryCast(_item);
       _response.add(_c);
@@ -90,6 +92,9 @@ class LocationProvider {
     final String _url = this.getUrl(country: country);
     final _response = await _client.getGlobList(_url, region: true);
     final List<Region> _data = List();
+    if(_response == null || _response.isEmpty){
+      return _data;
+    }
     for(final _item in _response){
       Region _c = tryCast(_item);
       _data.add(_c);
@@ -113,6 +118,9 @@ class LocationProvider {
     final _response = await _client.getGlobList(_url, city: true);
     //check the list empty or not
     final _cityList = List<City>();
+    if(_response.isEmpty){
+      return _cityList;
+    }
     for(final _item in _response){
       City _c = tryCast(_item);
       _cityList.add(_c);
@@ -182,8 +190,8 @@ class City {
   final String countryName;
   final String regionName;
   final String cityName;
-  final double latitude;
-  final double longitude;
+  final String latitude;
+  final String longitude;
 
   City(
       {this.countryName,
@@ -192,12 +200,13 @@ class City {
       this.latitude,
       this.longitude});
   factory City.fromJson(Map<String, dynamic> _json) {
-    return City(
+    final _city = City(
       regionName: _json['region'],
       countryName: _json['country'],
       cityName: _json['city'],
-      latitude: _json['latitude'],
-      longitude: _json['longitude'],
+      latitude: _json['latitude'].toString(),
+      longitude: _json['longitude'].toString(),
     );
+    return _city;
   }
 }

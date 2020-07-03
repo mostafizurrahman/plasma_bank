@@ -164,8 +164,23 @@ class _AddressState extends State<AddressWidget> {
   _openCityList() async {
     WidgetProvider.loading(context);
     final _code = this._countryCodeConfig.controller.text;
-    final _regionName = this._regionConfig.controller.text;
-    final _region = Region(countryName:_code, regionName:_regionName);
+    String _state = this._regionConfig.controller.text.toLowerCase();
+    if(_state.contains('union state of')){
+      _state = _state.toLowerCase().replaceAll('union state of', '');
+    }
+    if(_state.contains('state of')){
+      _state = _state.toLowerCase().replaceAll('state of', '');
+    }
+    if(_state.contains('division')){
+      _state = _state.replaceAll('division', '');
+    }
+    if(_state.contains('district')){
+      _state = _state.replaceAll('district', '');
+    }
+
+
+    final _regionName = this._regionConfig.controller.text.split(" ")[0];
+    final _region = Region(countryName:_code, regionName:_state);
     final _dataList = await locationProvider.getCityList(_region);
     Navigator.pop(context);
     if (_dataList != null){

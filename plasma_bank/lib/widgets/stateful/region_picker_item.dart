@@ -9,7 +9,7 @@ import 'package:rxdart/rxdart.dart';
 
 class RegionWidget extends StatelessWidget {
   final double _height = 75;
-  final Region regionData;
+  final regionData;
   final bool isSelected;
   final Function(dynamic) onSelected;
   RegionWidget(this.regionData, this.onSelected, this.isSelected);
@@ -62,7 +62,7 @@ class RegionWidget extends StatelessWidget {
                     SizedBox(
                       width: 12,
                     ),
-                    Text(this.regionData.regionName),
+                    Text(regionData is Region ? this.regionData.regionName : regionData.cityName),
                     Expanded(
                       child: Row(
                         mainAxisAlignment: MainAxisAlignment.end,
