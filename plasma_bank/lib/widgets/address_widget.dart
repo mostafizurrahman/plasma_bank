@@ -51,12 +51,16 @@ class _AddressState extends State<AddressWidget> {
   _setLocation() {
     this._errorBehavior.sink.add('');
     final _city = locationProvider.gpsCity;
-    this._countryConfig.controller.text = _city.fullName;
-    this._countryCodeConfig.controller.text = _city.countryName;
-    this._regionConfig.controller.text = _city.regionName;
-    this._cityConfig.controller.text = _city.cityName;
-    this._streetConfig.controller.text = _city.street + ", " + _city.subStreet;
-    this._zipConfig.controller.text = _city.postalCode;
+    if (_city != null) {
+      this._countryConfig.controller.text = _city.fullName ?? '';
+      this._countryCodeConfig.controller.text = _city.countryName ?? '';
+      this._regionConfig.controller.text = _city.regionName ?? '';
+      this._cityConfig.controller.text = _city.cityName ?? '';
+      this._streetConfig.controller.text =
+          _city.street + ", " + _city.subStreet;
+      this._zipConfig.controller.text = _city.postalCode ?? '';
+      this._houseConfig.controller.text = _city.house ?? '';
+    }
   }
 
   @override
@@ -119,7 +123,8 @@ class _AddressState extends State<AddressWidget> {
                             child: Container(
 //                              color: Colors.blueAccent,
                               height: snapshot.data
-                                  ? _contentHeight - this._scrollAdjustment * 0.35
+                                  ? _contentHeight -
+                                      this._scrollAdjustment * 0.35
                                   : _contentHeight,
                               width: _width,
                               child: Column(
@@ -168,7 +173,6 @@ class _AddressState extends State<AddressWidget> {
                                       this._scrollBehavior.sink.add(true);
                                     },
                                     onEditingDone: () {
-                                      this._scrollBehavior.sink.add(false);
                                       _animateTextFields(isHide: true);
                                     },
                                   ),
@@ -217,13 +221,16 @@ class _AddressState extends State<AddressWidget> {
 
   _animateTextFields({isHide = false}) {
     if (isHide) {
+
       FocusScope.of(context).requestFocus(FocusNode());
       Future.delayed(
         Duration(seconds: 1),
         () {
-          _scrollController.animateTo(0.0,
-              duration: Duration(milliseconds: 500), curve: Curves.ease);
+          this._scrollBehavior.sink.add(false);
+//          _scrollController.animateTo(0.0,
+//              duration: Duration(milliseconds: 500), curve: Curves.ease);
         },
+
       );
     } else {
       if (this._scrollController.offset == 0.0) {
@@ -246,53 +253,54 @@ class _AddressState extends State<AddressWidget> {
 
   _saveAddress() {
     FocusScope.of(context).requestFocus(FocusNode());
-    this._errorBehavior.sink.add('');
-    final _country = this._countryConfig.controller.text;
-    final _state = this._regionConfig.controller.text;
-    final _city = this._cityConfig.controller.text;
-    final _road = this._streetConfig.controller.text;
-    final _zip = this._zipConfig.controller.text;
-    final _house = this._houseConfig.controller.text;
-    if (_country.isEmpty) {
-      _errorMessage(this._countryConfig);
-    } else if (_state.isEmpty) {
-      _errorMessage(this._regionConfig);
-    } else if (_city.isEmpty) {
-      _errorMessage(this._cityConfig);
-    } else if (_road.isEmpty) {
-      _errorMessage(_streetConfig);
-    } else if (_road.isEmpty) {
-      _errorMessage(_streetConfig);
-    } else if (_zip.isEmpty) {
-      _errorMessage(_zipConfig);
-    } else if (_house.isEmpty) {
-      _errorMessage(_houseConfig);
-    } else {
-      final _addressMap = {
-        'country': _country,
-        'code': this._countryCodeConfig.controller.text,
-        'state': _state,
-        'city': _city,
-        'street': _road,
-        'zip': _zip,
-        'house': _house,
-      };
-      if (!this.skipPopup) {
-        skipPopup = true;
+    if (this.skipPopup) {
+      return;
+    }
+    skipPopup = true;
+    Future.delayed(Duration(seconds: 1), () {
+      this._errorBehavior.sink.add('');
+      this._scrollBehavior.sink.add(false);
+      final _country = this._countryConfig.controller.text;
+      final _state = this._regionConfig.controller.text;
+      final _city = this._cityConfig.controller.text;
+      final _road = this._streetConfig.controller.text;
+      final _zip = this._zipConfig.controller.text;
+      final _house = this._houseConfig.controller.text;
+      if (_country.isEmpty) {
+        _errorMessage(this._countryConfig);
+      } else if (_state.isEmpty) {
+        _errorMessage(this._regionConfig);
+      } else if (_city.isEmpty) {
+        _errorMessage(this._cityConfig);
+      } else if (_road.isEmpty) {
+        _errorMessage(_streetConfig);
+      } else if (_road.isEmpty) {
+        _errorMessage(_streetConfig);
+      } else if (_zip.isEmpty) {
+        _errorMessage(_zipConfig);
+      } else if (_house.isEmpty) {
+        _errorMessage(_houseConfig);
+      } else {
+        final _addressMap = {
+          'country': _country,
+          'code': this._countryCodeConfig.controller.text,
+          'state': _state,
+          'city': _city,
+          'street': _road,
+          'zip': _zip,
+          'house': _house,
+        };
+
         final _address = Address.fromMap(_addressMap);
-        Future.delayed(
-          Duration(milliseconds: 500),
-          () {
-            Navigator.pushNamed(
-              context,
-              AppRoutes.pagePersonData,
-              arguments: {'address': _address},
-            );
-            skipPopup = false;
-          },
+
+        Navigator.pushNamed(
+          context,
+          AppRoutes.pagePersonData,
+          arguments: {'address': _address},
         );
       }
-    }
+      skipPopup = false;
+    });
   }
 
   _onChangedStreet(String value) {}

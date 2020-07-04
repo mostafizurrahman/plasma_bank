@@ -45,6 +45,23 @@ class AppStyle {
     return Color.fromARGB(255, 150, 150, 150);
   }
 
+  static BoxDecoration circularShadow(){
+    return BoxDecoration(
+      color: Colors.white,
+      boxShadow: [
+        BoxShadow(
+          color: Color.fromRGBO(0, 0, 0, 0.15),
+          offset: Offset(0, 0),
+          blurRadius: 12,
+          spreadRadius: 8,
+        ),
+      ],
+      borderRadius: BorderRadius.all(
+        Radius.circular(1000),
+      ),
+    );
+  }
+
   static const fontBold = 'SF_UIFont_Bold';
   static const fontNormal = 'SF_UIFont';
   static const Color colorHighlight = Color.fromARGB(255, 255, 20, 80);

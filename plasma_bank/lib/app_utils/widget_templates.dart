@@ -79,12 +79,21 @@ class WidgetTemplate {
     final bool isPassword = false,
     final int maxLen = 25,
     final Function onTap,
+    String Function(String) validator,
     final Function(String) onChangedValue,
     final Function onEditingDone,
     final Function onIconTap,
   }) {
+    if (validator == null) {
+      validator = (String value) {
+        return null;
+      };
+    }
     final _inputFormatter = isDigit
-        ? [WhitelistingTextInputFormatter.digitsOnly]
+        ? [
+            new LengthLimitingTextInputFormatter(maxLen),
+            WhitelistingTextInputFormatter.digitsOnly
+          ]
         : [
             WhitelistingTextInputFormatter(RegExp("[a-zA-Z0-9,.:@ /]")),
             new LengthLimitingTextInputFormatter(maxLen),
@@ -92,8 +101,12 @@ class WidgetTemplate {
     return Padding(
       padding: EdgeInsets.only(top: 8, bottom: 8),
       child: new TextField(
+        autofillHints: null,
+        enableSuggestions: false,
         controller: _config.controller,
         focusNode: _config.focusNode,
+        expands: false,
+
         onTap: onTap,
         onChanged: onChangedValue,
         enabled: isEnabled,
@@ -106,6 +119,7 @@ class WidgetTemplate {
         autocorrect: false,
         keyboardAppearance: Brightness.light,
         decoration: InputDecoration(
+            errorText: validator(_config.controller.text),
             focusedBorder: UnderlineInputBorder(
               borderSide: BorderSide(color: AppStyle.theme(), width: 0.75),
             ),

@@ -54,6 +54,7 @@ class LocationProvider {
           _city.fullName = _mark.country;
           _city.street = _mark.thoroughfare;
           _city.subStreet = _mark.subThoroughfare;
+          _city.house = _mark.subLocality;
           this.gpsCity = _city;
           debugPrint(_mark.country);
           debugPrint(_mark.postalCode);
@@ -264,6 +265,7 @@ class Region {
 
 class City {
   String street;
+  String house;
   String subStreet;
   String postalCode;
   String fullName;
