@@ -6,11 +6,13 @@ import 'package:plasma_bank/app_utils/app_constants.dart';
 import 'package:plasma_bank/app_utils/image_helper.dart';
 import 'package:plasma_bank/app_utils/widget_providers.dart';
 import 'package:plasma_bank/app_utils/widget_templates.dart';
+import 'package:plasma_bank/network/uploader.dart';
 
 class PreviewWidget extends StatefulWidget {
   final ImageType imageType;
   final String imagePath;
-  PreviewWidget(this.imageType, this.imagePath);
+  final Function onUploaded;
+  PreviewWidget(this.imageType, this.imagePath, this.onUploaded);
   @override
   State<StatefulWidget> createState() {
     return _PreviewState();
@@ -18,6 +20,7 @@ class PreviewWidget extends StatefulWidget {
 }
 
 class _PreviewState extends State<PreviewWidget> {
+
   @override
   Widget build(BuildContext context) {
     final _height = MediaQuery.of(context).size.height;
@@ -57,9 +60,9 @@ class _PreviewState extends State<PreviewWidget> {
             height: 90,
             child: Center(
               child: WidgetProvider.getButton(
-                  "UPLOAD",
+                  "USE PICTURE",
                   Icon(
-                    Icons.cloud_upload,
+                    Icons.check,
                     color: Colors.white,
                   ),
                   _onUploadStart,
@@ -73,13 +76,17 @@ class _PreviewState extends State<PreviewWidget> {
 
   _onUploadStart() {
     WidgetProvider.loading(context);
-    Future.delayed(Duration(seconds: 4), () {
-      Navigator.pop(context);
-      WidgetTemplate.message(context,
-          "Your profile picture uploaded successfully! You need to check other registration information",
-          dialogTitle: "Upload Success!", onTapped: () {
-        Navigator.pop(context);
-      });
+    Future.delayed(Duration(seconds: 1), () {
+//      final _uploader = ImageUploader();
+//      final _base64 = ImageUploader.getBase64(this.widget.imagePath);
+//      _uploader.uploadImage(_base64);
+      this.widget.onUploaded(this.widget.imagePath);
+      Navigator.popUntil(context, ModalRoute.withName(AppRoutes.pagePersonData));
+//      WidgetTemplate.message(context,
+//          "Your profile picture uploaded successfully! You need to check other registration information",
+//          dialogTitle: "Upload Success!", onTapped: () {
+//        Navigator.pop(context);
+//      });
     });
   }
 

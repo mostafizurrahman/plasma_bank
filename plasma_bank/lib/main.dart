@@ -117,7 +117,7 @@ class _PlasmaState extends State<PlasmaBank> {
       _widget = LocationTerms();
     }
     else if (settings.name == AppRoutes.pageRouteCamera) {
-      _widget = CameraWidget();
+      _widget = CameraWidget(settings.arguments);
     }
     else if (settings.name == AppRoutes.pageRouteDonor) {
       _widget = PatientInfoWidget();
@@ -128,7 +128,8 @@ class _PlasmaState extends State<PlasmaBank> {
         final Map<String, dynamic> _args = settings.arguments;
         final imageType = _args["type"];
         final imagePath = _args["image"];
-        _widget = PreviewWidget(imageType, imagePath);
+        final onUploaded = _args["on_uploaded"];
+        _widget = PreviewWidget(imageType, imagePath, onUploaded);
       }
     }
 
