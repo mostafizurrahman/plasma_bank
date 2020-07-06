@@ -7,6 +7,7 @@ import 'package:plasma_bank/app_utils/app_constants.dart';
 import 'package:plasma_bank/app_utils/location_provider.dart';
 import 'package:plasma_bank/app_utils/widget_providers.dart';
 import 'package:plasma_bank/media/dash_painter.dart';
+import 'package:plasma_bank/widgets/stateful/integer_item.dart';
 import 'package:plasma_bank/widgets/stateful/region_picker_item.dart';
 import 'package:rxdart/rxdart.dart';
 
@@ -14,13 +15,18 @@ import 'country_picker_item.dart';
 
 class DataPickerWidget extends StatefulWidget {
   final bool hasDoneButton;
+  final isGridView;
   final String picketTitle;
   final List dataList;
   final Function(dynamic) onSelectedData;
   final Function onClosed;
+  final String unit;
 
   DataPickerWidget(this.dataList, this.onSelectedData, this.onClosed,
-      {this.picketTitle = 'PICK A DATA', this.hasDoneButton = true});
+      {this.picketTitle = 'PICK A DATA',
+        this.unit = '',
+      this.hasDoneButton = true,
+      this.isGridView = false});
   @override
   State<StatefulWidget> createState() {
     return _DataPickerState();
@@ -28,6 +34,7 @@ class DataPickerWidget extends StatefulWidget {
 }
 
 class _DataPickerState extends State<DataPickerWidget> {
+  final itemExtent = 80.0;
   @override
   Widget build(BuildContext context) {
     final double _titleHeight = 55;
@@ -43,6 +50,7 @@ class _DataPickerState extends State<DataPickerWidget> {
               body: Column(
                 children: [
                   Container(
+                    decoration: AppStyle.getLightBox(),
                     height: _titleHeight,
                     child: Row(
                       crossAxisAlignment: CrossAxisAlignment.center,
@@ -94,7 +102,7 @@ class _DataPickerState extends State<DataPickerWidget> {
                         return ListView.builder(
                           scrollDirection: Axis.vertical,
                           itemCount: this.widget.dataList.length + 1,
-                          itemExtent: 75,
+                          itemExtent: itemExtent,
                           itemBuilder: (_context, _index) {
                             if (_index == this.widget.dataList.length) {
                               return Container(
@@ -102,8 +110,7 @@ class _DataPickerState extends State<DataPickerWidget> {
                               );
                             }
                             final _data = this.widget.dataList[_index];
-                            bool isSelected = _data == this._tempSubject.value;
-                            return _getItemWidget(_data, isSelected);
+                            return _getItemWidget(_data);
 
 //                            this.getCountryItem(_data);
                           },
@@ -130,7 +137,60 @@ class _DataPickerState extends State<DataPickerWidget> {
     );
   }
 
-  Widget _getItemWidget(final _data, final bool _isSelected) {
+  Widget _getItemWidget(final _data) {
+
+    if(_data is String){
+
+      bool _isSelected = _data == this._tempSubject.value;
+      return Padding(
+        padding: EdgeInsets.only(left: 16, right:  16, top: 12, bottom: 12),
+        child: Container(
+
+          decoration: AppStyle.lightShadow(),
+          child: ClipRRect(
+            child: Material(
+              color: Colors.transparent,
+              child: Ink(
+                child: InkWell(
+                  onTap: (){
+                    this._tempSubject.sink.add(_data);
+                  },
+                  child: Row(
+                    children: [
+                      SizedBox(width: 12,),
+                      WidgetProvider.circledIcon(Icon(Icons.radio_button_checked ,color: _isSelected ? AppStyle.theme() :  Colors.cyan,),),
+                      SizedBox(width: 12,),
+                      Text(
+                        _data,
+                        style: TextStyle(
+                          color: _isSelected ?  AppStyle.theme() : Colors.black54 ,
+                          fontSize: 16,
+                          fontFamily: AppStyle.fontBold,
+                        ),
+                      ),
+                    ],
+                  ),
+                ),
+              ),
+            ),
+            borderRadius: BorderRadius.all(Radius.circular(100)),
+          ),
+        ),
+      );
+    }
+
+    if (_data is List<int>) {
+
+      return IntegerItem(
+        _data,
+        this._tempSubject.value,
+        this._onSubjectSelected,
+        dimension: itemExtent - 32,
+        unitName: this.widget.unit,
+      );
+    }
+
+    bool _isSelected = _data == this._tempSubject.value;
     if (_data is Region || _data is City) {
       return RegionWidget(_data, this._onSubjectSelected, _isSelected);
     }

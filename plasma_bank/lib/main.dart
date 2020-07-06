@@ -133,7 +133,8 @@ class _PlasmaState extends State<PlasmaBank> {
         final imageType = _args["type"];
         final imagePath = _args["image"];
         final onUploaded = _args["on_uploaded"];
-        _widget = PreviewWidget(imageType, imagePath, onUploaded);
+        final route = _args['route_name'];
+        _widget = PreviewWidget(imageType, imagePath, onUploaded, route);
       }
     }
 

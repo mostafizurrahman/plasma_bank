@@ -12,7 +12,8 @@ class PreviewWidget extends StatefulWidget {
   final ImageType imageType;
   final String imagePath;
   final Function onUploaded;
-  PreviewWidget(this.imageType, this.imagePath, this.onUploaded);
+  final String routeName;
+  PreviewWidget(this.imageType, this.imagePath, this.onUploaded, this.routeName);
   @override
   State<StatefulWidget> createState() {
     return _PreviewState();
@@ -82,7 +83,7 @@ class _PreviewState extends State<PreviewWidget> {
 //      _uploader.uploadImage(_base64);
       this.widget.onUploaded(this.widget.imagePath);
       Navigator.pop(context);
-      Navigator.popUntil(context, ModalRoute.withName(AppRoutes.pagePersonData));
+      Navigator.popUntil(context, ModalRoute.withName(this.widget.routeName));
 //      WidgetTemplate.message(context,
 //          "Your profile picture uploaded successfully! You need to check other registration information",
 //          dialogTitle: "Upload Success!", onTapped: () {

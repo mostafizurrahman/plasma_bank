@@ -245,6 +245,7 @@ class _ProfileState extends State<ProfileWidget> {
       final arguments = {
         'is_front_camera': true,
         'on_captured_function': _onCaptured,
+        'route_name' : AppRoutes.pagePersonData,
       };
       Navigator.pushNamed(context, AppRoutes.pageRouteCamera,
           arguments: arguments);
