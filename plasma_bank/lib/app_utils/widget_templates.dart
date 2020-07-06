@@ -1,8 +1,10 @@
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
+import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
-import 'package:plasma_bank/app_utils/widget_providers.dart';
+
 import 'package:plasma_bank/widgets/stateless/message_widget.dart';
+import 'package:rxdart/rxdart.dart';
 
 import 'app_constants.dart';
 
@@ -106,7 +108,6 @@ class WidgetTemplate {
         controller: _config.controller,
         focusNode: _config.focusNode,
         expands: false,
-
         onTap: onTap,
         onChanged: onChangedValue,
         enabled: isEnabled,
@@ -131,6 +132,99 @@ class WidgetTemplate {
         textInputAction: TextInputAction.done,
         onEditingComplete: onEditingDone,
       ),
+    );
+  }
+
+  static Widget gateRadio(BuildContext _contex, final BehaviorSubject<int> _radioStream, final String _title,
+
+      {IconButton button}) {
+    return Row(
+      children: [
+        Expanded(
+          child: button == null
+              ? Text(
+                  _title,
+                  style: TextStyle(fontFamily: AppStyle.fontBold, color: Colors.grey),
+                )
+              : Row(
+                  children: [
+                    Text(
+                      _title,
+                      style: TextStyle(fontFamily: AppStyle.fontBold, color: Colors.grey),
+                    ),
+                    button,
+                  ],
+                ),
+        ),
+        Container(
+//        color: Colors.yellow,
+//          width: 50,
+          child: StreamBuilder(
+            initialData: 0,
+            stream: _radioStream.stream,
+            builder: (_context, _snap) {
+              return Row(
+                children: <Widget>[
+                  SizedBox(
+                    width: 30,
+                    child: Text(
+                      'YES',
+                      textAlign: TextAlign.left,
+                      style: TextStyle(
+                        color: Colors.black,
+                      ),
+                    ),
+                  ),
+                  new Radio(
+                    value: 1,
+                    groupValue: _snap.data,
+                    onChanged: (value) {
+
+                      FocusScope.of(_context).requestFocus(FocusNode());
+                      _radioStream.sink.add(value);
+                    },
+                  ),
+                ],
+              );
+            },
+          ),
+        ),
+        SizedBox(
+          width: 8,
+        ),
+        Container(
+//          color: Colors.red,
+//          width: 50,
+          child: StreamBuilder(
+            initialData: 0,
+            stream: _radioStream.stream,
+            builder: (_context, _snap) {
+              return Row(
+                children: <Widget>[
+                  SizedBox(
+                    width: 25,
+                    child: Text(
+                      'NO',
+                      textAlign: TextAlign.left,
+                      style: TextStyle(
+                        color: Colors.black,
+                      ),
+                    ),
+                  ),
+                  new Radio(
+                    value: 0,
+                    groupValue: _snap.data,
+                    onChanged: (value) {
+                      FocusScope.of(_context).requestFocus(FocusNode());
+                      _radioStream.sink.add(value);
+                    },
+                  ),
+                ],
+              );
+            },
+          ),
+        ),
+      ],
     );
   }
 }

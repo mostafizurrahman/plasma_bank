@@ -12,9 +12,11 @@ class AppRoutes {
   static const String pageRouteEntry = "/home/entry";
   static const String pageRouteImage = "/home/camera/image";
   static const String pageRouteCamera = "/home/camera";
+
   static const String pageLocateTerms = '/home/locationTerms';
   static const String pageAddressData = '/home/address';
   static const String pagePersonData = '/home/personal';
+  static const String pageHealthData = '/home/personal/health';
 
 }
 
@@ -144,10 +146,12 @@ class AppStyle {
 
 class TextConfig{
 
+  final int maxLen;
+  final bool isDigit;
   final TextEditingController controller = TextEditingController();
   final FocusNode focusNode = FocusNode();
   final String labelText;
-  TextConfig(this.labelText);
+  TextConfig(this.labelText, {this.isDigit = false, this.maxLen = 25});
 }
 
 enum ImageType { profile, prescription, document }
