@@ -81,6 +81,7 @@ class _PreviewState extends State<PreviewWidget> {
 //      final _base64 = ImageUploader.getBase64(this.widget.imagePath);
 //      _uploader.uploadImage(_base64);
       this.widget.onUploaded(this.widget.imagePath);
+      Navigator.pop(context);
       Navigator.popUntil(context, ModalRoute.withName(AppRoutes.pagePersonData));
 //      WidgetTemplate.message(context,
 //          "Your profile picture uploaded successfully! You need to check other registration information",

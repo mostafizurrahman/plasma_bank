@@ -39,6 +39,9 @@ class _ProfileState extends State<ProfileWidget> {
       initialScrollOffset: 0.0,
       keepScrollOffset: true,
     );
+    this._nameConfig.controller.text = 'mostafizur rahman';
+    this._emailConfig.controller.text = 'mostafizur.cse@gmail.com';
+    this._phoneConfig.controller.text = '01675876752';
   }
 
   @override
@@ -297,9 +300,14 @@ class _ProfileState extends State<ProfileWidget> {
           this._errorBehavior.sink.add('mobile number is empty');
         } else {
 
-          final Address _address = this.widget.getData('address'); 
-          final BloodDonor bloodDonor = BloodDonor.fromMap(map)
+          final Map _arguments = Map.from( this.widget.arguments); 
+          _arguments['name'] = _name;
+          _arguments['email'] = _email;
+          _arguments['mobile'] = _mobile;
+          _arguments['profile'] = profileImage;
+//          final BloodDonor bloodDonor = BloodDonor.fromMap(map) 
 
+          Navigator.pushNamed(context, AppRoutes.pageHealthData, arguments: _arguments);
           
         }
 
