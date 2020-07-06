@@ -17,14 +17,16 @@ class CameraWidget extends BaseWidget {
   State<StatefulWidget> createState() {
     final _frontCamera = super.getData('is_front_camera');
     final _onCaptured = super.getData('on_captured_function');
-    return _CameraState(_onCaptured, _frontCamera);
+    final _routeName = super.getData('route_name');
+    return _CameraState(_onCaptured, _frontCamera, _routeName);
   }
 }
 
 class _CameraState extends State<CameraWidget> with WidgetsBindingObserver {
   final Function(String) _onImageCaptured;
   final bool _isFrontCamera;
-  _CameraState(this._onImageCaptured, this._isFrontCamera);
+  final String _routeName;
+  _CameraState(this._onImageCaptured, this._isFrontCamera, this._routeName);
   String _imagePath;
   CameraController _cameraController;
 
@@ -231,7 +233,8 @@ class _CameraState extends State<CameraWidget> with WidgetsBindingObserver {
       final args = {
         "type": ImageType.profile,
         "image": _capturedPath,
-        'on_uploaded': _onCaptured
+        'on_uploaded': _onCaptured,
+        'route_name':this._routeName,
       };
       Navigator.pushNamed(context, AppRoutes.pageRouteImage, arguments: args);
 

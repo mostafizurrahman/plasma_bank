@@ -64,6 +64,41 @@ class AppStyle {
     );
   }
 
+
+  static BoxDecoration lightShadow(){
+    return BoxDecoration(
+      color: Colors.white,
+      boxShadow: [
+        BoxShadow(
+          color: Color.fromRGBO(0, 0, 0, 0.1),
+          offset: Offset(0, 0),
+          blurRadius: 8,
+          spreadRadius: 4,
+        ),
+      ],
+      borderRadius: BorderRadius.all(
+        Radius.circular(1000),
+      ),
+    );
+  }
+
+  static BoxDecoration highlightShadow(){
+    return BoxDecoration(
+      color: Colors.white,
+      boxShadow: [
+        BoxShadow(
+          color: Color.fromARGB(255, 255, 20, 80),
+          offset: Offset(0, 0),
+          blurRadius: 8,
+          spreadRadius: 4,
+        ),
+      ],
+      borderRadius: BorderRadius.all(
+        Radius.circular(1000),
+      ),
+    );
+  }
+
   static const fontBold = 'SF_UIFont_Bold';
   static const fontNormal = 'SF_UIFont';
   static const Color colorHighlight = Color.fromARGB(255, 255, 20, 80);
@@ -72,6 +107,21 @@ class AppStyle {
     boxShadow: [
       BoxShadow(
         color: Color.fromRGBO(0, 0, 0, 0.15),
+        offset: Offset(0, 0),
+        blurRadius: 12,
+        spreadRadius: 8,
+      ),
+    ],
+    borderRadius: const BorderRadius.all(
+      const Radius.circular(16),
+    ),
+  );
+
+  static const BoxDecoration selectedDecoration = BoxDecoration(
+    color: Colors.white,
+    boxShadow: [
+      BoxShadow(
+        color: Color.fromARGB(255, 255, 20, 80),
         offset: Offset(0, 0),
         blurRadius: 12,
         spreadRadius: 8,
