@@ -105,6 +105,7 @@ class WidgetTemplate {
       child: new TextField(
         autofillHints: null,
         enableSuggestions: false,
+
         controller: _config.controller,
         focusNode: _config.focusNode,
         expands: false,

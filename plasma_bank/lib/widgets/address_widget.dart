@@ -1,35 +1,27 @@
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter/painting.dart';
-import 'package:flutter/services.dart';
 import 'package:plasma_bank/app_utils/widget_templates.dart';
 import 'package:plasma_bank/network/models/abstract_person.dart';
-import 'package:rxdart/rxdart.dart';
 import '../widgets/base_widget.dart';
 import 'package:plasma_bank/app_utils/app_constants.dart';
 import 'package:plasma_bank/app_utils/location_provider.dart';
 import 'package:plasma_bank/app_utils/widget_providers.dart';
 import 'package:plasma_bank/widgets/stateful/data_picker_widget.dart';
+import 'package:plasma_bank/widgets/base/base_state.dart';
+
 
 class AddressWidget extends BaseWidget {
   AddressWidget(Map arguments) : super(arguments);
-
   @override
   State<StatefulWidget> createState() {
     return _AddressState();
   }
 }
 
-class _AddressState extends State<AddressWidget> {
+class _AddressState extends BaseKeyboardState<AddressWidget>  {
   bool skipPopup = false;
-
-  final _scrollAdjustment = 350.0;
-  final _txtError = ' is missing.';
-//  final TextEditingController _zipController = TextEditingController();
   final TextConfig _countryConfig = TextConfig('country');
-
-  final BehaviorSubject<String> _errorBehavior = BehaviorSubject<String>();
-  final BehaviorSubject<bool> _scrollBehavior = BehaviorSubject();
 
   final TextConfig _countryCodeConfig = TextConfig('code');
   final TextConfig _regionConfig = TextConfig('region/state');
@@ -37,19 +29,15 @@ class _AddressState extends State<AddressWidget> {
   final TextConfig _streetConfig = TextConfig('street/locality');
   final TextConfig _zipConfig = TextConfig('zip/po');
   final TextConfig _houseConfig = TextConfig('house/other');
-  ScrollController _scrollController;
+
   @override
   void initState() {
     super.initState();
-    _scrollController = new ScrollController(
-      initialScrollOffset: 0.0,
-      keepScrollOffset: true,
-    );
     _setLocation();
   }
 
   _setLocation() {
-    this._errorBehavior.sink.add('');
+
     final _city = locationProvider.gpsCity;
     if (_city != null) {
       this._countryConfig.controller.text = _city.fullName ?? '';
@@ -63,203 +51,34 @@ class _AddressState extends State<AddressWidget> {
     }
   }
 
+
+
   @override
   void dispose() {
     super.dispose();
-    this._scrollBehavior.close();
-    if (this._errorBehavior != null && !this._errorBehavior.isClosed) {
-      this._errorBehavior.close();
-    }
+
   }
 
   @override
   Widget build(BuildContext context) {
-    final _paddingBottom = MediaQuery.of(context).padding.bottom;
-    final _paddingTop = MediaQuery.of(context).padding.top;
-    final _appBarHeight = 54;
-    final _width = MediaQuery.of(context).size.width;
-    final _height = MediaQuery.of(context).size.height;
-    final _contentHeight =
-        _height - _paddingBottom - _paddingTop - _appBarHeight;
-    return Container(
-      color: AppStyle.greyBackground(),
-      child: Padding(
-        padding: EdgeInsets.only(bottom: _paddingBottom),
-        child: Scaffold(
-          appBar: WidgetProvider.appBar(
-            'Address',
-            actions: [
-              Padding(
-                padding: EdgeInsets.only(right: 24.0),
-                child: GestureDetector(
-                  onTap: _setLocation,
-                  child: Icon(
-                    Icons.refresh,
-                    color: AppStyle.theme(),
-                    size: 26.0,
-                  ),
-                ),
-              ),
-            ],
-          ),
-          body: Container(
-            width: _width,
-//            color: Colors.red,
-            child: Padding(
-              padding: const EdgeInsets.only(left: 24, right: 24),
-              child: Column(
-                children: [
-                  StreamBuilder<bool>(
-                      stream: this._scrollBehavior.stream,
-                      initialData: false,
-                      builder: (context, snapshot) {
-                        return Container(
-//                          color: Colors.teal,
-                          height: snapshot.data
-                              ? _contentHeight - this._scrollAdjustment
-                              : _contentHeight,
-                          child: SingleChildScrollView(
-                            controller: _scrollController,
-                            child: Container(
-//                              color: Colors.blueAccent,
-                              height: snapshot.data
-                                  ? _contentHeight -
-                                      this._scrollAdjustment * 0.35
-                                  : _contentHeight,
-                              width: _width,
-                              child: Column(
-                                crossAxisAlignment: CrossAxisAlignment.start,
-                                children: [
-                                  Padding(
-                                    padding:
-                                        EdgeInsets.only(top: 24, bottom: 12),
-                                    child: Row(
-                                      crossAxisAlignment:
-                                          CrossAxisAlignment.center,
-                                      children: [
-                                        WidgetProvider.circledIcon(
-                                          Icon(
-                                            Icons.place,
-                                            color: AppStyle.theme(),
-                                            size: 25,
-                                          ),
-                                        ),
-                                        SizedBox(
-                                          width: 12,
-                                        ),
-                                        Text(
-                                          'ENTER ADDRESS',
-                                          textAlign: TextAlign.left,
-                                          style: TextStyle(
-                                            fontSize: 24,
-                                            fontFamily: AppStyle.fontBold,
-                                          ),
-                                        ),
-                                      ],
-                                    ),
-                                  ),
-                                  _getCountry(),
-                                  _getRegion(),
-                                  _getCity(),
-                                  _geStreet(),
-                                  WidgetTemplate.getTextField(
-                                    this._houseConfig,
-                                    maxLen: 30,
-                                    isReadOnly: false,
-                                    showCursor: true,
-                                    onTap: () {
-                                      this._errorBehavior.sink.add('');
-                                      _animateTextFields();
-                                      this._scrollBehavior.sink.add(true);
-                                    },
-                                    onEditingDone: () {
-                                      _animateTextFields(isHide: true);
-                                    },
-                                  ),
-                                ],
-                              ),
-                            ),
-                          ),
-                        );
-                      }),
-                  Expanded(
-                    child: Column(
-                      mainAxisAlignment: MainAxisAlignment.end,
-                      children: [
-                        StreamBuilder(
-                          stream: this._errorBehavior.stream,
-                          initialData: '',
-                          builder: (_context, _snap) {
-                            return Center(
-                              child: Text(
-                                _snap.data,
-                                style: TextStyle(
-                                  color: AppStyle.theme(),
-                                ),
-                              ),
-                            );
-                          },
-                        )
-                      ],
-                    ),
-                  )
-                ],
-              ),
-            ),
-          ),
-          floatingActionButtonLocation:
-              FloatingActionButtonLocation.centerFloat,
-          floatingActionButton: WidgetProvider.button(
-            _saveAddress,
-            "NEXT",
-            context,
-          ),
-        ),
-      ),
-    );
+    return super.build(context);
   }
 
-  _animateTextFields({isHide = false}) {
-    if (isHide) {
 
-      FocusScope.of(context).requestFocus(FocusNode());
-      Future.delayed(
-        Duration(seconds: 1),
-        () {
-          this._scrollBehavior.sink.add(false);
-//          _scrollController.animateTo(0.0,
-//              duration: Duration(milliseconds: 500), curve: Curves.ease);
-        },
-
-      );
-    } else {
-      if (this._scrollController.offset == 0.0) {
-        Future.delayed(Duration(seconds: 1), () {
-          _scrollController.animateTo(200.0,
-              duration: Duration(milliseconds: 500), curve: Curves.ease);
-        });
-      }
-    }
-  }
 
   _errorMessage(final TextConfig _config) {
-    final String _msg = '${_config.labelText.toUpperCase()} $_txtError';
-    this._errorBehavior.sink.add(_msg);
-    FocusScope.of(context).requestFocus(_config.focusNode);
-
-    this._scrollBehavior.sink.add(true);
-    _animateTextFields();
+    super.setError(_config);
   }
 
-  _saveAddress() {
+  @override
+  onSubmitData() {
     FocusScope.of(context).requestFocus(FocusNode());
     if (this.skipPopup) {
       return;
     }
     skipPopup = true;
     Future.delayed(Duration(seconds: 1), () {
-      this._errorBehavior.sink.add('');
-      this._scrollBehavior.sink.add(false);
+
       final _country = this._countryConfig.controller.text;
       final _state = this._regionConfig.controller.text;
       final _city = this._cityConfig.controller.text;
@@ -316,15 +135,6 @@ class _AddressState extends State<AddressWidget> {
             isReadOnly: false,
             showCursor: true,
             maxLen: 50,
-            onTap: () {
-              this._errorBehavior.sink.add('');
-              this._scrollBehavior.sink.add(true);
-              _animateTextFields();
-            },
-            onEditingDone: () {
-              _animateTextFields(isHide: true);
-              this._scrollBehavior.sink.add(false);
-            },
           ),
         ),
         SizedBox(
@@ -338,15 +148,6 @@ class _AddressState extends State<AddressWidget> {
             this._zipConfig,
             isReadOnly: false,
             showCursor: true,
-            onTap: () {
-              this._errorBehavior.sink.add('');
-              this._scrollBehavior.sink.add(true);
-              _animateTextFields();
-            },
-            onEditingDone: () {
-              _animateTextFields(isHide: true);
-              this._scrollBehavior.sink.add(false);
-            },
           ),
         ),
       ],
@@ -367,10 +168,7 @@ class _AddressState extends State<AddressWidget> {
         Expanded(
           child: WidgetTemplate.getTextField(
             this._countryConfig,
-            onTap: () {
-              this._errorBehavior.sink.add('');
-              _openCountryList();
-            },
+            onTap:_openCountryList,
           ),
         ),
         SizedBox(
@@ -522,4 +320,72 @@ class _AddressState extends State<AddressWidget> {
     }
     return _state;
   }
+
+
+  ///OVERRIDEN METHODS
+
+  @override
+  String getAppBarTitle() {
+    return 'Address';
+  }
+
+  @override
+  List<Widget> getLeftActionItems() {
+    return [
+      Padding(
+        padding: EdgeInsets.only(right: AppStyle.PADDING),
+        child: GestureDetector(
+          onTap: _setLocation,
+          child: Icon(
+            Icons.refresh,
+            color: AppStyle.theme(),
+            size: AppStyle.ICON_SIZE_S,
+          ),
+        ),
+      ),
+    ];
+  }
+
+  @override
+ Widget getSingleChildContent(){
+    return  Container(
+      height: super.getContentHeight(),
+      child: Column(
+        crossAxisAlignment: CrossAxisAlignment.start,
+        children: [
+          Padding(
+            padding:
+            EdgeInsets.only(top: 24, bottom: 12),
+            child: Row(
+              children: [
+                WidgetProvider.circledIcon(
+                  Icon(  Icons.place, color: AppStyle.theme(), size: 25,
+                  ),
+                ),
+                SizedBox( width: 12, ),
+                Text(
+                  'ENTER ADDRESS',
+                  textAlign: TextAlign.left,
+                  style: TextStyle( fontSize: 24,
+                    fontFamily: AppStyle.fontBold,
+                  ),
+                ),
+              ],
+              crossAxisAlignment:
+              CrossAxisAlignment.center,
+            ),
+          ),
+          _getCountry(),
+          _getRegion(),
+          _getCity(),
+          _geStreet(),
+          WidgetTemplate.getTextField(this._houseConfig,
+            maxLen: 30, isReadOnly: false, showCursor: true,
+          ),
+        ],
+      ),
+    );
+  }
+
+
 }

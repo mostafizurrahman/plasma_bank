@@ -35,29 +35,16 @@ class _PlasmaState extends State<PlasmaBank> {
 
   @override
   void initState() {
-    // TODO: implement initState
     super.initState();
-//    _listenToConnection();
   }
 
-  _listenToConnection(){
-    this._connectivity.checkConnectivity().asStream().listen((event) {
-      if(event is ConnectionState) {
-
-        if (event == ConnectivityResult.none) {
-
-        }
-      }
-    });
-  }
-
-
-/*
-
- */
   @override
   Widget build(BuildContext context) {
-    SystemChrome.setEnabledSystemUIOverlays(SystemUiOverlay.values);
+    SystemChrome.setSystemUIOverlayStyle(SystemUiOverlayStyle(
+        statusBarColor: Colors.transparent,
+    ));
+    FlutterStatusbarcolor.setStatusBarWhiteForeground(false);
+
     FlutterStatusbarcolor.setStatusBarColor(Colors.transparent);
     return Column(
       children: [

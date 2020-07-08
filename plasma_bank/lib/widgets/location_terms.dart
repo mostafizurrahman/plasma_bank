@@ -4,6 +4,7 @@ import 'package:app_settings/app_settings.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
 import 'package:flutter_statusbarcolor/flutter_statusbarcolor.dart';
+//import 'package:flutter_statusbarcolor/flutter_statusbarcolor.dart';
 import 'package:geolocator/geolocator.dart';
 import 'package:plasma_bank/app_utils/app_constants.dart';
 import 'package:plasma_bank/app_utils/location_provider.dart';
@@ -31,7 +32,7 @@ class LocationTermsState extends State<LocationTerms> {
     // TODO: implement initState
     super.initState();
     Future.delayed(Duration(milliseconds: 50), () async {
-      await FlutterStatusbarcolor.setStatusBarWhiteForeground(false);
+//      await FlutterStatusbarcolor.setStatusBarWhiteForeground(false);
       this._webPublisher.sink.add(false);
     });
   }
@@ -61,7 +62,7 @@ class LocationTermsState extends State<LocationTerms> {
 
   @override
   Widget build(BuildContext context) {
-//    Navigator.pop(context);
+    FlutterStatusbarcolor.setStatusBarWhiteForeground(false);
     return Scaffold(
       backgroundColor: AppStyle.greyBackground(),
       floatingActionButtonLocation: FloatingActionButtonLocation.centerFloat,
@@ -101,7 +102,7 @@ class LocationTermsState extends State<LocationTerms> {
         .toString());
     Future.delayed(Duration(milliseconds: 200), () async {
       this._webPublisher.sink.add(true);
-      await FlutterStatusbarcolor.setStatusBarWhiteForeground(false);
+//      await FlutterStatusbarcolor.setStatusBarWhiteForeground(false);
     });
   }
 }
