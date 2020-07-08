@@ -3,7 +3,7 @@ import 'dart:io';
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter/src/widgets/framework.dart';
-import 'package:flutter_statusbarcolor/flutter_statusbarcolor.dart';
+//import 'package:flutter_statusbarcolor/flutter_statusbarcolor.dart';
 import 'package:plasma_bank/app_utils/app_constants.dart';
 import 'package:plasma_bank/app_utils/widget_providers.dart';
 import 'package:plasma_bank/app_utils/widget_templates.dart';
@@ -60,18 +60,18 @@ class _ProfileState extends State<ProfileWidget> {
         padding: EdgeInsets.only(bottom: _paddingBottom),
         child: Scaffold(
           appBar: WidgetProvider.appBar('Profile'),
-          body: Padding(
-            padding: EdgeInsets.only(left: 24, right: 24),
-            child: Column(
-              children: [
-                Container(
-                  height: 400,
+          body: Column(
+            children: [
+              Container(
+                height: _contentHeight,
 //              color: Colors.grey,
-                  child: SingleChildScrollView(
-                    controller: this._scrollController,
-                    child: Container(
-                      height: 600,
+                child: SingleChildScrollView(
+                  controller: this._scrollController,
+                  child: Container(
+                    height: _contentHeight + 300,
 //                  color: Colors.cyan,
+                    child: Padding(
+                      padding: EdgeInsets.only(left: 24, right: 24),
                       child: Column(
                         children: [
                           Container(
@@ -188,27 +188,27 @@ class _ProfileState extends State<ProfileWidget> {
                     ),
                   ),
                 ),
-                Expanded(
-                  child: Column(
-                    crossAxisAlignment: CrossAxisAlignment.center,
-                    mainAxisAlignment: MainAxisAlignment.end,
-                    children: [
-                      StreamBuilder(
-                        initialData: '',
-                        builder: (_context, _snap){
-                          return Text(
-                            _snap.data,
-                            style: TextStyle(
-                              color: AppStyle.theme(),
-                            ),
-                          );
-                        },
-                      )
-                    ],
-                  ),
-                )
-              ],
-            ),
+              ),
+              Expanded(
+                child: Column(
+                  crossAxisAlignment: CrossAxisAlignment.center,
+                  mainAxisAlignment: MainAxisAlignment.end,
+                  children: [
+                    StreamBuilder(
+                      initialData: '',
+                      builder: (_context, _snap){
+                        return Text(
+                          _snap.data,
+                          style: TextStyle(
+                            color: AppStyle.theme(),
+                          ),
+                        );
+                      },
+                    )
+                  ],
+                ),
+              )
+            ],
           ),
           floatingActionButtonLocation:
               FloatingActionButtonLocation.centerFloat,
@@ -276,7 +276,7 @@ class _ProfileState extends State<ProfileWidget> {
   }
 
   _onCaptured(final String imagePath) async {
-    await FlutterStatusbarcolor.setStatusBarWhiteForeground(false);
+//    await FlutterStatusbarcolor.setStatusBarWhiteForeground(false);
     this.profileImage = imagePath;
     this._profileBehavior.sink.add(imagePath);
   }

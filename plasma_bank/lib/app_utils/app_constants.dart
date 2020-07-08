@@ -36,6 +36,8 @@ class AppStyle {
   static const double PADDING_M = 12;
   static const double PADDING_S = 8;
 
+  static const double ICON_SIZE_S = 26;
+
   static Color greyBackground({ alpha = 255}){
 
     final _background = (0.9 * 255).toInt();

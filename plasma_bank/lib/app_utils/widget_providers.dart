@@ -235,6 +235,38 @@ class WidgetProvider {
     );
   }
 
+  static errorButton(Function _onTap, final String txt, BuildContext context,
+      {padding = 48.0}) {
+    return Padding(
+      padding: const EdgeInsets.all(12.0),
+      child: Container(
+        decoration: BoxDecoration(
+          borderRadius: BorderRadius.all(Radius.circular(100)),
+        ),
+        height: 50,
+        width: MediaQuery.of(context).size.width - padding,
+        child: RaisedButton(
+
+          shape: RoundedRectangleBorder(
+            side: BorderSide(color: AppStyle.theme(), width: 1.5),
+            borderRadius: BorderRadius.circular(120.0),
+          ),
+          color: Colors.white,
+          onPressed: () {
+            debugPrint('this is done');
+            if (_onTap != null) {
+              _onTap();
+            }
+          },
+          child: Text(
+            txt,
+            style: TextStyle(fontSize: 13, color: AppStyle.theme()),
+          ),
+        ),
+      ),
+    );
+  }
+
   static PreferredSize appBar(String _title, {List<Widget> actions}) {
     assert(_title != null, 'TITLE IS NULL');
     return PreferredSize(
@@ -252,6 +284,7 @@ class WidgetProvider {
             iconTheme: IconThemeData(color: AppStyle.theme()),
             titleSpacing: 0,
           ),
-        ));
+        ),
+    );
   }
 }

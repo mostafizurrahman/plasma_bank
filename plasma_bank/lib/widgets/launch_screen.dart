@@ -1,6 +1,6 @@
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
-import 'package:flutter_statusbarcolor/flutter_statusbarcolor.dart';
+//import 'package:flutter_statusbarcolor/flutter_statusbarcolor.dart';
 import 'package:plasma_bank/app_utils/app_constants.dart';
 import 'package:plasma_bank/app_utils/image_helper.dart';
 import 'package:plasma_bank/app_utils/localization_helper.dart';
@@ -20,7 +20,7 @@ class _LaunchScreenState extends State<LaunchScreenWidget> {
     super.initState();
     Future.delayed(const Duration(seconds: 3), () async {
 
-      await FlutterStatusbarcolor.setStatusBarWhiteForeground(false);
+//      await FlutterStatusbarcolor.setStatusBarWhiteForeground(false);
       Navigator.popAndPushNamed(context, AppRoutes.pageRouteHome);
     });
   }
