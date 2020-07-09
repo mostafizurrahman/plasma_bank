@@ -1,4 +1,5 @@
 import 'dart:io';
+import 'package:connectivity/connectivity.dart';
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
 import 'package:plasma_bank/app_utils/app_constants.dart';
@@ -24,6 +25,10 @@ class _HomePageState extends State<HomePageWidget> {
   final _db = FirebaseRepositories();
   final _downloader = CovidDataHelper();
   final _bottomNavigationBehavior = BehaviorSubject<int>();
+
+
+
+  final Connectivity _connectivity = Connectivity();
 
   @override
   void initState() {
@@ -139,10 +144,23 @@ class _HomePageState extends State<HomePageWidget> {
     return DonorWidget(this.visible, _registerDonorTap);
   }
 
+  Widget _getMessageWidget(){
+    if (!this.visible) {
+      Future.delayed(Duration(microseconds: 600), () {
+        this.visible = true;
+        this._bottomNavigationBehavior.sink.add(0);
+      });
+    }
+
+
+  }
+
   _registerDonorTap(final bool isRegistration) {
     if (isRegistration) {
+      Navigator.pushNamed(context, AppRoutes.pageLocateTerms);
       //star registration
     } else {
+      Navigator.pushNamed(context, AppRoutes.pageLocateTerms);
       //display donor list
     }
   }

@@ -3,7 +3,7 @@ import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:flutter/cupertino.dart';
 
 import '../models/abstract_person.dart';
-class BloodHunter extends Person{
+class BloodCollector extends Person{
 
   String diseaseName;
   int bloodCount;
@@ -19,7 +19,7 @@ class BloodHunter extends Person{
 //        bloodGroup = map['blood_group'],
 //        this.birthDate = map['birth_date'] == null ? null : (map['birth_date'] as Timestamp).toDate(),
 //        address = Address.fromMap(map['address'] ?? {});
-  BloodHunter(final Map<String, dynamic> _map, {DocumentReference reference}) : super(_map){
+  BloodCollector(final Map<String, dynamic> _map, {DocumentReference reference}) : super(_map){
     this.reference = reference;
     this.hospitalAddress = Address.fromMap(_map['hospital_address']);
     this.injectionDate = _map['injection_date'] == null ? null : (_map['injection_date'] as Timestamp).toDate();
@@ -30,7 +30,7 @@ class BloodHunter extends Person{
   }
 
 
-  BloodHunter.fromMap(Map<String, dynamic> map, {DocumentReference reference}) : super.fromMap(map){
+  BloodCollector.fromMap(Map<String, dynamic> map, {DocumentReference reference}) : super.fromMap(map){
 
     this.reference = reference;
     debugPrint("Dont know");
@@ -52,7 +52,7 @@ class BloodHunter extends Person{
     _data['hospital_address'] = this.hospitalAddress.toJson();
     return _data;
   }
-  BloodHunter.fromSnapshot(DocumentSnapshot snapshot)
+  BloodCollector.fromSnapshot(DocumentSnapshot snapshot)
       : this.fromMap(snapshot.data, reference: snapshot.reference);
 
 }

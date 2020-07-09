@@ -1,5 +1,6 @@
 import 'package:cloud_firestore/cloud_firestore.dart';
-import 'package:plasma_bank/network/models/blood_hunter.dart';
+import 'package:plasma_bank/network/models/blood_collector.dart';
+
 
 class FirebaseRepositories {
 
@@ -40,7 +41,7 @@ class FirebaseRepositories {
   }
 
   Future<DocumentReference> addBloodHunter(dynamic bloodHunter) async {
-    if(bloodHunter is BloodHunter){
+    if(bloodHunter is BloodCollector){
       final _json = bloodHunter.toJson();
       final _data = {bloodHunter.mobileNumber: _json};
       return await _patientCollection.add(_data);
@@ -50,7 +51,7 @@ class FirebaseRepositories {
     }
   }
 
-  updatePatient(BloodHunter bloodHunter) async {
+  updatePatient(BloodCollector bloodHunter) async {
     await _patientCollection
         .document(bloodHunter.reference.documentID)
         .updateData(bloodHunter.toJson());

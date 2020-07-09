@@ -242,7 +242,7 @@ class ApiClient {
     final response = await get(_url);
     if (response.statusCode == 200) {
       List _locations = List();
-      final List<Map<dynamic, dynamic>> _list = json.decode(response.body);
+      final List<dynamic> _list = await json.decode(response.body);
       if(region){
         for(final _data in _list){
           final _region = Region.fromJson(_data);

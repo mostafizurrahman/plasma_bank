@@ -1,16 +1,12 @@
-
-
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
 import 'package:plasma_bank/app_utils/app_constants.dart';
 import 'package:plasma_bank/app_utils/image_helper.dart';
 
 class CollectorWidget extends StatelessWidget {
-
   final bool visible;
-  final Function(bool ) _onCollectTap;
+  final Function(bool) _onCollectTap;
   CollectorWidget(this.visible, this._onCollectTap);
-
 
   @override
   Widget build(BuildContext context) {
@@ -28,7 +24,10 @@ class CollectorWidget extends StatelessWidget {
         duration: Duration(seconds: 1),
         child: Container(
           width: _width,
-          height: MediaQuery.of(context).size.height - 60 - _bottom,
+          height: MediaQuery.of(context).size.height -
+              (_top > 0 ? 43 : 60) -
+              _bottom -
+              _top,
           //color: Color.fromARGB(255, _background, _background, _background),
           decoration: BoxDecoration(
             image: DecorationImage(
@@ -37,60 +36,91 @@ class CollectorWidget extends StatelessWidget {
               alignment: Alignment.topCenter,
             ),
           ),
-          child: Padding(
-            padding:  EdgeInsets.only(top: (24 + _top), bottom:  24, left: 24, right:  24),
-            child: Scaffold(
-              backgroundColor: Colors.transparent,
-              body: Column(
-                crossAxisAlignment: CrossAxisAlignment.start,
-                mainAxisAlignment: MainAxisAlignment.end,
-                children: [
-                  Text(
-                    'Blood is a life\npass it on!'.toUpperCase(),
+          child: Scaffold(
+            backgroundColor: Colors.transparent,
+            body: Column(
+              crossAxisAlignment: CrossAxisAlignment.start,
+              mainAxisAlignment: MainAxisAlignment.end,
+              children: [
+                Padding(
+                  padding: const EdgeInsets.only(left: 24, right: 24),
+                  child: Text(
+                    'BLOOD IS LIFE,\nPASS IT ON',
                     style: TextStyle(
                       fontSize: 28,
                       fontFamily: AppStyle.fontBold,
                     ),
                   ),
-                  Padding(
-                    padding: EdgeInsets.only(top: 32, bottom: 200),
-                    child: Text(
-                      'collect a beg of blood for a reason, let the reason to be life. there is no great joy than saving a life.',
-                      style: TextStyle(fontSize: 16, height: 1.3, color: Colors.black.withAlpha(200)),
-                      textAlign: TextAlign.left,
+                ),
+                Padding(
+                  padding: EdgeInsets.only(
+                      top: 28, bottom: 110, left: 24, right: 24),
+                  child: Text(
+                    'collect a beg of blood for a reason, let the reason to be life. there is no great joy than saving a life.',
+                    style: TextStyle(fontSize: 16, height: 1.3, color: Colors.black.withAlpha(175)),
+                  ),
+                ),
+              ],
+            ),
+            floatingActionButtonLocation: FloatingActionButtonLocation.endFloat,
+            floatingActionButton: Padding(
+              padding: EdgeInsets.only(right: 12, bottom: 8),
+              child: Container(
+                width: 135,
+                height: 60,
+                child: Column(
+                  crossAxisAlignment: CrossAxisAlignment.end,
+                  children: [
+                    Container(
+                      width: _width,
+                      child: Row(
+                        crossAxisAlignment: CrossAxisAlignment.end,
+                        mainAxisAlignment: MainAxisAlignment.end,
+                        children: [
+                          Row(
+                            crossAxisAlignment: CrossAxisAlignment.end,
+                            mainAxisAlignment: MainAxisAlignment.end,
+                            children: [
+                              FloatingActionButton(
+                                heroTag: '__hero',
+                                onPressed: () {
+                                  this._onCollectTap(true);
+                                },
+                                backgroundColor: Colors.white,
+                                child: Icon(
+                                  Icons.group,
+                                  color: AppStyle
+                                      .theme(), //Color.fromARGB(255, 240, 10, 80),
+                                  size: 35,
+                                ),
+                              ),
+                            ],
+                          ),
+                          SizedBox(
+                            width: 16,
+                          ),
+                          Row(
+                            crossAxisAlignment: CrossAxisAlignment.end,
+                            mainAxisAlignment: MainAxisAlignment.end,
+                            children: [
+                              FloatingActionButton(
+                                onPressed: () {
+                                  this._onCollectTap(false);
+                                },
+                                backgroundColor: Colors.white,
+                                child: Icon(
+                                  Icons.add,
+                                  color: AppStyle.theme(),
+                                  size: 50,
+                                ),
+                              ),
+                            ],
+                          ),
+                        ],
+                      ),
                     ),
-                  ),
-                ],
-              ),
-              floatingActionButton: Column(
-                mainAxisAlignment: MainAxisAlignment.end,
-                children: [
-                  FloatingActionButton(
-                    onPressed: (){
-                      this._onCollectTap(false);
-                    },
-                    backgroundColor: AppStyle.theme(),
-                    child: Icon(
-                      Icons.group,
-                      color: Colors.white, //Color.fromARGB(255, 240, 10, 80),
-                      size: 35,
-                    ),
-                  ),
-                  SizedBox(
-                    height: 12,
-                  ),
-                  FloatingActionButton(
-                    onPressed: (){
-                      this._onCollectTap(false);
-                    },
-                    backgroundColor: AppStyle.theme(),
-                    child: Icon(
-                      Icons.add,
-                      color: Colors.white,
-                      size: 50,
-                    ),
-                  ),
-                ],
+                  ],
+                ),
               ),
             ),
           ),

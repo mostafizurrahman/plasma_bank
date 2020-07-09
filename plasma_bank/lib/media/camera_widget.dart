@@ -6,17 +6,27 @@ import 'package:flutter/material.dart';
 import 'package:path_provider/path_provider.dart';
 import 'package:plasma_bank/app_utils/app_constants.dart';
 
-import 'package:plasma_bank/widgets/widget_templates.dart';
+import 'package:plasma_bank/app_utils/widget_templates.dart';
+import 'package:plasma_bank/widgets/base_widget.dart';
 import 'package:rxdart/rxdart.dart';
 
-class CameraWidget extends StatefulWidget {
+class CameraWidget extends BaseWidget {
+  CameraWidget(Map arguments) : super(arguments);
+
   @override
   State<StatefulWidget> createState() {
-    return _CameraState();
+    final _frontCamera = super.getData('is_front_camera');
+    final _onCaptured = super.getData('on_captured_function');
+    final _routeName = super.getData('route_name');
+    return _CameraState(_onCaptured, _frontCamera, _routeName);
   }
 }
 
 class _CameraState extends State<CameraWidget> with WidgetsBindingObserver {
+  final Function(String) _onImageCaptured;
+  final bool _isFrontCamera;
+  final String _routeName;
+  _CameraState(this._onImageCaptured, this._isFrontCamera, this._routeName);
   String _imagePath;
   CameraController _cameraController;
 
@@ -37,7 +47,12 @@ class _CameraState extends State<CameraWidget> with WidgetsBindingObserver {
   _selectCamera() async {
     final cameras = await availableCameras();
     for (CameraDescription description in cameras) {
-      if (description.lensDirection == CameraLensDirection.back) {
+      if (description.lensDirection == CameraLensDirection.front &&
+          this._isFrontCamera) {
+        this._onCameraSelected(description);
+        break;
+      } else if (description.lensDirection == CameraLensDirection.back &&
+          !this._isFrontCamera) {
         this._onCameraSelected(description);
         break;
       }
@@ -54,6 +69,9 @@ class _CameraState extends State<CameraWidget> with WidgetsBindingObserver {
 
     if (_captureBehavior != null) {
       this._captureBehavior.close();
+    }
+    if (this._onImageCaptured != null) {
+      this._onImageCaptured(this._imagePath);
     }
     super.dispose();
   }
@@ -131,6 +149,7 @@ class _CameraState extends State<CameraWidget> with WidgetsBindingObserver {
                               width: keyWidth,
                               child: Icon(
                                 Icons.cancel,
+                                color: AppStyle.theme(),
                                 size: 30,
                               ),
                             ),
@@ -154,7 +173,7 @@ class _CameraState extends State<CameraWidget> with WidgetsBindingObserver {
                         return Container(
                           decoration: new BoxDecoration(
                             color: _snap.data
-                                ? Colors.cyan.withAlpha(150)
+                                ? AppStyle.theme()
                                 : Colors.white.withAlpha(200),
                             borderRadius:
                                 new BorderRadius.all(Radius.circular(30)),
@@ -194,7 +213,7 @@ class _CameraState extends State<CameraWidget> with WidgetsBindingObserver {
                       },
                     ),
                   ),
-                )
+                ),
               ],
             ),
           ),
@@ -203,11 +222,20 @@ class _CameraState extends State<CameraWidget> with WidgetsBindingObserver {
     );
   }
 
+  _onCaptured(final String imagePath) {
+    this._imagePath = imagePath;
+  }
+
   _captureImage() async {
     this._captureBehavior.sink.add(true);
     final _capturedPath = await this._getCaptureImagePath();
     if (_capturedPath != null) {
-      final args = {"type": ImageType.profile, "image": _capturedPath};
+      final args = {
+        "type": ImageType.profile,
+        "image": _capturedPath,
+        'on_uploaded': _onCaptured,
+        'route_name':this._routeName,
+      };
       Navigator.pushNamed(context, AppRoutes.pageRouteImage, arguments: args);
 
       this._captureBehavior.sink.add(false);
