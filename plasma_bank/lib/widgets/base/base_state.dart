@@ -27,9 +27,6 @@ abstract class BaseKeyboardState<T extends BaseWidget> extends State<T> {
     _keyboardVisibilitySubscriberId = _keyboardVisibility.addNewListener(
       onChange: onKeyboardVisibilityChanged,
     );
-    Future.delayed(Duration(milliseconds: 150), () async {
-//      await FlutterStatusbarcolor.setStatusBarWhiteForeground(false);
-    });
   }
 
   onKeyboardVisibilityChanged(final bool isKeyboardVisible) {
@@ -42,8 +39,6 @@ abstract class BaseKeyboardState<T extends BaseWidget> extends State<T> {
       debugPrint(this._heightDiscard.toString());
       this._scrollVisibleBehavior.sink.add(_keyboardState);
       this._animateTextField(isHide: !_keyboardState);
-
-
     });
   }
 
@@ -106,7 +101,9 @@ abstract class BaseKeyboardState<T extends BaseWidget> extends State<T> {
     );
   }
 
-  onSubmitData() {}
+  onSubmitData() {
+    FlutterStatusbarcolor.setStatusBarWhiteForeground(false);
+  }
 
   setError(final TextConfig _errorController) {
     this._errorBehavior.sink.add(_errorController);
@@ -114,13 +111,10 @@ abstract class BaseKeyboardState<T extends BaseWidget> extends State<T> {
 
   onError() {
     final _errorTextController = this._errorBehavior.value;
-
-
     if (_errorTextController != null ) {
       if(_errorTextController.controller.text.isEmpty){
         FocusScope.of(context).requestFocus(_errorTextController.focusNode);
       } else {
-
         this._errorBehavior.sink.add(null);
         this.onSubmitData();
       }
@@ -131,7 +125,6 @@ abstract class BaseKeyboardState<T extends BaseWidget> extends State<T> {
     final _paddingBottom = MediaQuery.of(context).padding.bottom;
     final _paddingTop = MediaQuery.of(context).padding.top;
     final _appBarHeight = 54;
-
     final _height = MediaQuery.of(context).size.height;
     final _contentHeight =
         _height - _paddingBottom - _paddingTop - _appBarHeight;
@@ -164,29 +157,32 @@ abstract class BaseKeyboardState<T extends BaseWidget> extends State<T> {
     if (!this._scrollVisibleBehavior.isClosed) {
       _scrollVisibleBehavior.close();
     }
-
     if (!_errorBehavior.isClosed) {
       _errorBehavior.close();
     }
   }
 
   _animateTextField({isHide = false}) {
+    FlutterStatusbarcolor.setStatusBarWhiteForeground(false);
     if (isHide) {
       FocusScope.of(context).requestFocus(FocusNode());
       Future.delayed(
-        Duration(seconds: 1),
-        () {
-          this._scrollVisibleBehavior.sink.add(false);
-          _scrollController.animateTo(0.0,
-              duration: Duration(milliseconds: 500), curve: Curves.ease);
+        Duration(seconds: 1), () {
+          if(!this._scrollVisibleBehavior.isClosed){
+            this._scrollVisibleBehavior.sink.add(false);
+            _scrollController.animateTo(0.0,
+                duration: Duration(milliseconds: 500), curve: Curves.ease);
+          }
         },
       );
     } else {
-      if (this._scrollController.offset == 0.0) {
-        Future.delayed(Duration(seconds: 1), () {
-          _scrollController.animateTo(this._heightDiscard,
-              duration: Duration(milliseconds: 500), curve: Curves.ease);
-        });
+      if(!this._scrollVisibleBehavior.isClosed){
+        if (this._scrollController.offset == 0.0) {
+          Future.delayed(Duration(seconds: 1), () {
+            _scrollController.animateTo(this._heightDiscard > 100 ? this._heightDiscard / 2 : this._heightDiscard,
+                duration: Duration(milliseconds: 500), curve: Curves.ease);
+          });
+        }
       }
     }
   }
