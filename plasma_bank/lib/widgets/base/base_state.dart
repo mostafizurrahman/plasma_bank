@@ -8,6 +8,7 @@ import 'package:plasma_bank/widgets/base_widget.dart';
 import 'package:rxdart/rxdart.dart';
 
 abstract class BaseKeyboardState<T extends BaseWidget> extends State<T> {
+
   final BehaviorSubject<bool> _scrollVisibleBehavior = BehaviorSubject();
   final BehaviorSubject<TextConfig> _errorBehavior = BehaviorSubject();
   double _heightDiscard = 0.0;
@@ -16,6 +17,7 @@ abstract class BaseKeyboardState<T extends BaseWidget> extends State<T> {
   int _keyboardVisibilitySubscriberId;
   ScrollController _scrollController;
   bool _keyboardState;
+
   @override
   void initState() {
     super.initState();
@@ -32,8 +34,6 @@ abstract class BaseKeyboardState<T extends BaseWidget> extends State<T> {
   onKeyboardVisibilityChanged(final bool isKeyboardVisible) {
     _keyboardState = isKeyboardVisible;
     debugPrint(isKeyboardVisible.toString());
-
-
     Future.delayed(Duration(milliseconds: 100), () {
       this._heightDiscard = MediaQuery.of(context).viewInsets.bottom;
       debugPrint(this._heightDiscard.toString());
@@ -67,12 +67,12 @@ abstract class BaseKeyboardState<T extends BaseWidget> extends State<T> {
                   width: _width,
 
                   height: _contentHeight - (_snap.data ? _heightDiscard : 0),
-                  child: Padding(
-                    padding: const EdgeInsets.only(left: 24, right: 24),
-                    child: SingleChildScrollView(
-                      controller: _scrollController,
+                  child: SingleChildScrollView(
+                    controller: _scrollController,
+                    child:Padding(
+                      padding: const EdgeInsets.only(left: 24, right: 24),
                       child: this.getSingleChildContent(),
-                    ),
+                    ) ,
                   ),
                 );
               },

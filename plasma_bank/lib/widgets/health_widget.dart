@@ -11,6 +11,7 @@ import 'package:plasma_bank/media/dash_painter.dart';
 import 'package:plasma_bank/widgets/base_widget.dart';
 import 'package:plasma_bank/widgets/stateful/data_picker_widget.dart';
 import 'package:rxdart/rxdart.dart';
+import 'package:plasma_bank/widgets/base/base_state.dart';
 
 class HealthWidget extends BaseWidget {
   HealthWidget(Map arguments) : super(arguments);
@@ -21,14 +22,16 @@ class HealthWidget extends BaseWidget {
   }
 }
 
-class _HealthState extends State<HealthWidget> {
-  final String _disease = 'People who might not be able to donate blood include those who:\n\n1. have used needles to take drugs, steroids, or other substances that a doctor has not prescribed  have engaged in sex for money or drugs'+
-  "\n2. test positive for certain conditions, such as HIV or Creutzfeldt-Jakob disease (CJD)\n" +
-  '3. have taken certain medications\n' +
-  "4. are male and have had sexual contact with other males in the past 3 months\n";
-  final String _covidInfo = 'if you are infected by covid-19 then you may take plasma in critical infection status. and if you are recovered from covid-19 disease, then you may donate your plasma.';
+class _HealthState extends BaseKeyboardState<HealthWidget> {
+  final String _disease =
+      'People who might not be able to donate blood include those who:\n\n1. have used needles to take drugs, steroids, or other substances that a doctor has not prescribed  have engaged in sex for money or drugs' +
+          "\n2. test positive for certain conditions, such as HIV or Creutzfeldt-Jakob disease (CJD)\n" +
+          '3. have taken certain medications\n' +
+          "4. are male and have had sexual contact with other males in the past 3 months\n";
+  final String _covidInfo =
+      'if you are infected by covid-19 then you may take plasma in critical infection status. and if you are recovered from covid-19 disease, then you may donate your plasma.';
   int languageGroupValue = 0, deviceRegGroupValue = 0;
-  final BehaviorSubject<String> _errorBehavior = BehaviorSubject<String>();
+
   final BehaviorSubject<List<String>> _prescriptionBehavior = BehaviorSubject();
   DateTime _dateTime = new DateTime.now();
   final BehaviorSubject<int> _smokeBehavior = BehaviorSubject<int>();
@@ -42,22 +45,15 @@ class _HealthState extends State<HealthWidget> {
   final TextConfig _weightConfig = TextConfig('body weight');
   final TextConfig _bloodConfig = TextConfig('blood group');
   final TextConfig _medicineConfig = TextConfig('remarks/disease');
-
   final TextConfig _infectionConfig = TextConfig('infection date');
-
   final TextConfig _recoveryConfig = TextConfig('recovery date');
-
   final TextConfig _ageConfig = TextConfig('age');
   final TextConfig _heightConfig = TextConfig('height');
   TextConfig _selectedConfig;
 
   @override
   void dispose() {
-    // TODO: implement dispose
     super.dispose();
-    if (_errorBehavior != null && !_errorBehavior.isClosed) {
-      _errorBehavior.close();
-    }
     if (_smokeBehavior != null && !_smokeBehavior.isClosed) {
       _smokeBehavior.close();
     }
@@ -77,199 +73,10 @@ class _HealthState extends State<HealthWidget> {
 
   @override
   Widget build(BuildContext context) {
-    final _paddingBottom = MediaQuery.of(context).padding.bottom;
-    final _paddingTop = MediaQuery.of(context).padding.top;
-    final _appBarHeight = 54;
-    final _width = MediaQuery.of(context).size.width;
-    final _height = MediaQuery.of(context).size.height;
-    final _contentHeight =
-        _height - _paddingBottom - _paddingTop - _appBarHeight;
-    final double ratio = 0.325;
-//    Navigator.pop(context);
-    return Container(
-      color: AppStyle.greyBackground(),
-      child: Padding(
-        padding: EdgeInsets.only(bottom: _paddingBottom),
-        child: Scaffold(
-          appBar: WidgetProvider.appBar('Health'),
-          body: Container(
-            height: _contentHeight,
-            color: Colors.white,
-            child: SingleChildScrollView(
-              child: Container(
-                width: _width,
-                height: 1310,
-//                color: Colors.red,
-                child: Padding(
-                  padding: EdgeInsets.only(left: 24, right: 24),
-                  child: Container(
-//                    color: Colors.blueAccent,
-                    child: Column(
-                      crossAxisAlignment: CrossAxisAlignment.start,
-                      children: [
-                        this._getTitle('PHYSICAL INFO',  Icons.person),
-                        CustomPaint(
-                          size: Size(MediaQuery.of(context).size.width, 1.0),
-                          painter: DashLinePainter(),
-                        ),
-                        Row(
-                          children: [
-                            Container(
-                              width: (_width - 48) / 2 - 8,
-                              child: this._getTextField(this._bloodConfig),
-                            ),
-                            SizedBox(
-                              width: 16,
-                            ),
-                            Container(
-                              width: (_width - 48) / 2 - 8,
-                              child: this._getTextField(this._ageConfig),
-                            ),
-                          ],
-                        ),
-                        Row(
-                          children: [
-                            Container(
-                              width: (_width - 48) / 2 - 8,
-                              child: this._getTextField(this._weightConfig),
-                            ),
-                            SizedBox(
-                              width: 16,
-                            ),
-                            Container(
-                              width: (_width - 48) / 2 - 8,
-                              child: this._getTextField(this._heightConfig),
-                            ),
-                          ],
-                        ),
-                        this._getTextField(this._medicineConfig,
-                            isReadOnly: false, isDigit: false),
-                        this._getTitle('BEHAVIOR INFO',  Icons.accessibility),
-                        CustomPaint(
-                          size: Size(MediaQuery.of(context).size.width, 1.0),
-                          painter: DashLinePainter(),
-                        ),
-                        SizedBox(
-                          height: 16,
-                        ),
-                        WidgetTemplate.gateRadio(
-                          context,
-                          this._drinkBehavior,
-                          'DRINKING',
-                        ),
-                        WidgetTemplate.gateRadio(
-                          context,
-                          this._smokeBehavior,
-                          'SMOKING',
-                        ),
-                        WidgetTemplate.gateRadio(
-                          context,
-                          this._diseaseBehavior,
-                          'DISEASE',
-                          button: IconButton(
-                            color: Colors.amber,
-                            icon: Icon(
-                              Icons.error,
-                            ),
-                            onPressed: () {
-                              WidgetTemplate.message(context, _disease);
-                            },
-                          ),
-                        ),
-                        this._getTitle('COVID-19 INFO',  Icons.brightness_high),
-
-                        CustomPaint(
-                          size: Size(MediaQuery.of(context).size.width, 1.0),
-                          painter: DashLinePainter(),
-                        ),
-                        WidgetTemplate.gateRadio(
-                          context,
-                          this._covidBehavior,
-                          'COVID-19 :',
-                          button: IconButton(
-                            color: Colors.amber,
-                            icon: Icon(
-                              Icons.error,
-                            ),
-                            onPressed: () {
-                              WidgetTemplate.message(context, _covidInfo);
-                            },
-                          ),
-                        ),
-                        StreamBuilder(
-                          initialData: 0,
-                          stream: this._covidBehavior.stream,
-                          builder: (_context, _snap) {
-                            if (_snap.data == 0) {
-                              return SizedBox();
-                            }
-                            return Container(
-                              width: _width - 48,
-                              child: Column(
-                                children: [
-                                  WidgetTemplate.getTextField(
-                                    this._infectionConfig,
-                                    isReadOnly: true,
-                                    showCursor: false,
-                                    onTap: () {
-                                      this._errorBehavior.sink.add('');
-                                      this._showDatePicker(
-                                          this._infectionConfig.controller);
-                                    },
-                                    onEditingDone: () {},
-                                  ),
-                                  WidgetTemplate.getTextField(
-                                    this._recoveryConfig,
-                                    isReadOnly: true,
-                                    showCursor: false,
-                                    onTap: () {
-                                      this._showDatePicker(
-                                          this._recoveryConfig.controller);
-                                      this._errorBehavior.sink.add('');
-                                    },
-                                    onEditingDone: () {},
-                                  ),
-                                ],
-                              ),
-                            );
-                          },
-                        ),
-                        this._getTitle('PRESCRIPTION',  Icons.description),
-                        CustomPaint(
-                          size: Size(MediaQuery.of(context).size.width, 1.0),
-                          painter: DashLinePainter(),
-                        ),
-                        Padding(
-                          padding: const EdgeInsets.only(top: 48, bottom: 48),
-                          child: StreamBuilder<List<String>>(
-                            stream: _prescriptionBehavior.stream,
-                            initialData: ['-', '-'],
-                            builder: (context, snapshot) {
-                              return _getPrescription(
-                                  snapshot.data, _width, ratio);
-                            },
-                          ),
-                        ),
-                      ],
-                    ),
-                  ),
-                ),
-              ),
-            ),
-          ),
-          floatingActionButtonLocation:
-              FloatingActionButtonLocation.centerFloat,
-          floatingActionButton: WidgetProvider.button(
-            _createDonor,
-            "CREATE DONOR",
-            context,
-          ),
-        ),
-      ),
-    );
+    return super.build(context);
   }
 
-  Widget _getTitle(final String _title, final IconData _icon){
+  Widget _getTitle(final String _title, final IconData _icon) {
     return Padding(
       padding: EdgeInsets.only(top: 48, bottom: 12),
       child: Row(
@@ -330,10 +137,10 @@ class _HealthState extends State<HealthWidget> {
         data[0] == '-'
             ? _widget
             : _getPrescriptionImage(data[0], _width * ratio),
+        SizedBox(width: 8,),
         data[1] == '-'
             ? _widget
             : _getPrescriptionImage(data[1], _width * ratio),
-//        data[2] == '-' ? _widget : _getPrescriptionImage(data[2], _width * ratio),
       ],
     );
   }
@@ -369,7 +176,7 @@ class _HealthState extends State<HealthWidget> {
       final arguments = {
         'is_front_camera': true,
         'on_captured_function': _onCaptured,
-        'route_name' : AppRoutes.pageHealthData,
+        'route_name': AppRoutes.pageHealthData,
       };
       Navigator.pushNamed(context, AppRoutes.pageRouteCamera,
           arguments: arguments);
@@ -380,12 +187,12 @@ class _HealthState extends State<HealthWidget> {
   }
 
   _onCaptured(final String _imagePath) {
-    final _list = List.from(this._prescriptionBehavior.value ?? ['-', '-']) ;
-    if(_list[0] == '-'){
+    final _list = List.from(this._prescriptionBehavior.value ?? ['-', '-']);
+    if (_list[0] == '-') {
       this._prescriptionBehavior.sink.add([_imagePath, '-']);
-    } else if (_list[1] == '-' || _list[1] == this._imagePath){
+    } else if (_list[1] == '-' || _list[1] == this._imagePath) {
       this._prescriptionBehavior.sink.add([_list[0], _imagePath]);
-    }else if (_list[0] == this._imagePath){
+    } else if (_list[0] == this._imagePath) {
       this._prescriptionBehavior.sink.add([_imagePath, _list[1]]);
     }
   }
@@ -402,7 +209,6 @@ class _HealthState extends State<HealthWidget> {
       maxLen: 15,
       isReadOnly: isReadOnly,
       isDigit: isDigit,
-
       showCursor: true,
       onTap: () {
         this._selectedConfig = _config;
@@ -433,10 +239,7 @@ class _HealthState extends State<HealthWidget> {
           List _data = ['A+', 'B+', 'AB+', 'O+', 'A-', 'B-', 'AB-', 'O-'];
           this._openPopUp(_data, _onSelected, _onClosed, 'SELECT BLOOD GROUP');
         }
-
-//        this._errorBehavior.sink.add('');
       },
-//      onEditingDone: () {},
     );
   }
 
@@ -494,8 +297,175 @@ class _HealthState extends State<HealthWidget> {
         lastDate: DateTime.now(),
         firstDate: DateTime(1920));
     if (_dateTime != null) {
-      String date = DateFormat("dd-MM-yyyy").format(_dateTime);
+      String date = DateFormat("dd MMM, yyyy").format(_dateTime);
       _controller.text = date;
     }
+  }
+
+  @override
+  String getActionTitle() {
+    return 'CREATE DONOR';
+  }
+
+  @override
+  String getAppBarTitle() {
+    return 'Health';
+  }
+
+  @override
+  onSubmitData() {
+    super.onSubmitData();
+    this._createDonor();
+  }
+
+  @override
+  Widget getSingleChildContent() {
+    final _width = MediaQuery.of(context).size.width;
+    return Container(
+      width: _width,
+      height: 1310,
+      child: Column(
+        crossAxisAlignment: CrossAxisAlignment.start,
+        children: [
+          this._getTitle('PHYSICAL INFO', Icons.person),
+          CustomPaint(
+            size: Size(MediaQuery.of(context).size.width, 1.0),
+            painter: DashLinePainter(),
+          ),
+          Row(
+            children: [
+              Container(
+                width: (_width - 48) / 2 - 8,
+                child: this._getTextField(this._bloodConfig),
+              ),
+              SizedBox(
+                width: 16,
+              ),
+              Container(
+                width: (_width - 48) / 2 - 8,
+                child: this._getTextField(this._ageConfig),
+              ),
+            ],
+          ),
+          Row(
+            children: [
+              Container(
+                width: (_width - 48) / 2 - 8,
+                child: this._getTextField(this._weightConfig),
+              ),
+              SizedBox(
+                width: 16,
+              ),
+              Container(
+                width: (_width - 48) / 2 - 8,
+                child: this._getTextField(this._heightConfig),
+              ),
+            ],
+          ),
+          this._getTextField(this._medicineConfig,
+              isReadOnly: false, isDigit: false),
+          this._getTitle('BEHAVIOR INFO', Icons.accessibility),
+          CustomPaint(
+            size: Size(MediaQuery.of(context).size.width, 1.0),
+            painter: DashLinePainter(),
+          ),
+          SizedBox(
+            height: 16,
+          ),
+          WidgetTemplate.gateRadio(
+            context,
+            this._drinkBehavior,
+            'DRINKING',
+          ),
+          WidgetTemplate.gateRadio(
+            context,
+            this._smokeBehavior,
+            'SMOKING',
+          ),
+          WidgetTemplate.gateRadio(
+            context,
+            this._diseaseBehavior,
+            'DISEASE',
+            button: IconButton(
+              color: Colors.amber,
+              icon: Icon(
+                Icons.error,
+              ),
+              onPressed: () {
+                WidgetTemplate.message(context, _disease);
+              },
+            ),
+          ),
+          this._getTitle('COVID-19 INFO', Icons.brightness_high),
+          CustomPaint(
+            size: Size(MediaQuery.of(context).size.width, 1.0),
+            painter: DashLinePainter(),
+          ),
+          WidgetTemplate.gateRadio(
+            context,
+            this._covidBehavior,
+            'COVID-19 :',
+            button: IconButton(
+              color: Colors.amber,
+              icon: Icon(
+                Icons.error,
+              ),
+              onPressed: () {
+                WidgetTemplate.message(context, _covidInfo);
+              },
+            ),
+          ),
+          StreamBuilder(
+            initialData: 0,
+            stream: this._covidBehavior.stream,
+            builder: (_context, _snap) {
+              if (_snap.data == 0) {
+                return SizedBox();
+              }
+              return Container(
+                width: _width - 48,
+                child: Column(
+                  children: [
+                    WidgetTemplate.getTextField(
+                      this._infectionConfig,
+                      isReadOnly: true,
+                      showCursor: false,
+                      onTap: () {
+                        this._showDatePicker(
+                            this._infectionConfig.controller);
+                      },
+                    ),
+                    WidgetTemplate.getTextField(
+                      this._recoveryConfig,
+                      isReadOnly: true,
+                      showCursor: false,
+                      onTap: () {
+                        this._showDatePicker(
+                            this._recoveryConfig.controller);
+                      },
+                    ),
+                  ],
+                ),
+              );
+            },
+          ),
+          this._getTitle('PRESCRIPTION', Icons.description),
+          CustomPaint(
+            size: Size(MediaQuery.of(context).size.width, 1.0),
+            painter: DashLinePainter(),
+          ),
+          Padding(
+            padding: const EdgeInsets.only(top: 48, bottom: 48),
+            child: StreamBuilder<List<String>>(
+              stream: _prescriptionBehavior.stream,
+              initialData: ['-', '-'],
+              builder: (context, snapshot) {
+                return _getPrescription(snapshot.data, _width, 0.325);
+              },
+            ),
+          ),
+        ],
+      ),
+    );
   }
 }
