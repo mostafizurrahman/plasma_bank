@@ -1,16 +1,13 @@
-
-
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
 import 'dart:ui' as ui;
 
-import 'package:plasma_bank/widgets/widget_templates.dart';
+import 'package:plasma_bank/app_utils/widget_templates.dart';
 
 import 'app_constants.dart';
 import 'image_helper.dart';
 
-class WidgetProvider{
-
+class WidgetProvider {
   static Widget getAppBar(BuildContext context, {title}) {
     return AppBar(
       elevation: 1.25,
@@ -18,49 +15,51 @@ class WidgetProvider{
         color: Colors.black,
       ),
       backgroundColor: Colors.white,
-
       leading: Container(
         height: 70,
         child: Center(
           child: new IconButton(
-            icon: new Icon(Icons.arrow_back, ),
+            icon: new Icon(
+              Icons.arrow_back,
+            ),
             onPressed: () => Navigator.of(context).pop(),
           ),
         ),
       ),
-      title: Text(title ?? "", style: TextStyle(
-        color: Colors.pink
-      ),),
+      title: Text(
+        title ?? "",
+        style: TextStyle(color: Colors.pink),
+      ),
       centerTitle: true,
     );
   }
 
-  static Widget getButton(final String _title, final Icon suffixIcon, final Function _onTap, {final buttonWidth = 250.0}){
+  static Widget getButton(
+      final String _title, final Icon suffixIcon, final Function _onTap,
+      {final buttonWidth = 250.0}) {
     return Padding(
-      padding: const EdgeInsets.only(left: 24, right:  24, top: 16, bottom:  24),
+      padding: const EdgeInsets.only(left: 24, right: 24, top: 16, bottom: 24),
       child: Container(
         width: buttonWidth,
         height: 48,
         child: RaisedButton(
           onPressed: _onTap,
           elevation: 0.5,
-          color: Colors.blueAccent,
+          color: AppStyle.theme(),
           shape: RoundedRectangleBorder(
             borderRadius: new BorderRadius.circular(40),
-            side: BorderSide(color: Colors.cyan, width: 1.75),
+            side: BorderSide(color: Colors.white, width: 1.75),
           ),
           child: Row(
             mainAxisAlignment: MainAxisAlignment.center,
             crossAxisAlignment: CrossAxisAlignment.center,
             children: [
-
               Text(
                 _title,
                 style: TextStyle(
                     fontSize: 18,
                     fontWeight: FontWeight.w500,
-                    color: Colors.white
-                ),
+                    color: Colors.white),
               ),
               Padding(
                 padding: const EdgeInsets.all(8.0),
@@ -99,7 +98,7 @@ class WidgetProvider{
                   ],
                   color: Colors.black54.withOpacity(0.5),
                   borderRadius:
-                  new BorderRadius.all(const Radius.circular(12.0)),
+                      new BorderRadius.all(const Radius.circular(12.0)),
                 ),
                 child: Center(
                   child: Column(
@@ -127,20 +126,17 @@ class WidgetProvider{
     );
   }
 
-  static circledIcon(final Widget _icon){
+  static circledIcon(final Widget _icon) {
     return Container(
       decoration: BoxDecoration(
           borderRadius: BorderRadius.all(
             Radius.circular(1000),
           ),
           border: Border.all(
-              width: 0.85,
-              color: Colors.red,
-              style: BorderStyle.solid)),
+              width: 0.85, color: Colors.red, style: BorderStyle.solid)),
       child: _icon,
     );
   }
-
 
   //theme color #FF006C
   static List<Widget> navigators(
@@ -159,7 +155,7 @@ class WidgetProvider{
 
     for (int i = 0; i < _buttonCount; i++) {
       final _iconName =
-      _selectedIndex == i ? _icons[i].replaceAll('_n', '_h') : _icons[i];
+          _selectedIndex == i ? _icons[i].replaceAll('_n', '_h') : _icons[i];
       final _widget = Container(
         color: Colors.transparent,
         width: _width - 5,
@@ -170,7 +166,7 @@ class WidgetProvider{
             color: Colors.white,
             child: Ink(
               child: InkWell(
-                onTap: ()=>_onTap(i),
+                onTap: () => _onTap(i),
                 child: Column(
                   mainAxisAlignment: MainAxisAlignment.center,
                   crossAxisAlignment: CrossAxisAlignment.center,
@@ -209,4 +205,86 @@ class WidgetProvider{
     return _widgets;
   }
 
+  static button(Function _onTap, final String txt, BuildContext context,
+      {padding = 48.0}) {
+    return Padding(
+      padding: const EdgeInsets.all(12.0),
+      child: Container(
+        decoration: BoxDecoration(
+          borderRadius: BorderRadius.all(Radius.circular(100)),
+        ),
+        height: 50,
+        width: MediaQuery.of(context).size.width - padding,
+        child: RaisedButton(
+          shape: RoundedRectangleBorder(
+            borderRadius: BorderRadius.circular(120.0),
+          ),
+          color: AppStyle.theme(),
+          onPressed: () {
+            debugPrint('this is done');
+            if (_onTap != null) {
+              _onTap();
+            }
+          },
+          child: Text(
+            txt,
+            style: TextStyle(fontSize: 18, color: Colors.white),
+          ),
+        ),
+      ),
+    );
+  }
+
+  static errorButton(Function _onTap, final String txt, BuildContext context,
+      {padding = 48.0}) {
+    return Padding(
+      padding: const EdgeInsets.all(12.0),
+      child: Container(
+        decoration: BoxDecoration(
+          borderRadius: BorderRadius.all(Radius.circular(100)),
+        ),
+        height: 50,
+        width: MediaQuery.of(context).size.width - padding,
+        child: RaisedButton(
+
+          shape: RoundedRectangleBorder(
+            side: BorderSide(color: AppStyle.theme(), width: 1.5),
+            borderRadius: BorderRadius.circular(120.0),
+          ),
+          color: Colors.white,
+          onPressed: () {
+            debugPrint('this is done');
+            if (_onTap != null) {
+              _onTap();
+            }
+          },
+          child: Text(
+            txt,
+            style: TextStyle(fontSize: 13, color: AppStyle.theme()),
+          ),
+        ),
+      ),
+    );
+  }
+
+  static PreferredSize appBar(String _title, {List<Widget> actions}) {
+    assert(_title != null, 'TITLE IS NULL');
+    return PreferredSize(
+        preferredSize: Size.fromHeight(54.0),
+        child: AppBar(
+          automaticallyImplyLeading: false, // hides leading widget
+          flexibleSpace: AppBar(
+            actions: actions != null ? actions : [],
+            centerTitle: false,
+            backgroundColor: AppStyle.greyBackground(),
+            title: Text(
+              _title,
+              style: TextStyle(color: AppStyle.titleTxtColor()),
+            ),
+            iconTheme: IconThemeData(color: AppStyle.theme()),
+            titleSpacing: 0,
+          ),
+        ),
+    );
+  }
 }

@@ -1,9 +1,10 @@
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
+//import 'package:flutter_statusbarcolor/flutter_statusbarcolor.dart';
 import 'package:plasma_bank/app_utils/app_constants.dart';
 import 'package:plasma_bank/app_utils/image_helper.dart';
 import 'package:plasma_bank/app_utils/localization_helper.dart';
-import 'package:plasma_bank/widgets/widget_templates.dart';
+import 'package:plasma_bank/app_utils/widget_templates.dart';
 
 class LaunchScreenWidget extends StatefulWidget {
   @override
@@ -17,8 +18,9 @@ class _LaunchScreenState extends State<LaunchScreenWidget> {
   @override
   void initState() {
     super.initState();
-    Future.delayed(const Duration(seconds: 3), () {
-//      context, AppRoutes.pageRouteHome)
+    Future.delayed(const Duration(seconds: 3), () async {
+
+//      await FlutterStatusbarcolor.setStatusBarWhiteForeground(false);
       Navigator.popAndPushNamed(context, AppRoutes.pageRouteHome);
     });
   }
