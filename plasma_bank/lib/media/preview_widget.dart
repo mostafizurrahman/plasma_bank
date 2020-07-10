@@ -3,10 +3,8 @@ import 'dart:io';
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
 import 'package:plasma_bank/app_utils/app_constants.dart';
-import 'package:plasma_bank/app_utils/image_helper.dart';
 import 'package:plasma_bank/app_utils/widget_providers.dart';
-import 'package:plasma_bank/app_utils/widget_templates.dart';
-import 'package:plasma_bank/network/uploader.dart';
+
 
 class PreviewWidget extends StatefulWidget {
   final ImageType imageType;
@@ -22,6 +20,24 @@ class PreviewWidget extends StatefulWidget {
 
 class _PreviewState extends State<PreviewWidget> {
 
+  Image _imageWidget;
+  @override
+  void initState() {
+
+    super.initState();
+    _imageWidget = Image.file(
+      File(this.widget.imagePath),
+      fit: BoxFit.fitHeight,
+    );
+    _imageWidget.image.evict();
+  }
+
+  @override
+  void dispose() {
+
+    super.dispose();
+    _imageWidget.image.evict();
+  }
   @override
   Widget build(BuildContext context) {
     final _height = MediaQuery.of(context).size.height;
@@ -49,10 +65,7 @@ class _PreviewState extends State<PreviewWidget> {
                 ),
                 child: ClipRRect(
                   borderRadius: new BorderRadius.all(Radius.circular(12)),
-                  child: Image.file(
-                    File(this.widget.imagePath),
-                    fit: BoxFit.fitHeight,
-                  ),
+                  child: _imageWidget,
                 ),
               ),
             ),

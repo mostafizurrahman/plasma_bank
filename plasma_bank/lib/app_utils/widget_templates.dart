@@ -45,6 +45,7 @@ class WidgetTemplate {
   static message(BuildContext context, String message,
       {String dialogTitle,
       Function onTapped,
+        Function onActionTap,
       String actionTitle,
       Icon titleIcon = const Icon(
         Icons.info,
@@ -61,6 +62,7 @@ class WidgetTemplate {
     MessageWidget _overlayWidget = MessageWidget(
       message,
       onTapped: onTapped,
+      onActionTap: onActionTap,
       actionIcon: actionIcon,
       actionTitle: actionTitle,
       headerColor: headerColor,

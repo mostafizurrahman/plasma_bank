@@ -29,7 +29,6 @@ class LocationTermsState extends State<LocationTerms> {
 
   @override
   void initState() {
-    // TODO: implement initState
     super.initState();
     Future.delayed(Duration(milliseconds: 50), () async {
 //      await FlutterStatusbarcolor.setStatusBarWhiteForeground(false);
@@ -49,7 +48,15 @@ class LocationTermsState extends State<LocationTerms> {
     final _status = await locationProvider.updateLocation();
     if (_status == GeolocationStatus.denied) {
       Navigator.pop(context);
-      AppSettings.openAppSettings();
+
+      WidgetTemplate.message(context, 'location permission is denied! please, go to app settings and provide location permission to create your account.',
+        actionTitle: 'open app settings',
+          actionIcon: Icon(Icons.settings, color: Colors.white,),
+        onActionTap: (){
+          Navigator.pop(context);
+          AppSettings.openAppSettings();
+        }
+      );
     } else {
       final _countryList = await locationProvider.getCountryList();
       Navigator.pop(context);

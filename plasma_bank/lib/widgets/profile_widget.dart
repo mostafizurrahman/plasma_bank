@@ -1,7 +1,9 @@
 import 'dart:io';
+import 'package:app_settings/app_settings.dart';
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter/src/widgets/framework.dart';
+import 'package:permission_handler/permission_handler.dart';
 import 'package:plasma_bank/app_utils/app_constants.dart';
 import 'package:plasma_bank/app_utils/widget_templates.dart';
 import 'package:plasma_bank/media/dash_painter.dart';
@@ -39,29 +41,32 @@ class _ProfileState extends BaseKeyboardState<ProfileWidget> {
     return super.build(context);
   }
 
-  Widget _getProfileImage(
-      final String _imagePath,
-      final double _dimension) {
+  Widget _getProfileImage(final String _imagePath, final double _dimension) {
+    final _imageWidget = Image.file(
+      File(_imagePath),
+      fit: BoxFit.fitWidth,
+    );
+    _imageWidget.image.evict();
     return Container(
       width: _dimension,
       height: _dimension,
       child: new Material(
         child: new InkWell(
           onTap: _openCamera,
-          child: Image.file(
-            File(_imagePath),
-            fit: BoxFit.fitWidth,
-          ),
+          child: _imageWidget,
         ),
         color: Colors.transparent,
       ),
     );
   }
 
-  _openCamera() {
-    if (!this.skipTouch) {
+  _openCamera() async {
+
+    var _status = await Permission.camera.status;
+    if(_status.isGranted || _status.isUndetermined){
       this.skipTouch = true;
       final arguments = {
+        'image_named': 'profile',
         'is_front_camera': true,
         'on_captured_function': _onCaptured,
         'route_name': AppRoutes.pagePersonData,
@@ -70,11 +75,22 @@ class _ProfileState extends BaseKeyboardState<ProfileWidget> {
           arguments: arguments);
       Future.delayed(
         Duration(seconds: 1),
-        () {
+            () {
           this.skipTouch = false;
         },
       );
+    } else {
+      WidgetTemplate.message(context,
+          'camera permission is denied. please, go to app settings and grant the camera permission',
+          actionIcon: Icon(Icons.settings, color: Colors.white,),
+          onActionTap: this._onCameraDenied,
+          actionTitle: 'open app settings');
     }
+  }
+
+  _onCameraDenied(){
+    Navigator.pop(context);
+    AppSettings.openAppSettings();
   }
 
   _onCaptured(final String imagePath) async {
@@ -196,12 +212,14 @@ class _ProfileState extends BaseKeyboardState<ProfileWidget> {
             ),
           ),
           CustomPaint(
-            size: Size(
-                MediaQuery.of(context).size.width, 1.0),
+            size: Size(MediaQuery.of(context).size.width, 1.0),
             painter: DashLinePainter(),
           ),
-          WidgetTemplate.getTextField( this._nameConfig, maxLen: 32,
-            isReadOnly: false, showCursor: true,
+          WidgetTemplate.getTextField(
+            this._nameConfig,
+            maxLen: 32,
+            isReadOnly: false,
+            showCursor: true,
           ),
           WidgetTemplate.getTextField(
             this._emailConfig,
@@ -213,13 +231,17 @@ class _ProfileState extends BaseKeyboardState<ProfileWidget> {
                 return null;
               }
               bool emailValid = RegExp(
-                  r"^[a-zA-Z0-9.a-zA-Z0-9.!#$%&'*+-/=?^_`{|}~]+@[a-zA-Z0-9]+\.[a-zA-Z]+")
+                      r"^[a-zA-Z0-9.a-zA-Z0-9.!#$%&'*+-/=?^_`{|}~]+@[a-zA-Z0-9]+\.[a-zA-Z]+")
                   .hasMatch(_value);
               return emailValid ? null : 'enter valid email';
             },
           ),
-          WidgetTemplate.getTextField(  this._phoneConfig, maxLen: 15,
-            isReadOnly: false, isDigit: true, showCursor: true,
+          WidgetTemplate.getTextField(
+            this._phoneConfig,
+            maxLen: 15,
+            isReadOnly: false,
+            isDigit: true,
+            showCursor: true,
           ),
         ],
       ),
