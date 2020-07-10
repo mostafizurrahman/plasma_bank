@@ -1,9 +1,11 @@
 import 'dart:io';
 
+import 'package:app_settings/app_settings.dart';
 import 'package:camera/camera.dart';
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
 import 'package:path_provider/path_provider.dart';
+import 'package:permission_handler/permission_handler.dart';
 import 'package:plasma_bank/app_utils/app_constants.dart';
 
 import 'package:plasma_bank/app_utils/widget_templates.dart';
@@ -25,6 +27,7 @@ class CameraWidget extends BaseWidget {
 class _CameraState extends State<CameraWidget> with WidgetsBindingObserver {
   final Function(String) _onImageCaptured;
   final bool _isFrontCamera;
+  bool _isCameraDenied = false;
   final String _routeName;
   _CameraState(this._onImageCaptured, this._isFrontCamera, this._routeName);
   String _imagePath;
@@ -227,22 +230,26 @@ class _CameraState extends State<CameraWidget> with WidgetsBindingObserver {
   }
 
   _captureImage() async {
-    this._captureBehavior.sink.add(true);
-    final _capturedPath = await this._getCaptureImagePath();
-    if (_capturedPath != null) {
-      final args = {
-        "type": ImageType.profile,
-        "image": _capturedPath,
-        'on_uploaded': _onCaptured,
-        'route_name':this._routeName,
-      };
-      Navigator.pushNamed(context, AppRoutes.pageRouteImage, arguments: args);
-
-      this._captureBehavior.sink.add(false);
+    if (this._isCameraDenied) {
+      AppSettings.openAppSettings();
     } else {
-      WidgetTemplate.message(context,
-          "Fail to capture image! Facing some technical difficulties. Please! Try again later",
-          dialogTitle: "Capture Fail!");
+      this._captureBehavior.sink.add(true);
+      final _capturedPath = await this._getCaptureImagePath();
+      if (_capturedPath != null) {
+        final args = {
+          "type": ImageType.profile,
+          "image": _capturedPath,
+          'on_uploaded': _onCaptured,
+          'route_name': this._routeName,
+        };
+        Navigator.pushNamed(context, AppRoutes.pageRouteImage, arguments: args);
+
+        this._captureBehavior.sink.add(false);
+      } else {
+        WidgetTemplate.message(context,
+            "Fail to capture image! Facing some technical difficulties. Please! Try again later",
+            dialogTitle: "Capture Fail!");
+      }
     }
   }
 
@@ -253,8 +260,14 @@ class _CameraState extends State<CameraWidget> with WidgetsBindingObserver {
     final Directory extDir = await getApplicationDocumentsDirectory();
     final String dirPath = '${extDir.path}/picture/plasma';
     await Directory(dirPath).create(recursive: true);
-    final String filePath =
-        '$dirPath/${DateTime.now().millisecondsSinceEpoch}.jpg';
+    final String pathname =
+        this.widget.getData('image_named') ?? DateTime.now().toString();
+    final String filePath = '$dirPath/${pathname}.jpg';
+
+    if (await File(filePath).exists()) {
+      await File(filePath).delete(recursive: true);
+      debugPrint("deleted");
+    }
 
     if (this._cameraController.value.isTakingPicture) {
       // A capture is already pending, do nothing.
@@ -306,15 +319,44 @@ class _CameraState extends State<CameraWidget> with WidgetsBindingObserver {
   }
 
   Widget _getCameraPreviewWidget() {
-//    if (this._cameraController == null || !this._cameraController.value.isInitialized){
-//      this._cameraBehavior.sink.add(false);
-//    }final _ratio = this._cameraController.value.aspectRatio;
-    final _width = MediaQuery.of(context).size.width - 48;
+    Widget _widget;
+    this._isCameraDenied = false;
+    double _ratio = 1.0;
+    final _width = MediaQuery.of(context).size.width - 64;
+    try {
+      _widget = CameraPreview(this._cameraController);
+      _ratio = this._cameraController.value.aspectRatio;
+    } catch (_exception) {
+      this._isCameraDenied = true;
+      _widget = Material(
+        child: Ink(
+          child: InkWell(
+            onTap: () async {
+              var _status = await Permission.camera.status;
+              if(_status.isGranted || _status.isUndetermined){
+                this._openCamera();
+              } else {
+                AppSettings.openAppSettings();
+              }
+            },
+            child: Container(
+              color: Colors.transparent,
+              width: _width,
+              height: 60,
+              child: Center(
+                child: Text('open app settings'),
+              ),
+            ),
+          ),
+        ),
+      );
+    }
+
     return ClipRRect(
       borderRadius: new BorderRadius.all(Radius.circular(20)),
       child: AspectRatio(
-        aspectRatio: this._cameraController.value.aspectRatio,
-        child: CameraPreview(this._cameraController),
+        aspectRatio: _ratio,
+        child: _widget,
       ),
     );
   }

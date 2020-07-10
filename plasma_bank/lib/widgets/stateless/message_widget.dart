@@ -2,6 +2,8 @@ import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
 import 'dart:ui' as ui;
 
+import 'package:plasma_bank/app_utils/app_constants.dart';
+
 class MessageWidget extends StatelessWidget {
   final Color headerColor;
   final Color messageColor;
@@ -10,6 +12,7 @@ class MessageWidget extends StatelessWidget {
   final String actionTitle;
   final Function onTapped;
 
+  final Function onActionTap;
   final Icon actionIcon;
   final Icon titleIcon;
   MessageWidget(this._message,
@@ -21,11 +24,8 @@ class MessageWidget extends StatelessWidget {
         color: Colors.blueAccent,
         size: 30,
       ),
-      this.actionIcon = const Icon(
-        Icons.check_circle,
-        size: 25,
-        color: Colors.green,
-      ),
+        this.onActionTap,
+      this.actionIcon ,
       this.headerColor = Colors.green,
       this.messageColor = Colors.black54});
 
@@ -157,16 +157,16 @@ class MessageWidget extends StatelessWidget {
       child: Container(
         height: 45,
         child: RaisedButton(
-          onPressed: this.onTapped ??
+          onPressed: this.onActionTap ?? this.onTapped ??
               () {
                 debugPrint("DONE");
                 Navigator.pop(context);
               },
           elevation: 0.5,
-          color: Colors.blueAccent,
+          color: AppStyle.theme(),
           shape: RoundedRectangleBorder(
             borderRadius: new BorderRadius.circular(40),
-            side: BorderSide(color: Colors.cyan, width: 1.75),
+            side: BorderSide(color: Colors.cyan, width: 0.75),
           ),
           child: Row(
             mainAxisAlignment: MainAxisAlignment.center,
@@ -181,7 +181,7 @@ class MessageWidget extends StatelessWidget {
               ),
               Padding(
                 padding: const EdgeInsets.all(8.0),
-                child: this.actionIcon,
+                child: this.actionIcon != null ? this.actionIcon : Text(''),
               )
             ],
           ),

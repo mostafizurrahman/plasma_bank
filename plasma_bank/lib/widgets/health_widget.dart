@@ -1,9 +1,11 @@
 import 'dart:io';
 
+import 'package:app_settings/app_settings.dart';
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter/src/widgets/framework.dart';
 import 'package:intl/intl.dart';
+import 'package:permission_handler/permission_handler.dart';
 import 'package:plasma_bank/app_utils/app_constants.dart';
 import 'package:plasma_bank/app_utils/widget_providers.dart';
 import 'package:plasma_bank/app_utils/widget_templates.dart';
@@ -102,14 +104,14 @@ class _HealthState extends BaseKeyboardState<HealthWidget> {
     );
   }
 
-  Widget _getPrescription(final List<String> data, final _width, final ratio) {
-    final _widget = Container(
+  Widget _getPButton(String _data, final _width, final ratio ){
+    return Container(
       decoration: AppStyle.shadowDecoration,
       width: _width * ratio,
       height: _width * ratio * 16 / 9,
       child: new Material(
         child: new InkWell(
-          onTap: () => _openCamera('-'),
+          onTap: () => _openCamera(_data),
           child: new Center(
             child: Container(
               height: 80,
@@ -130,16 +132,20 @@ class _HealthState extends BaseKeyboardState<HealthWidget> {
         color: Colors.transparent,
       ),
     );
+  }
 
+  Widget _getPrescription(final List<String> data, final _width, final ratio) {
+    final _widget1 = this._getPButton(data[0], _width, ratio);
+    final _widget2 = this._getPButton(data[1], _width, ratio);
     return Row(
       mainAxisAlignment: MainAxisAlignment.spaceEvenly,
       children: [
-        data[0] == '-'
-            ? _widget
+        data[0] == 'p1'
+            ? _widget1
             : _getPrescriptionImage(data[0], _width * ratio),
         SizedBox(width: 8,),
-        data[1] == '-'
-            ? _widget
+        data[1] == 'p2'
+            ? _widget2
             : _getPrescriptionImage(data[1], _width * ratio),
       ],
     );
@@ -147,6 +153,11 @@ class _HealthState extends BaseKeyboardState<HealthWidget> {
 
   Widget _getPrescriptionImage(
       final String _imagePath, final double _dimension) {
+    final _imageWidget = Image.file(
+      File(_imagePath),
+      fit: BoxFit.fitWidth,
+    );
+    _imageWidget.image.evict();
     return Container(
       decoration: AppStyle.shadowDecoration,
       child: ClipRRect(
@@ -157,10 +168,7 @@ class _HealthState extends BaseKeyboardState<HealthWidget> {
           child: new Material(
             child: new InkWell(
               onTap: () => _openCamera(_imagePath),
-              child: Image.file(
-                File(_imagePath),
-                fit: BoxFit.fitWidth,
-              ),
+              child: _imageWidget,
             ),
             color: Colors.transparent,
           ),
@@ -169,12 +177,24 @@ class _HealthState extends BaseKeyboardState<HealthWidget> {
     );
   }
 
-  _openCamera(String _path) {
-    if (!this.skipTouch) {
+  _onCameraDenied(){
+    AppSettings.openAppSettings();
+  }
+
+  _openCamera(String _path) async {
+    var status = await Permission.camera.status;
+    if (status.isDenied) {
+      WidgetTemplate.message(context,
+          'camera permission is denied. please, go to app settings and grant the camera permission',
+          onTapped: this._onCameraDenied,
+          actionTitle: 'open app settings');
+    } else if (!this.skipTouch) {
       this._imagePath = _path;
       this.skipTouch = true;
+
       final arguments = {
-        'is_front_camera': true,
+        'image_named' : _path.contains("/") ? _path.split('/').last : _path,
+        'is_front_camera': false,
         'on_captured_function': _onCaptured,
         'route_name': AppRoutes.pageHealthData,
       };
@@ -182,18 +202,18 @@ class _HealthState extends BaseKeyboardState<HealthWidget> {
           arguments: arguments);
       Future.delayed(Duration(seconds: 1), () {
         this.skipTouch = false;
-      });
+      },);
     }
   }
 
   _onCaptured(final String _imagePath) {
-    final _list = List.from(this._prescriptionBehavior.value ?? ['-', '-']);
-    if (_list[0] == '-') {
-      this._prescriptionBehavior.sink.add([_imagePath, '-']);
-    } else if (_list[1] == '-' || _list[1] == this._imagePath) {
-      this._prescriptionBehavior.sink.add([_list[0], _imagePath]);
-    } else if (_list[0] == this._imagePath) {
-      this._prescriptionBehavior.sink.add([_imagePath, _list[1]]);
+    if (_imagePath != null){
+      final _list = List.from(this._prescriptionBehavior.value ?? ['p1', 'p2']);
+      if (_list[0] == 'p1' || _list[0] == this._imagePath) {
+        this._prescriptionBehavior.sink.add([_imagePath, _list[1]]);
+      } else if (_list[1] == 'p2' || _list[1] == this._imagePath) {
+        this._prescriptionBehavior.sink.add([_list[0], _imagePath]);
+      }
     }
   }
 
@@ -458,7 +478,7 @@ class _HealthState extends BaseKeyboardState<HealthWidget> {
             padding: const EdgeInsets.only(top: 48, bottom: 48),
             child: StreamBuilder<List<String>>(
               stream: _prescriptionBehavior.stream,
-              initialData: ['-', '-'],
+              initialData: ['p1', 'p2'],
               builder: (context, snapshot) {
                 return _getPrescription(snapshot.data, _width, 0.325);
               },
