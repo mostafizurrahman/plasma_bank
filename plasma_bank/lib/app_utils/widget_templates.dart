@@ -138,7 +138,7 @@ class WidgetTemplate {
     );
   }
 
-  static Widget gateRadio(BuildContext _contex, final BehaviorSubject<int> _radioStream, final String _title,
+  static Widget gateRadio(final BehaviorSubject<int> _radioStream, final String _title,
 
       {IconButton button}) {
     return Row(

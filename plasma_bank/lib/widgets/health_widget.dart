@@ -14,6 +14,7 @@ import 'package:plasma_bank/network/models/blood_donor.dart';
 import 'package:plasma_bank/network/models/plasma_donor.dart';
 import 'package:plasma_bank/widgets/base_widget.dart';
 import 'package:plasma_bank/widgets/stateful/data_picker_widget.dart';
+import 'package:plasma_bank/widgets/stateful/uploader_widget.dart';
 import 'package:rxdart/rxdart.dart';
 import 'package:plasma_bank/widgets/base/base_state.dart';
 
@@ -289,12 +290,20 @@ class _HealthState extends BaseKeyboardState<HealthWidget> {
         }
         final _donor = PlasmaDonor.fromMap(_donorData);
         debugPrint('done');
+        _openDataUploader(_donor);
       } else{
         final _bloodDonor = BloodDonor.fromMap(_donorData);
         debugPrint('done');
+        _openDataUploader(_bloodDonor);
       }
     }
   }
+
+
+  _openDataUploader(final BloodDonor donor){
+    showDialog(context: this.context, builder: (_)=>UploaderWidget(donor));
+  }
+
 
   _getTextField(
     TextConfig _config, {
@@ -475,17 +484,14 @@ class _HealthState extends BaseKeyboardState<HealthWidget> {
             height: 16,
           ),
           WidgetTemplate.gateRadio(
-            context,
             this._drinkBehavior,
             'DRINKING',
           ),
           WidgetTemplate.gateRadio(
-            context,
             this._smokeBehavior,
             'SMOKING',
           ),
           WidgetTemplate.gateRadio(
-            context,
             this._diseaseBehavior,
             'DISEASE',
             button: IconButton(
@@ -502,7 +508,6 @@ class _HealthState extends BaseKeyboardState<HealthWidget> {
             painter: DashLinePainter(),
           ),
           WidgetTemplate.gateRadio(
-            context,
             this._covidBehavior,
             'COVID-19 :',
             button: IconButton(

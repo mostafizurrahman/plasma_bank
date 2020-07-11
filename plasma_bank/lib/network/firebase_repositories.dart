@@ -1,5 +1,6 @@
 import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:plasma_bank/network/models/blood_collector.dart';
+import 'package:plasma_bank/network/models/blood_donor.dart';
 
 
 class FirebaseRepositories {
@@ -55,5 +56,11 @@ class FirebaseRepositories {
     await _patientCollection
         .document(bloodHunter.reference.documentID)
         .updateData(bloodHunter.toJson());
+  }
+
+
+  Future<DocumentReference> uploadBloodDoner(final BloodDonor bloodDonor){
+    assert(bloodDonor.address != null, 'ADDRESS MUST NOT BE NULL');
+    
   }
 }
