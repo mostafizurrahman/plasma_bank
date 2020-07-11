@@ -10,6 +10,8 @@ import 'package:plasma_bank/app_utils/app_constants.dart';
 import 'package:plasma_bank/app_utils/widget_providers.dart';
 import 'package:plasma_bank/app_utils/widget_templates.dart';
 import 'package:plasma_bank/media/dash_painter.dart';
+import 'package:plasma_bank/network/models/blood_donor.dart';
+import 'package:plasma_bank/network/models/plasma_donor.dart';
 import 'package:plasma_bank/widgets/base_widget.dart';
 import 'package:plasma_bank/widgets/stateful/data_picker_widget.dart';
 import 'package:rxdart/rxdart.dart';
@@ -46,7 +48,7 @@ class _HealthState extends BaseKeyboardState<HealthWidget> {
 
   final TextConfig _weightConfig = TextConfig('body weight');
   final TextConfig _bloodConfig = TextConfig('blood group');
-  final TextConfig _medicineConfig = TextConfig('remarks/disease');
+  final TextConfig _lastDonationConfig = TextConfig('last donation date');
   final TextConfig _infectionConfig = TextConfig('infection date');
   final TextConfig _recoveryConfig = TextConfig('recovery date');
   final TextConfig _ageConfig = TextConfig('age');
@@ -104,7 +106,7 @@ class _HealthState extends BaseKeyboardState<HealthWidget> {
     );
   }
 
-  Widget _getPButton(String _data, final _width, final ratio ){
+  Widget _getPButton(String _data, final _width, final ratio) {
     return Container(
       decoration: AppStyle.shadowDecoration,
       width: _width * ratio,
@@ -143,7 +145,9 @@ class _HealthState extends BaseKeyboardState<HealthWidget> {
         data[0] == 'p1'
             ? _widget1
             : _getPrescriptionImage(data[0], _width * ratio),
-        SizedBox(width: 8,),
+        SizedBox(
+          width: 8,
+        ),
         data[1] == 'p2'
             ? _widget2
             : _getPrescriptionImage(data[1], _width * ratio),
@@ -177,7 +181,7 @@ class _HealthState extends BaseKeyboardState<HealthWidget> {
     );
   }
 
-  _onCameraDenied(){
+  _onCameraDenied() {
     AppSettings.openAppSettings();
   }
 
@@ -186,28 +190,30 @@ class _HealthState extends BaseKeyboardState<HealthWidget> {
     if (status.isDenied) {
       WidgetTemplate.message(context,
           'camera permission is denied. please, go to app settings and grant the camera permission',
-          onTapped: this._onCameraDenied,
-          actionTitle: 'open app settings');
+          onTapped: this._onCameraDenied, actionTitle: 'open app settings');
     } else if (!this.skipTouch) {
       this._imagePath = _path;
       this.skipTouch = true;
 
       final arguments = {
-        'image_named' : _path.contains("/") ? _path.split('/').last : _path,
+        'image_named': _path.contains("/") ? _path.split('/').last : _path,
         'is_front_camera': false,
         'on_captured_function': _onCaptured,
         'route_name': AppRoutes.pageHealthData,
       };
-      Navigator.pushNamed(context, AppRoutes.pageRouteCamera,
+      Navigator.pushNamed(context,
+          AppRoutes.pageRouteCamera,
           arguments: arguments);
-      Future.delayed(Duration(seconds: 1), () {
-        this.skipTouch = false;
-      },);
+      Future.delayed(
+        Duration(seconds: 1), (){
+          this.skipTouch = false;
+        },
+      );
     }
   }
 
   _onCaptured(final String _imagePath) {
-    if (_imagePath != null){
+    if (_imagePath != null) {
       final _list = List.from(this._prescriptionBehavior.value ?? ['p1', 'p2']);
       if (_list[0] == 'p1' || _list[0] == this._imagePath) {
         this._prescriptionBehavior.sink.add([_imagePath, _list[1]]);
@@ -217,7 +223,78 @@ class _HealthState extends BaseKeyboardState<HealthWidget> {
     }
   }
 
-  _createDonor() {}
+  _createDonor() {
+    final _bloodGroup = this._bloodConfig.controller.text;
+    final _age = this._ageConfig.controller.text;
+    final _weight = this._weightConfig.controller.text;
+    final _height = this._heightConfig.controller.text;
+    if (_bloodGroup.isEmpty) {
+      super.setError(this._bloodConfig);
+    } else if (_age.isEmpty) {
+      super.setError(this._ageConfig);
+    } else if (_weight.isEmpty) {
+      super.setError(this._weightConfig);
+    } else if (_height.isEmpty) {
+      super.setError(this._heightConfig);
+    } else {
+      final _donorData = Map.from(this.widget.arguments);
+      final _donate = this._lastDonationConfig.controller.text;
+      final _drinking = (this._drinkBehavior.value ?? 0) == 1;
+      final _smoking = (this._smokeBehavior.value ?? 0) == 1;
+      final _disease = (this._diseaseBehavior.value ?? 0) == 1;
+      final _isCovid = (this._covidBehavior.value ?? 0) == 1;
+
+      _donorData['blood_group'] = _bloodGroup;
+      _donorData['covid'] = _isCovid;
+      _donorData['smoke'] = _smoking;
+      _donorData['drink'] = _drinking;
+      _donorData['sick'] = _disease;
+      _donorData['donation_date'] = this._lastDonationConfig.controller.text;
+
+      List<Map> _dataList = List();
+      for(final String url in this._prescriptionBehavior.value ?? ['p1', 'p2']){
+        Map _data = {'link' : url, 'deletehash' : ''};
+        _dataList.add(_data);
+      }
+      _donorData['prescriptions'] = _dataList;
+      _donorData['age'] = _age;
+      _donorData['donation_date'] = _donate;
+      _donorData['weight'] = _weight;
+      _donorData['height'] = _height;
+
+      /*
+      this.weight = map['weight'];
+    this.hasSickness = map['sick'];
+    this.diseaseName = map['disease'];
+    this.hasSmokeHabit = map['smoke'];
+    this.hasDrinkHabit = map['drink'];
+
+
+
+
+    this.medicineList = map['medicines'];
+    this.prescriptionList = map['prescriptions'];
+    this.lastDonationDate = map['donation_date'] == null ? null : (map['donation_date'] as Timestamp).toDate();
+      */
+
+
+      if (_isCovid) {
+        final _infectionDate = this._infectionConfig.controller.text;
+        final _infectionEnd = this._recoveryConfig.controller.text;
+        if (_infectionDate.isEmpty) {
+          FocusScope.of(context).requestFocus(this._infectionConfig.focusNode);
+        } else {
+          _donorData['covid_date'] = _infectionDate;
+          _donorData['recovered_date'] = _infectionEnd;
+        }
+        final _donor = PlasmaDonor.fromMap(_donorData);
+        debugPrint('done');
+      } else{
+        final _bloodDonor = BloodDonor.fromMap(_donorData);
+        debugPrint('done');
+      }
+    }
+  }
 
   _getTextField(
     TextConfig _config, {
@@ -310,7 +387,7 @@ class _HealthState extends BaseKeyboardState<HealthWidget> {
     );
   }
 
-  _showDatePicker(TextEditingController _controller) async {
+  _showDatePicker(TextConfig _controller) async {
     _dateTime = await showDatePicker(
         context: context,
         initialDate: _dateTime ?? DateTime.now(),
@@ -318,7 +395,8 @@ class _HealthState extends BaseKeyboardState<HealthWidget> {
         firstDate: DateTime(1920));
     if (_dateTime != null) {
       String date = DateFormat("dd MMM, yyyy").format(_dateTime);
-      _controller.text = date;
+      _controller.controller.text = date;
+//      _controller.timestamped = _dateTime;
     }
   }
 
@@ -382,8 +460,12 @@ class _HealthState extends BaseKeyboardState<HealthWidget> {
               ),
             ],
           ),
-          this._getTextField(this._medicineConfig,
-              isReadOnly: false, isDigit: false),
+          WidgetTemplate.getTextField(
+            this._lastDonationConfig,
+            isReadOnly: true,
+            showCursor: false,
+            onTap: () => this._showDatePicker(this._lastDonationConfig),
+          ),
           this._getTitle('BEHAVIOR INFO', Icons.accessibility),
           CustomPaint(
             size: Size(MediaQuery.of(context).size.width, 1.0),
@@ -411,9 +493,7 @@ class _HealthState extends BaseKeyboardState<HealthWidget> {
               icon: Icon(
                 Icons.error,
               ),
-              onPressed: () {
-                WidgetTemplate.message(context, _disease);
-              },
+              onPressed: () => WidgetTemplate.message(context, _disease),
             ),
           ),
           this._getTitle('COVID-19 INFO', Icons.brightness_high),
@@ -430,9 +510,7 @@ class _HealthState extends BaseKeyboardState<HealthWidget> {
               icon: Icon(
                 Icons.error,
               ),
-              onPressed: () {
-                WidgetTemplate.message(context, _covidInfo);
-              },
+              onPressed: () => WidgetTemplate.message(context, _covidInfo),
             ),
           ),
           StreamBuilder(
@@ -450,19 +528,13 @@ class _HealthState extends BaseKeyboardState<HealthWidget> {
                       this._infectionConfig,
                       isReadOnly: true,
                       showCursor: false,
-                      onTap: () {
-                        this._showDatePicker(
-                            this._infectionConfig.controller);
-                      },
+                      onTap: () => this._showDatePicker(this._infectionConfig),
                     ),
                     WidgetTemplate.getTextField(
                       this._recoveryConfig,
                       isReadOnly: true,
                       showCursor: false,
-                      onTap: () {
-                        this._showDatePicker(
-                            this._recoveryConfig.controller);
-                      },
+                      onTap: () => this._showDatePicker(this._recoveryConfig),
                     ),
                   ],
                 ),

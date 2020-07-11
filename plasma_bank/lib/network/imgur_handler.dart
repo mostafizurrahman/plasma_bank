@@ -4,9 +4,19 @@ import 'dart:io';
 import 'package:plasma_bank/network/api_client.dart';
 import 'package:plasma_bank/network/auth.dart';
 class ImgurResponse{
-  final String deleteHash;
-  final String imageUrl;
-  ImgurResponse(this.imageUrl, this.deleteHash);
+  String deleteHash;
+  String imageUrl;
+  ImgurResponse({this.imageUrl,
+    this.deleteHash,
+    Map<dynamic, dynamic> jsonData}){
+    if(jsonData == null){
+      assert(this.imageUrl != null , 'url is null');
+    } else {
+      this.imageUrl = jsonData['link'];
+      this.deleteHash = jsonData['deletehash'];
+    }
+  }
+
   Map<String, String> toJson(){
     return {
       'deletehash' : this.deleteHash ?? '',
@@ -46,7 +56,9 @@ class ImgurHandler {
     } else if (response.body != null) {
       final map = json.decode(response.body)['data'];
       if(map is Map) {
-        return ImgurResponse(map['link'], map['deletehash']);
+        return ImgurResponse(
+            imageUrl: map['link'],
+            deleteHash: map['deletehash']);
       }
     }
     return null;
