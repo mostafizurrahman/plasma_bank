@@ -85,12 +85,15 @@ class AppStyle {
     );
   }
 
-  static BoxDecoration highlightShadow(){
+  static BoxDecoration highlightShadow({Color color }){
+    if (color == null){
+      color = Color.fromARGB(255, 255, 20, 80);
+    }
     return BoxDecoration(
       color: Colors.white,
       boxShadow: [
         BoxShadow(
-          color: Color.fromARGB(255, 255, 20, 80),
+          color: color,
           offset: Offset(0, 0),
           blurRadius: 8,
           spreadRadius: 4,
