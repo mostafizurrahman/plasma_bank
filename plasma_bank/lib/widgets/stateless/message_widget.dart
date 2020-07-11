@@ -166,7 +166,7 @@ class MessageWidget extends StatelessWidget {
           color: AppStyle.theme(),
           shape: RoundedRectangleBorder(
             borderRadius: new BorderRadius.circular(40),
-            side: BorderSide(color: Colors.cyan, width: 0.75),
+            side: BorderSide(color: Colors.white, width: 1.25),
           ),
           child: Row(
             mainAxisAlignment: MainAxisAlignment.center,

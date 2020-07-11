@@ -110,12 +110,12 @@ class _AddressState extends BaseKeyboardState<AddressWidget>  {
           'house': _house,
         };
 
-        final _address = Address.fromMap(_addressMap);
+//        final _address = Address.fromMap(_addressMap);
 
         Navigator.pushNamed(
           context,
           AppRoutes.pagePersonData,
-          arguments: {'address': _address},
+          arguments: {'address': _addressMap},
         );
       }
       skipPopup = false;

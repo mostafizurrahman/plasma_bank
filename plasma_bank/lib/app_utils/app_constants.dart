@@ -3,6 +3,7 @@ import 'dart:ui';
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
 import 'package:intl/intl.dart';
+import 'package:rxdart/rxdart.dart';
 
 class AppConstants {}
 
@@ -199,6 +200,7 @@ class AppStyle {
 class TextConfig{
 
   final int maxLen;
+  Timestamped timestamped;
   final bool isDigit;
   final TextEditingController controller = TextEditingController();
   final FocusNode focusNode = FocusNode();

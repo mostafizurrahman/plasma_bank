@@ -120,7 +120,7 @@ class _ProfileState extends BaseKeyboardState<ProfileWidget> {
             _arguments['name'] = _name;
             _arguments['email'] = _email;
             _arguments['mobile'] = _mobile;
-            _arguments['profile'] = profileImage;
+            _arguments['profile'] = {'link' : profileImage, 'deletehash' : ''};
             Navigator.pushNamed(context, AppRoutes.pageHealthData,
                 arguments: _arguments);
           }
