@@ -46,6 +46,9 @@ class Address {
 }
 
 abstract class Person {
+
+  String verificationCode;
+  bool hasValidPostal;
   String age;
   String bloodGroup; //db :: blood_group
   String emailAddress; //  "mostafizur.cse@gmail.com"
@@ -65,6 +68,8 @@ abstract class Person {
     this.profilePicture = ImgurResponse(jsonData:  _map['profile']);
     this.age = _map['age'];
     this.birthDate = getDOB(_map['age']);
+    this.hasValidPostal = _map['is_valid_postal'] ?? false;
+    this.verificationCode = _map['code'];
   }
 
 //  final String name;
@@ -93,6 +98,7 @@ abstract class Person {
         profilePicture = ImgurResponse(jsonData:  map['profile']),
         age = map['age'],
         birthDate = getDOB(map['age']),
+        this.hasValidPostal = map['is_valid_postal'] ?? false,
         address = Address.fromMap(map['address'] ?? {});
 
   Person.fromSnapshot(DocumentSnapshot snapshot)
@@ -111,7 +117,8 @@ abstract class Person {
       'address': _person.address.toJson(),
       'age' : _person.age,
       'email' : _person.emailAddress,
-      'profile' : _person.profilePicture,
+      'profile' : _person.profilePicture.toJson(),
+      'code' : _person.verificationCode ?? '',
     };
   }
 

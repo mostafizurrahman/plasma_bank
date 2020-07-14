@@ -28,15 +28,19 @@ class _UploaderState extends State<UploaderWidget> {
 
 
   @override
-  void dispose() {
-    super.dispose();
-    _subject.close();
+  void initState() {
+    super.initState();
     Future.delayed(Duration(seconds: 1), _startUploading);
   }
 
   @override
+  void dispose() {
+    super.dispose();
+    _subject.close();
+  }
+
+  @override
   Widget build(BuildContext context) {
-//    Navigator.pop(context);
     return WillPopScope(
       onWillPop: () async {
         return Future<bool>.value(false);
@@ -71,15 +75,16 @@ class _UploaderState extends State<UploaderWidget> {
                                 stream: _subject.stream,
                                 initialData: this._imgurResponse,
                                 builder: (_context, _snap){
-                                  if(this._imgurResponse == null ||
-                                      this._imgurResponse.imageUrl == null ||
-                                  this._imgurResponse.imageUrl.isEmpty ||
-                                  this._imgurResponse.imageUrl == 'p1' ||
-                                      this._imgurResponse.imageUrl == 'p2' ){
+                                  if(_snap.data == null ||
+                                      _snap.data.imageUrl == null ||
+                                      _snap.data.imageUrl.isEmpty ||
+                                      _snap.data.imageUrl == 'p1' ||
+                                      _snap.data.imageUrl == 'p2' ){
                                     return Center(child: Text('NO IMAGE...'));
                                   }
+                                  debugPrint(_snap.data?.imageUrl ?? 'NIL IMAGE PATH') ;
                                   final _imageWidget = Image.file(
-                                    File(this._imgurResponse.imageUrl),
+                                    File(_snap.data.imageUrl),
                                     fit: BoxFit.fitWidth,
                                   );
                                   _imageWidget.image.evict();
@@ -146,6 +151,8 @@ class _UploaderState extends State<UploaderWidget> {
 
   _onUploadError(final _error){
 
+    debugPrint('error_occured');
+    Navigator.pop(context);
   }
 
   _startUploading() async {
@@ -202,7 +209,13 @@ class _UploaderState extends State<UploaderWidget> {
       }
     }
 
-    final _fireRepository = FirebaseRepositories();
 
+
+    final _fireRepository = FirebaseRepositories();
+    final BloodDonor _donor = this.widget.bloodDonor;
+    final _docRef = await _fireRepository.uploadBloodDonor(_donor).catchError(_onUploadError);
+    debugPrint(_docRef.documentID);
+
+    Navigator.pop(context);
   }
 }

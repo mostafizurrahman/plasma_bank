@@ -1,9 +1,11 @@
+import 'dart:convert';
 import 'dart:typed_data';
 
 import 'package:flutter/cupertino.dart';
 import 'package:geolocator/geolocator.dart';
 import 'package:plasma_bank/network/api_client.dart';
 import 'package:plasma_bank/network/auth.dart';
+import 'package:plasma_bank/network/models/zip_data.dart';
 //import 'package:restcountries/restcountries.dart';
 
 class LocationProvider {
@@ -84,10 +86,10 @@ class LocationProvider {
     final _client = ApiClient();
     final String _url = this.getUrl();
     final List _data = await _client.getGlobList(_url);
-    if( _data == null){
+    if( _data == null) {
       return  List<Country>();
     }
-    for(final _item in _data){
+    for(final _item in _data) {
       Country _c = tryCast(_item);
       _response.add(_c);
     }
@@ -145,6 +147,68 @@ class LocationProvider {
       return "http://battuta.medunes.net/api/city/${region.countryName}/search/?region=${region.regionName}&key=$_key";
     }
     return "http://battuta.medunes.net/api/country/all/?key=$_key";
+  }
+
+  /*
+import Foundation
+
+let headers = [
+	"x-rapidapi-host": "community-zippopotamus.p.rapidapi.com",
+	"x-rapidapi-key": "f9ad890057msh4da7a9c66cf7fd2p1225ecjsn022708a76c7c"
+]
+
+let request = NSMutableURLRequest(url: NSURL(string: "https://community-zippopotamus.p.rapidapi.com/bd/2000")! as URL,
+                                        cachePolicy: .useProtocolCachePolicy,
+                                    timeoutInterval: 10.0)
+request.httpMethod = "GET"
+request.allHTTPHeaderFields = headers
+
+let session = URLSession.shared
+let dataTask = session.dataTask(with: request as URLRequest, completionHandler: { (data, response, error) -> Void in
+	if (error != nil) {
+		print(error)
+	} else {
+		let httpResponse = response as? HTTPURLResponse
+		print(httpResponse)
+	}
+})
+
+dataTask.resume()
+*/
+
+  Future<ZipData> getZipData(final String zipCode, String countryCode) async {
+
+
+    // verify required params are set
+
+    // create path and map variables
+    String path = "https://community-zippopotamus.p.rapidapi.com/$countryCode/$zipCode";
+
+    // query params
+    List<QueryParam> queryParams = [];
+    Map<String, String> headerParams = {
+      "x-rapidapi-host": "community-zippopotamus.p.rapidapi.com",
+      "x-rapidapi-key": Auth.ZIP_KEY,
+    };
+    Map<String, String> formParams = {};
+
+
+
+    String contentType = "application/json";
+    List<String> authNames = [];
+    final _client = ApiClient();
+    var response = await _client.invokeAPI(path, 'GET', queryParams, null,
+        headerParams, formParams, contentType, authNames);
+
+    if (response.statusCode >= 400) {
+      throw new ApiException(response.statusCode, response.body);
+    } else if (response.body != null) {
+      final map = json.decode(response.body);
+      if(map is Map) {
+        return _client.deserialize(response.body, 'ZipData') as ZipData;
+      }
+    }
+    return null;
   }
 }
 

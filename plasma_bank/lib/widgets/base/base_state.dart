@@ -101,7 +101,7 @@ abstract class BaseKeyboardState<T extends BaseWidget> extends State<T> {
     );
   }
 
-  onSubmitData() {
+  onSubmitData() async {
     FlutterStatusbarcolor.setStatusBarWhiteForeground(false);
   }
 

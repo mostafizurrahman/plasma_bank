@@ -14,7 +14,6 @@ class FirebaseRepositories {
 //  }
 
   CollectionReference _globalCovidData;
-
   CollectionReference _patientCollection;
   CollectionReference _plasmaCollection;
   DocumentReference _documentCollection;
@@ -59,8 +58,14 @@ class FirebaseRepositories {
   }
 
 
-  Future<DocumentReference> uploadBloodDoner(final BloodDonor bloodDonor){
+  Future<DocumentReference> uploadBloodDonor(final BloodDonor bloodDonor){
     assert(bloodDonor.address != null, 'ADDRESS MUST NOT BE NULL');
-    
+    final _code = bloodDonor.hasValidPostal ? bloodDonor.address.postalCode : 'invalid_postal';
+    return Firestore.instance.collection('donor')
+        .document(bloodDonor.address.country)
+        .collection(bloodDonor.address.state)
+        .document(bloodDonor.address.city)
+        .collection(_code)
+        .add(bloodDonor.toJson());
   }
 }
