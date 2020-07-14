@@ -10,7 +10,6 @@ import 'package:plasma_bank/app_utils/widget_providers.dart';
 import 'package:plasma_bank/widgets/stateful/data_picker_widget.dart';
 import 'package:plasma_bank/widgets/base/base_state.dart';
 
-
 class AddressWidget extends BaseWidget {
   AddressWidget(Map arguments) : super(arguments);
   @override
@@ -19,7 +18,7 @@ class AddressWidget extends BaseWidget {
   }
 }
 
-class _AddressState extends BaseKeyboardState<AddressWidget>  {
+class _AddressState extends BaseKeyboardState<AddressWidget> {
   bool skipPopup = false;
   final TextConfig _countryConfig = TextConfig('country');
 
@@ -27,7 +26,7 @@ class _AddressState extends BaseKeyboardState<AddressWidget>  {
   final TextConfig _regionConfig = TextConfig('region/state');
   final TextConfig _cityConfig = TextConfig('city/county/division');
   final TextConfig _streetConfig = TextConfig('street/locality');
-  final TextConfig _zipConfig = TextConfig('zip/po');
+  final TextConfig _zipConfig = TextConfig('zip/po', isDigit: true);
   final TextConfig _houseConfig = TextConfig('house/other');
 
   @override
@@ -37,7 +36,6 @@ class _AddressState extends BaseKeyboardState<AddressWidget>  {
   }
 
   _setLocation() {
-
     final _city = locationProvider.gpsCity;
     if (_city != null) {
       this._countryConfig.controller.text = _city.fullName ?? '';
@@ -51,39 +49,40 @@ class _AddressState extends BaseKeyboardState<AddressWidget>  {
     }
   }
 
-
-
   @override
   void dispose() {
     super.dispose();
-
   }
 
   @override
   Widget build(BuildContext context) {
+    skipPopup = false;
     return super.build(context);
   }
-
-
 
   _errorMessage(final TextConfig _config) {
     super.setError(_config);
   }
 
+  _onError(final _error) {
+    this.skipPopup = false;
+  }
+
   @override
-  onSubmitData() {
+  onSubmitData() async {
     FocusScope.of(context).requestFocus(FocusNode());
     if (this.skipPopup) {
       return;
     }
     skipPopup = true;
-    Future.delayed(Duration(seconds: 1), () {
+    final _zip = this._zipConfig.controller.text;
+    final _countryCode = this._countryCodeConfig.controller.text;
 
+    Future.delayed(Duration(seconds: 1), () async {
       final _country = this._countryConfig.controller.text;
       final _state = this._regionConfig.controller.text;
       final _city = this._cityConfig.controller.text;
       final _road = this._streetConfig.controller.text;
-      final _zip = this._zipConfig.controller.text;
       final _house = this._houseConfig.controller.text;
       if (_country.isEmpty) {
         _errorMessage(this._countryConfig);
@@ -100,14 +99,18 @@ class _AddressState extends BaseKeyboardState<AddressWidget>  {
       } else if (_house.isEmpty) {
         _errorMessage(_houseConfig);
       } else {
+        final _zipData = await locationProvider
+            .getZipData(_zip, _countryCode)
+            .catchError(_onError);
         final _addressMap = {
           'country': _country,
-          'code': this._countryCodeConfig.controller.text,
+          'code': _countryCode,
           'state': _state,
           'city': _city,
           'street': _road,
           'zip': _zip,
           'house': _house,
+          'is_valid_postal' : _zipData != null,
         };
 
 //        final _address = Address.fromMap(_addressMap);
@@ -168,7 +171,7 @@ class _AddressState extends BaseKeyboardState<AddressWidget>  {
         Expanded(
           child: WidgetTemplate.getTextField(
             this._countryConfig,
-            onTap:_openCountryList,
+            onTap: _openCountryList,
           ),
         ),
         SizedBox(
@@ -321,7 +324,6 @@ class _AddressState extends BaseKeyboardState<AddressWidget>  {
     return _state;
   }
 
-
   ///OVERRIDEN METHODS
 
   @override
@@ -347,45 +349,50 @@ class _AddressState extends BaseKeyboardState<AddressWidget>  {
   }
 
   @override
- Widget getSingleChildContent(){
-    return  Container(
+  Widget getSingleChildContent() {
+    return Container(
       height: super.getContentHeight(),
       child: Column(
         crossAxisAlignment: CrossAxisAlignment.start,
         children: [
           Padding(
-            padding:
-            EdgeInsets.only(top: 24, bottom: 12),
+            padding: EdgeInsets.only(top: 24, bottom: 12),
             child: Row(
               children: [
                 WidgetProvider.circledIcon(
-                  Icon(  Icons.place, color: AppStyle.theme(), size: 25,
+                  Icon(
+                    Icons.place,
+                    color: AppStyle.theme(),
+                    size: 25,
                   ),
                 ),
-                SizedBox( width: 12, ),
+                SizedBox(
+                  width: 12,
+                ),
                 Text(
                   'ENTER ADDRESS',
                   textAlign: TextAlign.left,
-                  style: TextStyle( fontSize: 24,
+                  style: TextStyle(
+                    fontSize: 24,
                     fontFamily: AppStyle.fontBold,
                   ),
                 ),
               ],
-              crossAxisAlignment:
-              CrossAxisAlignment.center,
+              crossAxisAlignment: CrossAxisAlignment.center,
             ),
           ),
           _getCountry(),
           _getRegion(),
           _getCity(),
           _geStreet(),
-          WidgetTemplate.getTextField(this._houseConfig,
-            maxLen: 30, isReadOnly: false, showCursor: true,
+          WidgetTemplate.getTextField(
+            this._houseConfig,
+            maxLen: 30,
+            isReadOnly: false,
+            showCursor: true,
           ),
         ],
       ),
     );
   }
-
-
 }

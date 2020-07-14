@@ -93,7 +93,7 @@ class WidgetTemplate {
         return null;
       };
     }
-    final _inputFormatter = isDigit
+    final _inputFormatter = isDigit || _config.isDigit
         ? [
             new LengthLimitingTextInputFormatter(maxLen),
             WhitelistingTextInputFormatter.digitsOnly

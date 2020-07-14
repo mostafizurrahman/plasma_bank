@@ -5,6 +5,8 @@ import 'dart:convert';
 
 import 'package:http/http.dart';
 import 'package:plasma_bank/app_utils/location_provider.dart';
+
+import 'models/zip_data.dart';
 abstract class Authentication {
 
   /// Apply authentication settings to header and query params.
@@ -105,6 +107,8 @@ class ApiClient {
           return value is int ? value : int.parse('$value');
         case 'bool':
           return value is bool ? value : '$value'.toLowerCase() == 'true';
+        case 'ZipData' :
+          return ZipData.fromJson(value);
         default:
           {
             Match match;
@@ -187,7 +191,7 @@ class ApiClient {
         .map((p) => '${p.name}=${p.value}');
     String queryString = ps.isNotEmpty ? '?' + ps.join('&') : '';
 
-    String url = basePath + path + queryString;
+    String url = path.contains('http') ? path :( basePath + path + queryString);
 
     headerParams.addAll(_defaultHeaderMap);
     headerParams['Content-Type'] = contentType;
@@ -263,4 +267,13 @@ class ApiClient {
     }
     return null;
   }
+
+
+
+
+
+
+
+
+
 }

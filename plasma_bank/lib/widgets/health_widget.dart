@@ -78,6 +78,7 @@ class _HealthState extends BaseKeyboardState<HealthWidget> {
 
   @override
   Widget build(BuildContext context) {
+//    Navigator.pop(context);
     return super.build(context);
   }
 
@@ -251,6 +252,7 @@ class _HealthState extends BaseKeyboardState<HealthWidget> {
       _donorData['drink'] = _drinking;
       _donorData['sick'] = _disease;
       _donorData['donation_date'] = this._lastDonationConfig.controller.text;
+      _donorData['code'] = '123445';
 
       List<Map> _dataList = List();
       for(final String url in this._prescriptionBehavior.value ?? ['p1', 'p2']){
