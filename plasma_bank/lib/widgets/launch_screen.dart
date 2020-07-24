@@ -1,5 +1,8 @@
+import 'dart:io';
+
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
+import 'package:flutter/services.dart';
 //import 'package:flutter_statusbarcolor/flutter_statusbarcolor.dart';
 import 'package:plasma_bank/app_utils/app_constants.dart';
 import 'package:plasma_bank/app_utils/image_helper.dart';
@@ -18,11 +21,22 @@ class _LaunchScreenState extends State<LaunchScreenWidget> {
   @override
   void initState() {
     super.initState();
-    Future.delayed(const Duration(seconds: 3), () async {
-
-//      await FlutterStatusbarcolor.setStatusBarWhiteForeground(false);
+    Future.delayed(const Duration(seconds: 2), () async {
+      await this._setDeviceInfo();
       Navigator.popAndPushNamed(context, AppRoutes.pageRouteHome);
     });
+  }
+
+
+  _setDeviceInfo() async {
+
+    const platform = const MethodChannel('flutter.plasma.com.device_info');
+    final Map<dynamic, dynamic> _deviceIno = await platform.invokeMethod('getPackageInfo');
+    deviceInfo.appPlatform = Platform.isIOS ? 'iOS' : Platform.isAndroid ? 'Android' : 'unknown';
+    deviceInfo.appBundleID = _deviceIno['package_name'];
+    deviceInfo.deviceUUID = _deviceIno['device_id'].toString().toUpperCase();
+    deviceInfo.deviceNamed = _deviceIno['device_name'];
+    debugPrint('done');
   }
 
   @override

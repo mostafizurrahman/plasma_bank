@@ -148,7 +148,7 @@ class LocationProvider {
     }
     return "http://battuta.medunes.net/api/country/all/?key=$_key";
   }
-  
+
   Future<ZipData> getZipData(final String zipCode, String countryCode) async {
 
 

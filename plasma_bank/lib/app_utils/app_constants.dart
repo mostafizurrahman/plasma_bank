@@ -198,7 +198,31 @@ class AppStyle {
 //
 //    );
   }
+  
+  
 }
+
+
+class DeviceInfo {
+
+  String appPlatform;
+  String appBundleID;
+  String deviceNamed;
+  String deviceUUID;
+
+  static final _device = DeviceInfo._internal();
+  DeviceInfo._internal();
+  factory DeviceInfo() {
+    return _device;
+  }
+
+
+
+
+}
+
+final DeviceInfo deviceInfo = DeviceInfo();
+
 
 class TextConfig{
 
