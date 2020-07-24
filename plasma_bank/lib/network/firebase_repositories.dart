@@ -1,4 +1,5 @@
 import 'package:cloud_firestore/cloud_firestore.dart';
+import 'package:plasma_bank/app_utils/app_constants.dart';
 import 'package:plasma_bank/network/models/blood_collector.dart';
 import 'package:plasma_bank/network/models/blood_donor.dart';
 
@@ -57,15 +58,27 @@ class FirebaseRepositories {
         .updateData(bloodHunter.toJson());
   }
 
+  Future<List<String>> getEmails(final BloodDonor bloodDonor){
+    
+  }
 
-  Future<DocumentReference> uploadBloodDonor(final BloodDonor bloodDonor){
+  Future<DocumentReference> uploadBloodDonor(final BloodDonor bloodDonor) async {
     assert(bloodDonor.address != null, 'ADDRESS MUST NOT BE NULL');
     final _code = bloodDonor.hasValidPostal ? bloodDonor.address.postalCode : 'invalid_postal';
-    return Firestore.instance.collection('donor')
+
+    final _docRef = await Firestore.instance.collection('donor')
         .document(bloodDonor.address.country)
         .collection(bloodDonor.address.state)
         .document(bloodDonor.address.city)
         .collection(_code)
         .add(bloodDonor.toJson());
+    if(_docRef.toString().isNotEmpty){
+      await Firestore.instance.collection('donor')
+          .document(bloodDonor.address.country)
+          .collection(bloodDonor.address.state)
+          .document(bloodDonor.address.city)
+          .setData({deviceInfo.deviceUUID : [bloodDonor.emailAddress]});
+    }
+    return _docRef;
   }
 }

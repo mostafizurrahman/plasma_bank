@@ -14,16 +14,19 @@ import Flutter
         controller.navigationController?
             .interactivePopGestureRecognizer?.isEnabled = false;
         
-        let nativeChannel = FlutterMethodChannel.init(name: "flutter.plasma.com.imgpath",
-        binaryMessenger: controller.binaryMessenger);
+        let nativeChannel = FlutterMethodChannel.init(
+            name: "flutter.plasma.com.device_info",
+            binaryMessenger: controller.binaryMessenger)
         nativeChannel.setMethodCallHandler( {
             (call: FlutterMethodCall, result: @escaping FlutterResult) -> Void in
-            if call.method == "getImagePath" {
-                if let _imagePath = Bundle.main.path(forResource: "mkt", ofType: "jpg") {
-                    result(["image_path" : _imagePath])
-                } else {
-                    result(["image_path" : "-"])
-                }
+            if call.method == "getPackageInfo" {
+                let _bundleID = Bundle.main.bundleIdentifier
+                let _type = UIDevice().type.rawValue
+                let _imei = UIDevice.current.identifierForVendor?.uuidString
+                let _device = _imei ?? "xyz_\(Date.init().timeIntervalSinceNow)"
+                result(["package_name" : _bundleID,
+                        "device_name" : _type,
+                        "device_id":_device ])
             }
         })
     }

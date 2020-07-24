@@ -104,12 +104,10 @@ class LocationTermsState extends State<LocationTerms> {
 
   Future<void> _loadHtmlFromAssets() async {
     String fileText = await rootBundle.loadString('lib/assets/terms.htm');
-    _controller.loadUrl(Uri.dataFromString(fileText,
-            mimeType: 'text/html', encoding: Encoding.getByName('utf-8'))
-        .toString());
-    Future.delayed(Duration(milliseconds: 200), () async {
-      this._webPublisher.sink.add(true);
-//      await FlutterStatusbarcolor.setStatusBarWhiteForeground(false);
-    });
+    String htmlText = Uri.dataFromString(fileText,
+        mimeType: 'text/html', encoding: Encoding.getByName('utf-8'))
+        .toString();
+    _controller.loadUrl(htmlText);
+    this._webPublisher.sink.add(true);
   }
 }
