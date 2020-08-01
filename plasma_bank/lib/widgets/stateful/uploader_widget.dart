@@ -209,8 +209,6 @@ class _UploaderState extends State<UploaderWidget> {
       }
     }
 
-
-
     final _fireRepository = FirebaseRepositories();
     final BloodDonor _donor = this.widget.bloodDonor;
     final _docRef = await _fireRepository.uploadBloodDonor(_donor).catchError(_onUploadError);
