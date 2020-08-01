@@ -16,7 +16,7 @@ class BloodDonor extends Person {
   String diseaseName;
   String moneyAmount;
   String lastDonationDate;
-  List<String> medicineList;
+  List<String> deviceList;
   List<ImgurResponse> prescriptionList;
 
 //  CBar(int a, int b, int cParam) :
@@ -41,7 +41,7 @@ class BloodDonor extends Person {
         this.diseaseName = map['disease'],
         this.hasSmokeHabit = map['smoke'],
         this.hasDrinkHabit = map['drink'],
-        this.medicineList = map['medicines'],
+        this.deviceList = map['devices'],
         this.prescriptionList = getImages(map['prescriptions']),
         this.lastDonationDate = map['donation_date'],
         super.fromMap(map);
@@ -54,7 +54,7 @@ class BloodDonor extends Person {
     _data['disease'] = this.diseaseName;
     _data['smoke'] = this.hasSmokeHabit;
     _data['drink'] = this.hasDrinkHabit;
-    _data['medicines'] = this.medicineList;
+    _data['devices'] = this.deviceList;
     _data['prescriptions'] = [
       this.prescriptionList.first.toJson() ?? {},
       this.prescriptionList.last.toJson() ?? {},];

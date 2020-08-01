@@ -246,6 +246,8 @@ class _HealthState extends BaseKeyboardState<HealthWidget> {
       final _disease = (this._diseaseBehavior.value ?? 0) == 1;
       final _isCovid = (this._covidBehavior.value ?? 0) == 1;
 
+      _donorData['package'] = deviceInfo.appBundleID;
+      _donorData['devices'] = [deviceInfo.deviceUUID];
       _donorData['blood_group'] = _bloodGroup;
       _donorData['covid'] = _isCovid;
       _donorData['smoke'] = _smoking;

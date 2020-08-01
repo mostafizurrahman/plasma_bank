@@ -1,5 +1,6 @@
 import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:plasma_bank/app_utils/app_constants.dart';
+import 'package:plasma_bank/network/models/abstract_person.dart';
 import 'package:plasma_bank/network/models/blood_collector.dart';
 import 'package:plasma_bank/network/models/blood_donor.dart';
 
@@ -33,6 +34,8 @@ class FirebaseRepositories {
   }
 
 
+
+
   Stream<QuerySnapshot> getGlobalCovidData(){
     return this._globalCovidData.snapshots();
   }
@@ -58,8 +61,13 @@ class FirebaseRepositories {
         .updateData(bloodHunter.toJson());
   }
 
-  Future<List<String>> getEmails(final BloodDonor bloodDonor){
-    
+  Stream<QuerySnapshot> getEmails(final Address deviceAddress) {
+    return Firestore.instance
+        .collection('donor')
+        .document(deviceAddress.country)
+        .collection(deviceAddress.state)
+        .document(deviceAddress.city)
+        .collection(deviceInfo.deviceUUID).snapshots();
   }
 
   Future<DocumentReference> uploadBloodDonor(final BloodDonor bloodDonor) async {

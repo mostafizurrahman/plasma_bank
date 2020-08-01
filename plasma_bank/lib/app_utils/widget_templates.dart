@@ -105,7 +105,7 @@ class WidgetTemplate {
     return Padding(
       padding: EdgeInsets.only(top: 8, bottom: 8),
       child: new TextField(
-        autofillHints: null,
+
         enableSuggestions: false,
 
         controller: _config.controller,
