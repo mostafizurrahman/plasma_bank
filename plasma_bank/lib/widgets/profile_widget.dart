@@ -1,12 +1,13 @@
 import 'dart:io';
 import 'package:app_settings/app_settings.dart';
-import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
-import 'package:flutter/src/widgets/framework.dart';
 import 'package:permission_handler/permission_handler.dart';
 import 'package:plasma_bank/app_utils/app_constants.dart';
+import 'package:plasma_bank/app_utils/widget_providers.dart';
 import 'package:plasma_bank/app_utils/widget_templates.dart';
 import 'package:plasma_bank/media/dash_painter.dart';
+import 'package:plasma_bank/network/donor_handler.dart';
+import 'package:plasma_bank/network/firebase_repositories.dart';
 import 'package:plasma_bank/widgets/base/base_state.dart';
 import 'package:plasma_bank/widgets/base_widget.dart';
 import 'package:rxdart/rxdart.dart';
@@ -24,9 +25,10 @@ class _ProfileState extends BaseKeyboardState<ProfileWidget> {
   final TextConfig _nameConfig = TextConfig('name');
   final TextConfig _emailConfig = TextConfig('email');
   final TextConfig _phoneConfig = TextConfig('mobile #');
-
+  final String _message = 'This email has registered as Blood Donor! Please, Login and verify the account';
   String profileImage;
   final BehaviorSubject<String> _profileBehavior = BehaviorSubject();
+
 
   @override
   void initState() {
@@ -34,6 +36,7 @@ class _ProfileState extends BaseKeyboardState<ProfileWidget> {
     this._nameConfig.controller.text = 'mostafizur rahman';
     this._emailConfig.controller.text = 'mostafizur.cse@gmail.com';
     this._phoneConfig.controller.text = '01675876752';
+
   }
 
   @override
@@ -105,7 +108,7 @@ class _ProfileState extends BaseKeyboardState<ProfileWidget> {
       this.skipTouch = true;
       Future.delayed(
         Duration(seconds: 1),
-        () {
+        () async {
           final String _name = this._nameConfig.controller.text;
           final String _email = this._emailConfig.controller.text;
           final String _mobile = this._phoneConfig.controller.text;
@@ -116,18 +119,50 @@ class _ProfileState extends BaseKeyboardState<ProfileWidget> {
           } else if (_mobile.isEmpty) {
             super.setError(this._phoneConfig);
           } else {
-            final Map _arguments = Map.from(this.widget.arguments);
-            _arguments['name'] = _name;
-            _arguments['email'] = _email;
-            _arguments['mobile'] = _mobile;
-            _arguments['profile'] = {'link' : profileImage, 'deletehash' : ''};
-            Navigator.pushNamed(context, AppRoutes.pageHealthData,
-                arguments: _arguments);
+
+
+            bool hasData = false;
+
+            if(donorHandler.hasExistingAccount(_email)){
+              this._onEmailExist(_email);
+              hasData = true;
+            }
+            WidgetProvider.loading(context);
+            final _repository = FirebaseRepositories();
+            if(!hasData){
+              if(await _repository.getDonorData(_email) == null){
+                final Map _arguments = Map.from(this.widget.arguments);
+                Navigator.pop(context);
+                _arguments['name'] = _name;
+                _arguments['email'] = _email;
+                _arguments['mobile'] = _mobile;
+                _arguments['profile'] = {'link' : profileImage, 'deletehash' : ''};
+                Navigator.pop(context);
+                Navigator.pushNamed(context, AppRoutes.pageHealthData,
+                    arguments: _arguments);
+              } else {
+                Navigator.pop(context);
+                this._onEmailExist(_email);
+              }
+            }
           }
           this.skipTouch = false;
         },
       );
     }
+  }
+
+  _onEmailExist(final String _email){
+
+    WidgetTemplate.message(context,
+        this._message,
+        actionTitle: 'OPEN LOGIN',
+        onActionTap: (){
+        Navigator.popUntil(context, ModalRoute.withName(AppRoutes.pageRouteHome));
+        Future.delayed(Duration(microseconds: 200), () async {
+          donorHandler.donorLoginBehavior.sink.add(_email);
+        });
+    });
   }
 
   @override

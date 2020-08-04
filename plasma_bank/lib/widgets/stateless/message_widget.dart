@@ -41,11 +41,7 @@ class MessageWidget extends StatelessWidget {
           body: Ink(
             child: InkWell(
               onTap: () {
-                if (this.onTapped != null) {
-                  this.onTapped();
-                } else {
-                  Navigator.pop(context);
-                }
+                Navigator.pop(context);
               },
               child: BackdropFilter(
                 filter: ui.ImageFilter.blur(sigmaX: 20, sigmaY: 20),
@@ -177,7 +173,7 @@ class MessageWidget extends StatelessWidget {
                 style: TextStyle(
                     fontSize: 18,
                     fontWeight: FontWeight.w500,
-                    color: Colors.white),
+                    color: Colors.white,),
               ),
               Padding(
                 padding: const EdgeInsets.all(8.0),

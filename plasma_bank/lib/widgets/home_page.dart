@@ -1,11 +1,15 @@
 import 'dart:io';
+import 'package:app_settings/app_settings.dart';
 import 'package:connectivity/connectivity.dart';
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
+import 'package:geolocator/geolocator.dart';
 import 'package:plasma_bank/app_utils/app_constants.dart';
-import 'package:plasma_bank/app_utils/image_helper.dart';
+import 'package:plasma_bank/app_utils/location_provider.dart';
 import 'package:plasma_bank/app_utils/widget_providers.dart';
+import 'package:plasma_bank/app_utils/widget_templates.dart';
 import 'package:plasma_bank/network/covid_data_helper.dart';
+import 'package:plasma_bank/network/donor_handler.dart';
 import 'package:plasma_bank/network/firebase_repositories.dart';
 import 'package:plasma_bank/widgets/stateless/collector_widget.dart';
 import 'package:plasma_bank/widgets/stateless/coronavirus_widget.dart';
@@ -21,19 +25,25 @@ class HomePageWidget extends StatefulWidget {
 }
 
 class _HomePageState extends State<HomePageWidget> {
-  bool visible = false;
-  final _db = FirebaseRepositories();
-  final _downloader = CovidDataHelper();
+
+  BehaviorSubject<int> _segmentBehavior = BehaviorSubject();
   final _bottomNavigationBehavior = BehaviorSubject<int>();
-
-
-
   final Connectivity _connectivity = Connectivity();
+  final _downloader = CovidDataHelper();
+  final _db = FirebaseRepositories();
+  bool visible = false;
 
   @override
   void initState() {
-    // TODO: implement initState
+
     super.initState();
+    donorHandler.donorLoginBehavior.listen(_openLoginWidget);
+  }
+
+
+  _openLoginWidget(final String value){
+
+
   }
 
   @override
@@ -41,6 +51,9 @@ class _HomePageState extends State<HomePageWidget> {
     super.dispose();
     if (_bottomNavigationBehavior != null) {
       _bottomNavigationBehavior.close();
+    }
+    if(!_segmentBehavior.isClosed){
+      _segmentBehavior.close();
     }
   }
 
@@ -62,6 +75,9 @@ class _HomePageState extends State<HomePageWidget> {
           _widget = _getDonateScreen(_context);
         } else if (_snap.data == 1) {
           _widget = _getCollectScreen(_context);
+        } else if (_snap.data == 3){
+        } else if (_snap.data == 4){
+          _widget = _getSettingsWidget(_context);
         }
 
         return Container(
@@ -123,6 +139,58 @@ class _HomePageState extends State<HomePageWidget> {
     );
   }
 
+
+
+
+
+
+  Widget _getSettingsWidget(BuildContext _context){
+    final _width =  MediaQuery.of(context).size.width;
+    return Container(
+      width:_width,
+      color: Colors.red,
+      child: StreamBuilder<int>(
+        initialData: 0,
+        stream: this._segmentBehavior.stream,
+        builder: (context, snapshot) {
+          return Column(
+            children: <Widget>[
+              CupertinoSegmentedControl(
+                onValueChanged: (value){
+
+                },
+                groupValue: snapshot.data,
+                children: loadTabs(),
+              )
+            ],
+          );
+        }
+      ),
+    );
+
+  }
+   loadTabs() {
+    final map = new Map();
+    for (int i = 0; i < 4; i++) {
+//putIfAbsent takes a key and a function callback that has return a value to that key.
+// In our example, since the Map is of type <int,Widget> we have to return widget.
+      map.putIfAbsent(
+          i,
+              () => Text(
+            "Tab $i",
+            style: TextStyle(color: Colors.white),
+          ));
+    }
+    return map;
+  }
+
+
+
+
+
+
+
+
   Widget _getCollectScreen(BuildContext _context) {
 
     if (!this.visible) {
@@ -155,12 +223,13 @@ class _HomePageState extends State<HomePageWidget> {
 
   }
 
-  _registerDonorTap(final bool isRegistration) {
+  _registerDonorTap(final bool isRegistration) async{
     if (isRegistration) {
-      Navigator.pushNamed(context, AppRoutes.pageLocateTerms);
+      _openRegistration();
+//      Navigator.pushNamed(context, AppRoutes.pageLocateTerms);
       //star registration
     } else {
-      Navigator.pushNamed(context, AppRoutes.pageLocateTerms);
+      _openRegistration();
       //display donor list
     }
   }
@@ -180,6 +249,30 @@ class _HomePageState extends State<HomePageWidget> {
       //register collection
     } else {
       //show previous list
+    }
+  }
+
+  _openRegistration() async {
+    WidgetProvider.loading(context);
+    final _status = await locationProvider.updateLocation();
+    if (_status == GeolocationStatus.denied) {
+      Navigator.pop(context);
+
+      WidgetTemplate.message(context, 'location permission is denied! please, go to app settings and provide location permission to create your account.',
+          actionTitle: 'open app settings',
+          actionIcon: Icon(Icons.settings, color: Colors.white,),
+          onActionTap: (){
+            Navigator.pop(context);
+            AppSettings.openAppSettings();
+          }
+      );
+    } else {
+      final _countryList = await locationProvider.getCountryList();
+      Navigator.pop(context);
+      Future.delayed(Duration(milliseconds: 100), () {
+        Navigator.pushNamed(context, AppRoutes.pageAddressData,
+            arguments: {'country_list': _countryList});
+      });
     }
   }
 }
