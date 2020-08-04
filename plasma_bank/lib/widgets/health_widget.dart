@@ -10,6 +10,7 @@ import 'package:plasma_bank/app_utils/app_constants.dart';
 import 'package:plasma_bank/app_utils/widget_providers.dart';
 import 'package:plasma_bank/app_utils/widget_templates.dart';
 import 'package:plasma_bank/media/dash_painter.dart';
+import 'package:plasma_bank/network/donor_handler.dart';
 import 'package:plasma_bank/network/models/blood_donor.dart';
 import 'package:plasma_bank/network/models/plasma_donor.dart';
 import 'package:plasma_bank/widgets/base_widget.dart';
@@ -303,9 +304,8 @@ class _HealthState extends BaseKeyboardState<HealthWidget> {
     }
   }
 
-
   _openDataUploader(final BloodDonor donor){
-    showDialog(context: this.context, builder: (_)=>UploaderWidget(donor));
+    showDialog(context: this.context, builder: (_)=>UploaderWidget(donor, donorHandler.donorEmails));
   }
 
 

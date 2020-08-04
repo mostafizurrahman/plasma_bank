@@ -8,6 +8,8 @@ import 'package:plasma_bank/app_utils/app_constants.dart';
 import 'package:plasma_bank/app_utils/image_helper.dart';
 import 'package:plasma_bank/app_utils/localization_helper.dart';
 import 'package:plasma_bank/app_utils/widget_templates.dart';
+import 'package:plasma_bank/network/donor_handler.dart';
+import 'package:plasma_bank/network/firebase_repositories.dart';
 
 class LaunchScreenWidget extends StatefulWidget {
   @override
@@ -36,6 +38,19 @@ class _LaunchScreenState extends State<LaunchScreenWidget> {
     deviceInfo.appBundleID = _deviceIno['package_name'];
     deviceInfo.deviceUUID = _deviceIno['device_id'].toString().toUpperCase();
     deviceInfo.deviceNamed = _deviceIno['device_name'];
+    final _repository = FirebaseRepositories();
+    _repository.getEmails().listen((event) {
+      if(event.data.isNotEmpty){
+        event.data.forEach((k,v) {
+          debugPrint('key :' + k.toString() + ' value ' + v.toString());
+          if(v is List<String>){
+            donorHandler.donorEmails = v;
+          }
+        });
+      } else {
+        debugPrint('empty');
+      }
+    });
     debugPrint('done');
   }
 

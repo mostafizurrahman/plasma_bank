@@ -12,7 +12,8 @@ import 'package:rxdart/rxdart.dart';
 
 class UploaderWidget extends StatefulWidget {
   final BloodDonor bloodDonor;
-  UploaderWidget(this.bloodDonor);
+  final List<String> emails;
+  UploaderWidget(this.bloodDonor, this.emails);
 
   @override
   State<StatefulWidget> createState() {
@@ -21,11 +22,9 @@ class UploaderWidget extends StatefulWidget {
 }
 
 class _UploaderState extends State<UploaderWidget> {
-
   BehaviorSubject<ImgurResponse> _subject = BehaviorSubject<ImgurResponse>();
   ImgurResponse _imgurResponse;
   _UploaderState(this._imgurResponse);
-
 
   @override
   void initState() {
@@ -41,6 +40,7 @@ class _UploaderState extends State<UploaderWidget> {
 
   @override
   Widget build(BuildContext context) {
+//    Navigator.pop(context);
     return WillPopScope(
       onWillPop: () async {
         return Future<bool>.value(false);
@@ -64,25 +64,28 @@ class _UploaderState extends State<UploaderWidget> {
                       mainAxisAlignment: MainAxisAlignment.center,
                       children: [
                         Container(
-                          decoration: AppStyle.highlightShadow(color: Colors.white),
+                          decoration:
+                              AppStyle.highlightShadow(color: Colors.white),
                           child: ClipRRect(
-                            borderRadius: BorderRadius.all(Radius.circular(1000),),
-
+                            borderRadius: BorderRadius.all(
+                              Radius.circular(1000),
+                            ),
                             child: Container(
                               width: 200,
                               height: 200,
                               child: StreamBuilder<ImgurResponse>(
                                 stream: _subject.stream,
                                 initialData: this._imgurResponse,
-                                builder: (_context, _snap){
-                                  if(_snap.data == null ||
+                                builder: (_context, _snap) {
+                                  if (_snap.data == null ||
                                       _snap.data.imageUrl == null ||
                                       _snap.data.imageUrl.isEmpty ||
                                       _snap.data.imageUrl == 'p1' ||
-                                      _snap.data.imageUrl == 'p2' ){
+                                      _snap.data.imageUrl == 'p2') {
                                     return Center(child: Text('NO IMAGE...'));
                                   }
-                                  debugPrint(_snap.data?.imageUrl ?? 'NIL IMAGE PATH') ;
+                                  debugPrint(
+                                      _snap.data?.imageUrl ?? 'NIL IMAGE PATH');
                                   final _imageWidget = Image.file(
                                     File(_snap.data.imageUrl),
                                     fit: BoxFit.fitWidth,
@@ -149,61 +152,62 @@ class _UploaderState extends State<UploaderWidget> {
     );
   }
 
-  _onUploadError(final _error){
-
+  _onUploadError(final _error) {
     debugPrint('error_occured');
     Navigator.pop(context);
   }
 
   _startUploading() async {
     final _uploader = ImgurHandler();
-    if (this.widget.bloodDonor.profilePicture != null){
+    if (this.widget.bloodDonor.profilePicture != null) {
       if (this.widget.bloodDonor.profilePicture.imageUrl != null &&
-          this.widget.bloodDonor.profilePicture.imageUrl.isNotEmpty){
-        final _profileImageStr = ImgurHandler
-            .getBase64(this.widget.bloodDonor.profilePicture.imageUrl);
+          this.widget.bloodDonor.profilePicture.imageUrl.isNotEmpty) {
+        final _profileImageStr = ImgurHandler.getBase64(
+            this.widget.bloodDonor.profilePicture.imageUrl);
         final _imgResponse = await _uploader
             .uploadImage(_profileImageStr)
             .catchError(_onUploadError);
-        if (_imgResponse != null){
+        if (_imgResponse != null) {
           this.widget.bloodDonor.profilePicture = _imgResponse;
         }
       }
     }
 
     if (this.widget.bloodDonor.prescriptionList != null &&
-        this.widget.bloodDonor.prescriptionList.first != null){
-      if (this.widget.bloodDonor.prescriptionList.first.imageUrl != null){
-        if(this.widget.bloodDonor.prescriptionList.first.imageUrl != 'p1'){
+        this.widget.bloodDonor.prescriptionList.first != null) {
+      if (this.widget.bloodDonor.prescriptionList.first.imageUrl != null) {
+        if (this.widget.bloodDonor.prescriptionList.first.imageUrl != 'p1') {
           this._subject.sink.add(this.widget.bloodDonor.prescriptionList.first);
-          final _prescription = ImgurHandler
-              .getBase64(this.widget.bloodDonor
-              .prescriptionList.first.imageUrl);
-              final _imgResponse = await _uploader
-                  .uploadImage(_prescription)
-                  .catchError(_onUploadError);
-              if (_imgResponse != null){
-                this.widget.bloodDonor.prescriptionList.first.imageUrl = _imgResponse.imageUrl;
-                this.widget.bloodDonor.prescriptionList.first.deleteHash = _imgResponse.deleteHash;
-              }
+          final _prescription = ImgurHandler.getBase64(
+              this.widget.bloodDonor.prescriptionList.first.imageUrl);
+          final _imgResponse = await _uploader
+              .uploadImage(_prescription)
+              .catchError(_onUploadError);
+          if (_imgResponse != null) {
+            this.widget.bloodDonor.prescriptionList.first.imageUrl =
+                _imgResponse.imageUrl;
+            this.widget.bloodDonor.prescriptionList.first.deleteHash =
+                _imgResponse.deleteHash;
+          }
         }
       }
     }
 
     if (this.widget.bloodDonor.prescriptionList != null &&
-        this.widget.bloodDonor.prescriptionList.last != null){
-      if (this.widget.bloodDonor.prescriptionList.last.imageUrl != null){
-        if(this.widget.bloodDonor.prescriptionList.last.imageUrl != 'p2'){
+        this.widget.bloodDonor.prescriptionList.last != null) {
+      if (this.widget.bloodDonor.prescriptionList.last.imageUrl != null) {
+        if (this.widget.bloodDonor.prescriptionList.last.imageUrl != 'p2') {
           this._subject.sink.add(this.widget.bloodDonor.prescriptionList.last);
-          final _prescription = ImgurHandler
-              .getBase64(this.widget.bloodDonor
-              .prescriptionList.last.imageUrl);
+          final _prescription = ImgurHandler.getBase64(
+              this.widget.bloodDonor.prescriptionList.last.imageUrl);
           final _imgResponse = await _uploader
               .uploadImage(_prescription)
               .catchError(_onUploadError);
-          if (_imgResponse != null){
-            this.widget.bloodDonor.prescriptionList.last.imageUrl = _imgResponse.imageUrl;
-            this.widget.bloodDonor.prescriptionList.last.deleteHash = _imgResponse.deleteHash;
+          if (_imgResponse != null) {
+            this.widget.bloodDonor.prescriptionList.last.imageUrl =
+                _imgResponse.imageUrl;
+            this.widget.bloodDonor.prescriptionList.last.deleteHash =
+                _imgResponse.deleteHash;
           }
         }
       }
@@ -211,8 +215,12 @@ class _UploaderState extends State<UploaderWidget> {
 
     final _fireRepository = FirebaseRepositories();
     final BloodDonor _donor = this.widget.bloodDonor;
-    final _docRef = await _fireRepository.uploadBloodDonor(_donor).catchError(_onUploadError);
-    debugPrint(_docRef.documentID);
+
+
+    await _fireRepository
+        .uploadBloodDonor(_donor, this.widget.emails)
+        .catchError(_onUploadError);
+
 
     Navigator.pop(context);
   }

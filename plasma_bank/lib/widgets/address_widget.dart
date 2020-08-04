@@ -2,6 +2,7 @@ import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter/painting.dart';
 import 'package:plasma_bank/app_utils/widget_templates.dart';
+import 'package:plasma_bank/network/firebase_repositories.dart';
 import 'package:plasma_bank/network/models/abstract_person.dart';
 import '../widgets/base_widget.dart';
 import 'package:plasma_bank/app_utils/app_constants.dart';
@@ -33,6 +34,7 @@ class _AddressState extends BaseKeyboardState<AddressWidget> {
   void initState() {
     super.initState();
     _setLocation();
+
   }
 
   _setLocation() {

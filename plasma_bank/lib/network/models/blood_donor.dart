@@ -24,12 +24,27 @@ class BloodDonor extends Person {
 //        super(a, b);
 
 
-  static List<ImgurResponse> getImages(final List<Map>_dataList){
+  static List<String> _getList(List<dynamic> _data){
+    List<String> _list = List();
+    _data.forEach((element) {
+      if(element is String ){
+        if(element.isNotEmpty) {
+          _list.add(element);
+        }
+      }
+    });
+    return _list;
+  }
+
+
+  static List<ImgurResponse> getImages(final List<dynamic>_dataList){
 
     List<ImgurResponse> _images = List();
     for(final image in _dataList){
-      ImgurResponse _response = ImgurResponse(jsonData:image);
-      _images.add(_response);
+      if(image is Map){
+        ImgurResponse _response = ImgurResponse(jsonData:image);
+        _images.add(_response);
+      }
     }
     return _images;
   }
@@ -41,7 +56,7 @@ class BloodDonor extends Person {
         this.diseaseName = map['disease'],
         this.hasSmokeHabit = map['smoke'],
         this.hasDrinkHabit = map['drink'],
-        this.deviceList = map['devices'],
+        this.deviceList = _getList(map['devices']),
         this.prescriptionList = getImages(map['prescriptions']),
         this.lastDonationDate = map['donation_date'],
         super.fromMap(map);
