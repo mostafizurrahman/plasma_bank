@@ -117,7 +117,7 @@ class _DataPickerState extends State<DataPickerWidget> {
                         );
                       },
                     ),
-                  )
+                  ),
                 ],
               ),
               floatingActionButtonLocation:

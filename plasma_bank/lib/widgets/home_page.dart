@@ -17,6 +17,8 @@ import 'package:plasma_bank/widgets/stateless/donor_widget.dart';
 import 'package:plasma_bank/widgets/stateless/home_plasma_widget.dart';
 import 'package:rxdart/rxdart.dart';
 
+import 'VerificationWidget.dart';
+
 class HomePageWidget extends StatefulWidget {
   @override
   State<StatefulWidget> createState() {
@@ -33,6 +35,8 @@ class _HomePageState extends State<HomePageWidget> {
   final _db = FirebaseRepositories();
   bool visible = false;
 
+
+  String _emailAddress;
   @override
   void initState() {
 
@@ -43,6 +47,9 @@ class _HomePageState extends State<HomePageWidget> {
 
   _openLoginWidget(final String value){
 
+    this._emailAddress = value;
+    this._bottomNavigationBehavior.sink.add(4);
+    this._segmentBehavior.sink.add(1);
 
   }
 
@@ -62,6 +69,7 @@ class _HomePageState extends State<HomePageWidget> {
     var mediaQuery = MediaQuery.of(context);
     double _top = mediaQuery.padding.top;
     double _bottom = mediaQuery.padding.bottom;
+    double _navigatorHeight =  (_bottom > 0 ? 55 : 65) + _bottom;
     return StreamBuilder(
       stream: this._bottomNavigationBehavior.stream,
       initialData: 2,
@@ -77,7 +85,7 @@ class _HomePageState extends State<HomePageWidget> {
           _widget = _getCollectScreen(_context);
         } else if (_snap.data == 3){
         } else if (_snap.data == 4){
-          _widget = _getSettingsWidget(_context);
+          _widget = _getSettingsWidget(_context, _navigatorHeight);
         }
 
         return Container(
@@ -96,7 +104,7 @@ class _HomePageState extends State<HomePageWidget> {
               initialData: 2,
               builder: (_context, _snap) {
                 return Container(
-                  height: (_bottom > 0 ? 55 : 65) + _bottom,
+                  height: _navigatorHeight,
                   decoration: AppStyle.bottomNavigatorBox(),
                   child: Row(
                     crossAxisAlignment: CrossAxisAlignment.start,
@@ -144,42 +152,77 @@ class _HomePageState extends State<HomePageWidget> {
 
 
 
-  Widget _getSettingsWidget(BuildContext _context){
-    final _width =  MediaQuery.of(context).size.width;
+  Widget _getSettingsWidget(BuildContext _context, final double _navigatorHeight){
+    double _top = MediaQuery.of(_context).padding.top ;
+    final _height = MediaQuery.of(_context).size.height;
+    final _width =  MediaQuery.of(_context).size.width;
     return Container(
       width:_width,
-      color: Colors.red,
-      child: StreamBuilder<int>(
-        initialData: 0,
-        stream: this._segmentBehavior.stream,
-        builder: (context, snapshot) {
-          return Column(
-            children: <Widget>[
-              CupertinoSegmentedControl(
-                onValueChanged: (value){
-
-                },
-                groupValue: snapshot.data,
-                children: loadTabs(),
-              )
-            ],
-          );
-        }
+      height: _height - _navigatorHeight,
+      child: Padding(
+        padding: EdgeInsets.only(top: _top),
+        child: StreamBuilder<int>(
+          initialData: 0,
+          stream: this._segmentBehavior.stream,
+          builder: (context, snapshot) {
+            return Column(
+              children: <Widget>[
+                SizedBox(height: 12,),
+                CupertinoSegmentedControl(
+                  pressedColor: AppStyle.theme().withAlpha(50),
+                  selectedColor: AppStyle.theme(),
+                  borderColor: AppStyle.theme(),
+                  unselectedColor: Colors.transparent,
+                  onValueChanged: (value){
+                    this._segmentBehavior.sink.add(value);
+                  },
+                  groupValue: snapshot.data,
+                  children: loadTabs(),
+                ),
+                Expanded(
+                  child: snapshot.data == 0 ?
+                  _getAccountListWidget() :
+                  _getLoginWidget(this._emailAddress),
+                ),
+              ],
+            );
+          }
+        ),
       ),
     );
 
   }
-   loadTabs() {
-    final map = new Map();
-    for (int i = 0; i < 4; i++) {
+
+  Widget _getAccountListWidget(){
+    return SizedBox();
+  }
+
+  Widget _getLoginWidget(final String _email){
+    return Container(
+        width: MediaQuery.of(context).size.width,
+        height: MediaQuery.of(context).size.height * 0.75,
+        child: VerificationPWidget(_email));
+  }
+
+
+
+  Map<int, Widget> loadTabs() {
+    final map = new Map<int, Widget>();
+    List _data = ['ACCOUNTS', 'LOGIN'];
+    int _selected = this._segmentBehavior.value ?? 0;
+
+    for (int i = 0; i < _data.length; i++) {
 //putIfAbsent takes a key and a function callback that has return a value to that key.
 // In our example, since the Map is of type <int,Widget> we have to return widget.
       map.putIfAbsent(
           i,
-              () => Text(
-            "Tab $i",
-            style: TextStyle(color: Colors.white),
-          ));
+              () => Padding(
+                padding: const EdgeInsets.all(5.0),
+                child: Text(
+                  _data[i],
+            style: TextStyle(color: _selected == i ? Colors.white : AppStyle.theme()),
+          ),
+              ));
     }
     return map;
   }

@@ -43,8 +43,14 @@ class _LaunchScreenState extends State<LaunchScreenWidget> {
       if(event.data.isNotEmpty){
         event.data.forEach((k,v) {
           debugPrint('key :' + k.toString() + ' value ' + v.toString());
-          if(v is List<String>){
-            donorHandler.donorEmails = v;
+          if(v is List<dynamic>){
+            List<String> _list = List();
+            v.forEach((value) {
+              if(value is String) {
+                _list.add(value);
+              }
+            });
+            donorHandler.donorEmails = _list;
           }
         });
       } else {

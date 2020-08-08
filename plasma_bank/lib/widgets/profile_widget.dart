@@ -119,17 +119,14 @@ class _ProfileState extends BaseKeyboardState<ProfileWidget> {
           } else if (_mobile.isEmpty) {
             super.setError(this._phoneConfig);
           } else {
-
-
             bool hasData = false;
-
             if(donorHandler.hasExistingAccount(_email)){
               this._onEmailExist(_email);
               hasData = true;
             }
-            WidgetProvider.loading(context);
-            final _repository = FirebaseRepositories();
             if(!hasData){
+              WidgetProvider.loading(context);
+              final _repository = FirebaseRepositories();
               if(await _repository.getDonorData(_email) == null){
                 final Map _arguments = Map.from(this.widget.arguments);
                 Navigator.pop(context);
