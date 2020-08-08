@@ -11,13 +11,14 @@ import 'package:plasma_bank/app_utils/widget_templates.dart';
 import 'package:plasma_bank/network/covid_data_helper.dart';
 import 'package:plasma_bank/network/donor_handler.dart';
 import 'package:plasma_bank/network/firebase_repositories.dart';
+import 'package:plasma_bank/widgets/stateful/switch_widget.dart';
 import 'package:plasma_bank/widgets/stateless/collector_widget.dart';
 import 'package:plasma_bank/widgets/stateless/coronavirus_widget.dart';
 import 'package:plasma_bank/widgets/stateless/donor_widget.dart';
 import 'package:plasma_bank/widgets/stateless/home_plasma_widget.dart';
 import 'package:rxdart/rxdart.dart';
 
-import 'VerificationWidget.dart';
+import 'verification_widget.dart';
 
 class HomePageWidget extends StatefulWidget {
   @override
@@ -181,8 +182,8 @@ class _HomePageState extends State<HomePageWidget> {
                 ),
                 Expanded(
                   child: snapshot.data == 0 ?
-                  _getAccountListWidget() :
-                  _getLoginWidget(this._emailAddress),
+                  _getAccountListWidget() : snapshot.data == 1 ?
+                  _getLoginWidget(this._emailAddress) : _getSwitchAccount(),
                 ),
               ],
             );
@@ -192,6 +193,16 @@ class _HomePageState extends State<HomePageWidget> {
     );
 
   }
+
+  Widget _getSwitchAccount(){
+
+    return Container(
+        width: MediaQuery.of(context).size.width,
+        height: MediaQuery.of(context).size.height * 0.75,
+        child: SwitchWidget(_onSwitched, _onLogout),
+    );
+  }
+
 
   Widget _getAccountListWidget(){
     return SizedBox();
@@ -208,7 +219,7 @@ class _HomePageState extends State<HomePageWidget> {
 
   Map<int, Widget> loadTabs() {
     final map = new Map<int, Widget>();
-    List _data = ['ACCOUNTS', 'LOGIN'];
+    List _data = ['ACCOUNTS', 'LOGIN', 'SWITCH'];
     int _selected = this._segmentBehavior.value ?? 0;
 
     for (int i = 0; i < _data.length; i++) {
@@ -318,4 +329,8 @@ class _HomePageState extends State<HomePageWidget> {
       });
     }
   }
+
+
+  _onLogout(String _email){}
+  _onSwitched(String _email){}
 }
