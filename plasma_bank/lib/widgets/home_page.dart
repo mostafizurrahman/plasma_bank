@@ -11,7 +11,9 @@ import 'package:plasma_bank/app_utils/widget_templates.dart';
 import 'package:plasma_bank/network/covid_data_helper.dart';
 import 'package:plasma_bank/network/donor_handler.dart';
 import 'package:plasma_bank/network/firebase_repositories.dart';
+import 'package:plasma_bank/network/models/blood_donor.dart';
 import 'package:plasma_bank/widgets/stateful/accounts_widget.dart';
+import 'package:plasma_bank/widgets/stateful/profile_info.dart';
 import 'package:plasma_bank/widgets/stateful/switch_widget.dart';
 import 'package:plasma_bank/widgets/stateless/collector_widget.dart';
 import 'package:plasma_bank/widgets/stateless/coronavirus_widget.dart';
@@ -29,30 +31,26 @@ class HomePageWidget extends StatefulWidget {
 }
 
 class _HomePageState extends State<HomePageWidget> {
-
   BehaviorSubject<int> _segmentBehavior = BehaviorSubject();
+  BehaviorSubject _loginBehavior = BehaviorSubject();
   final _bottomNavigationBehavior = BehaviorSubject<int>();
   final Connectivity _connectivity = Connectivity();
   final _downloader = CovidDataHelper();
   final _db = FirebaseRepositories();
   bool visible = false;
 
-
-  String _emailAddress;
   @override
   void initState() {
-
     super.initState();
     donorHandler.donorLoginBehavior.listen(_openLoginWidget);
+    donorHandler.readLoginData(this._loginBehavior);
   }
 
-
-  _openLoginWidget(final String value){
-
-    this._emailAddress = value;
+  _openLoginWidget(final String value) {
+    donorHandler.verificationEmail = value;
     this._bottomNavigationBehavior.sink.add(4);
     this._segmentBehavior.sink.add(1);
-
+    this._loginBehavior.sink.add(value);
   }
 
   @override
@@ -61,8 +59,12 @@ class _HomePageState extends State<HomePageWidget> {
     if (_bottomNavigationBehavior != null) {
       _bottomNavigationBehavior.close();
     }
-    if(!_segmentBehavior.isClosed){
+    if (!_segmentBehavior.isClosed) {
       _segmentBehavior.close();
+    }
+
+    if (!_loginBehavior.isClosed) {
+      _loginBehavior.close();
     }
   }
 
@@ -71,7 +73,7 @@ class _HomePageState extends State<HomePageWidget> {
     var mediaQuery = MediaQuery.of(context);
     double _top = mediaQuery.padding.top;
     double _bottom = mediaQuery.padding.bottom;
-    double _navigatorHeight =  (_bottom > 0 ? 55 : 65) + _bottom;
+    double _navigatorHeight = (_bottom > 0 ? 55 : 65) + _bottom;
     return StreamBuilder(
       stream: this._bottomNavigationBehavior.stream,
       initialData: 2,
@@ -85,8 +87,8 @@ class _HomePageState extends State<HomePageWidget> {
           _widget = _getDonateScreen(_context);
         } else if (_snap.data == 1) {
           _widget = _getCollectScreen(_context);
-        } else if (_snap.data == 3){
-        } else if (_snap.data == 4){
+        } else if (_snap.data == 3) {
+        } else if (_snap.data == 4) {
           _widget = _getSettingsWidget(_context, _navigatorHeight);
         }
 
@@ -149,17 +151,13 @@ class _HomePageState extends State<HomePageWidget> {
     );
   }
 
-
-
-
-
-
-  Widget _getSettingsWidget(BuildContext _context, final double _navigatorHeight){
-    double _top = MediaQuery.of(_context).padding.top ;
+  Widget _getSettingsWidget(
+      BuildContext _context, final double _navigatorHeight) {
+    double _top = MediaQuery.of(_context).padding.top;
     final _height = MediaQuery.of(_context).size.height;
-    final _width =  MediaQuery.of(_context).size.width;
+    final _width = MediaQuery.of(_context).size.width;
     return Container(
-      width:_width,
+      width: _width,
       height: _height - _navigatorHeight,
       child: Padding(
         padding: EdgeInsets.only(top: _top),
@@ -169,54 +167,73 @@ class _HomePageState extends State<HomePageWidget> {
           builder: (context, snapshot) {
             return Column(
               children: <Widget>[
-                SizedBox(height: 12,),
+                SizedBox(
+                  height: 12,
+                ),
                 CupertinoSegmentedControl(
                   pressedColor: AppStyle.theme().withAlpha(50),
                   selectedColor: AppStyle.theme(),
                   borderColor: AppStyle.theme(),
                   unselectedColor: Colors.transparent,
-                  onValueChanged: (value){
+                  onValueChanged: (value) {
                     this._segmentBehavior.sink.add(value);
                   },
                   groupValue: snapshot.data,
                   children: loadTabs(),
                 ),
                 Expanded(
-                  child: snapshot.data == 0 ?
-                  _getAccountListWidget() : snapshot.data == 1 ?
-                  _getLoginWidget(this._emailAddress) : _getSwitchAccount(),
+                  child: snapshot.data == 0
+                      ? _getAccountListWidget()
+                      : snapshot.data == 1
+                          ? _getLoginWidget()
+                          : _getSwitchAccount(),
                 ),
               ],
             );
-          }
+          },
         ),
       ),
     );
-
   }
 
-  Widget _getSwitchAccount(){
-
+  Widget _getSwitchAccount() {
     return Container(
-        width: MediaQuery.of(context).size.width,
-        height: MediaQuery.of(context).size.height * 0.75,
-        child: SwitchWidget(_onSwitched, _onLogout),
+      width: MediaQuery.of(context).size.width,
+      height: MediaQuery.of(context).size.height * 0.75,
+      child: SwitchWidget(_onSwitched, _onLogout),
     );
   }
 
-
-  Widget _getAccountListWidget(){
+  Widget _getAccountListWidget() {
     return AccountsWidget();
   }
 
-  Widget _getLoginWidget(final String _email){
-    return Container(
-        width: MediaQuery.of(context).size.width,
-        height: MediaQuery.of(context).size.height * 0.75,
-        child: VerificationPWidget(_email));
+  Widget _getLoginWidget() {
+    return StreamBuilder(
+      stream: _loginBehavior.stream,
+      initialData: donorHandler.loginDonor,
+      builder: (context, snapshot) {
+        if (snapshot.hasData && snapshot.data != null) {
+          if (snapshot.data is String) {
+            return Container(
+              width: MediaQuery.of(context).size.width,
+              height: MediaQuery.of(context).size.height * 0.75,
+              child: VerificationWidget(snapshot.data),
+            );
+          }
+          if (snapshot.data is BloodDonor) {
+            return ProfileInfoWidget();
+          }
+        }
+        return Container(
+
+          child: Center(child:
+            Text('NO  LOGIN  ACCOUNT'),),
+          width: MediaQuery.of(context).size.width,
+        );
+      },
+    );
   }
-
-
 
   Map<int, Widget> loadTabs() {
     final map = new Map<int, Widget>();
@@ -228,26 +245,19 @@ class _HomePageState extends State<HomePageWidget> {
 // In our example, since the Map is of type <int,Widget> we have to return widget.
       map.putIfAbsent(
           i,
-              () => Padding(
+          () => Padding(
                 padding: const EdgeInsets.all(5.0),
                 child: Text(
                   _data[i],
-            style: TextStyle(color: _selected == i ? Colors.white : AppStyle.theme()),
-          ),
+                  style: TextStyle(
+                      color: _selected == i ? Colors.white : AppStyle.theme()),
+                ),
               ));
     }
     return map;
   }
 
-
-
-
-
-
-
-
   Widget _getCollectScreen(BuildContext _context) {
-
     if (!this.visible) {
       Future.delayed(Duration(microseconds: 600), () {
         this.visible = true;
@@ -267,18 +277,16 @@ class _HomePageState extends State<HomePageWidget> {
     return DonorWidget(this.visible, _registerDonorTap);
   }
 
-  Widget _getMessageWidget(){
+  Widget _getMessageWidget() {
     if (!this.visible) {
       Future.delayed(Duration(microseconds: 600), () {
         this.visible = true;
         this._bottomNavigationBehavior.sink.add(0);
       });
     }
-
-
   }
 
-  _registerDonorTap(final bool isRegistration) async{
+  _registerDonorTap(final bool isRegistration) async {
     if (isRegistration) {
       _openRegistration();
 //      Navigator.pushNamed(context, AppRoutes.pageLocateTerms);
@@ -299,8 +307,9 @@ class _HomePageState extends State<HomePageWidget> {
     visible = false;
     this._bottomNavigationBehavior.sink.add(i);
   }
-  _onCollectTap(bool isCollection){
-    if(isCollection){
+
+  _onCollectTap(bool isCollection) {
+    if (isCollection) {
       //register collection
     } else {
       //show previous list
@@ -313,14 +322,16 @@ class _HomePageState extends State<HomePageWidget> {
     if (_status == GeolocationStatus.denied) {
       Navigator.pop(context);
 
-      WidgetTemplate.message(context, 'location permission is denied! please, go to app settings and provide location permission to create your account.',
+      WidgetTemplate.message(context,
+          'location permission is denied! please, go to app settings and provide location permission to create your account.',
           actionTitle: 'open app settings',
-          actionIcon: Icon(Icons.settings, color: Colors.white,),
-          onActionTap: (){
-            Navigator.pop(context);
-            AppSettings.openAppSettings();
-          }
-      );
+          actionIcon: Icon(
+            Icons.settings,
+            color: Colors.white,
+          ), onActionTap: () {
+        Navigator.pop(context);
+        AppSettings.openAppSettings();
+      });
     } else {
       final _countryList = await locationProvider.getCountryList();
       Navigator.pop(context);
@@ -331,7 +342,8 @@ class _HomePageState extends State<HomePageWidget> {
     }
   }
 
-
-  _onLogout(String _email){}
-  _onSwitched(String _email){}
+  _onLogout(String _email) {}
+  _onSwitched(String _email) {
+    this._openLoginWidget(_email);
+  }
 }

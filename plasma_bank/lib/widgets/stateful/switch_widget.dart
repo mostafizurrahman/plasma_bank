@@ -147,6 +147,6 @@ class _SwitchState extends State<SwitchWidget>{
   }
 
   _switchEmail(){
-
+    this.widget.onSwitched(this._emailConfig.controller.text);
   }
 }

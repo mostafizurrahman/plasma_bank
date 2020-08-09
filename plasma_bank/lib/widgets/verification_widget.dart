@@ -7,9 +7,9 @@ import 'package:plasma_bank/app_utils/app_constants.dart';
 import 'package:plasma_bank/widgets/stateful/keyboard_widget.dart';
 import 'package:rxdart/rxdart.dart';
 
-class VerificationPWidget extends StatefulWidget {
+class VerificationWidget extends StatefulWidget {
   final String emailAddress;
-  VerificationPWidget(this.emailAddress);
+  VerificationWidget(this.emailAddress);
 
   @override
   State<StatefulWidget> createState() {
@@ -17,7 +17,7 @@ class VerificationPWidget extends StatefulWidget {
   }
 }
 
-class _VerificationState extends State<VerificationPWidget> {
+class _VerificationState extends State<VerificationWidget> {
   int _selectedBoxIndex = 0;
   List<String> _otpDigits = List.generate(6, (i) => '');
   BehaviorSubject _keyboardBehavior = BehaviorSubject<bool>();
