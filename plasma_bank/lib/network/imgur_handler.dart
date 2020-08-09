@@ -6,6 +6,7 @@ import 'package:plasma_bank/network/auth.dart';
 class ImgurResponse{
   String deleteHash;
   String imageUrl;
+  String thumbUrl;
   ImgurResponse({this.imageUrl,
     this.deleteHash,
     Map<dynamic, dynamic> jsonData}){
@@ -13,6 +14,16 @@ class ImgurResponse{
       assert(this.imageUrl != null , 'url is null');
     } else {
       this.imageUrl = jsonData['link'];
+      if(this.imageUrl != null && this.imageUrl.isNotEmpty){
+        if(this.imageUrl.endsWith('.jpg')){
+          this.thumbUrl = this.imageUrl.replaceAll('.jpg', 'm.jpg');
+        } else if (this.imageUrl.endsWith('.jpeg')){
+          this.thumbUrl = this.imageUrl.replaceAll('.jpg', 'm.jpeg');
+        } else {
+          this.thumbUrl = imageUrl;
+        }
+
+      }
       this.deleteHash = jsonData['deletehash'];
     }
   }

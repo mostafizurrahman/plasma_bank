@@ -11,6 +11,7 @@ import 'package:plasma_bank/app_utils/widget_templates.dart';
 import 'package:plasma_bank/network/covid_data_helper.dart';
 import 'package:plasma_bank/network/donor_handler.dart';
 import 'package:plasma_bank/network/firebase_repositories.dart';
+import 'package:plasma_bank/widgets/stateful/accounts_widget.dart';
 import 'package:plasma_bank/widgets/stateful/switch_widget.dart';
 import 'package:plasma_bank/widgets/stateless/collector_widget.dart';
 import 'package:plasma_bank/widgets/stateless/coronavirus_widget.dart';
@@ -205,7 +206,7 @@ class _HomePageState extends State<HomePageWidget> {
 
 
   Widget _getAccountListWidget(){
-    return SizedBox();
+    return AccountsWidget();
   }
 
   Widget _getLoginWidget(final String _email){
