@@ -123,6 +123,21 @@ class AppStyle {
     ),
   );
 
+  static const BoxDecoration listItemDecoration = BoxDecoration(
+    color: Colors.white,
+    boxShadow: [
+      BoxShadow(
+        color: Color.fromRGBO(0, 0, 0, 0.15),
+        offset: Offset(0, 0),
+        blurRadius: 12,
+        spreadRadius: 8,
+      ),
+    ],
+    borderRadius: const BorderRadius.all(
+      const Radius.circular(8),
+    ),
+  );
+
   static const BoxDecoration selectedDecoration = BoxDecoration(
     color: Colors.white,
     boxShadow: [
