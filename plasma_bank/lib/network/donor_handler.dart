@@ -1,3 +1,5 @@
+import 'dart:math';
+
 import 'package:plasma_bank/network/firebase_repositories.dart';
 import 'package:plasma_bank/network/models/blood_donor.dart';
 import 'package:rxdart/rxdart.dart';
@@ -103,6 +105,15 @@ class DonorHandler {
 
   String get verificationEmail {
     return _verificationEmail;
+  }
+
+  String get identifier{
+    this._identifier = '';
+    var rng = new Random();
+    for (var i = 0; i < 6; i++) {
+      this._identifier += (rng.nextInt(10) % 10).toString();
+    }
+    return this._identifier;
   }
 }
 
