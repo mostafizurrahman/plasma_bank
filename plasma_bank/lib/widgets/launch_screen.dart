@@ -34,6 +34,7 @@ class _LaunchScreenState extends State<LaunchScreenWidget> {
 
     const platform = const MethodChannel('flutter.plasma.com.device_info');
     final Map<dynamic, dynamic> _deviceIno = await platform.invokeMethod('getPackageInfo');
+
     deviceInfo.appPlatform = Platform.isIOS ? 'iOS' : Platform.isAndroid ? 'Android' : 'unknown';
     deviceInfo.appBundleID = _deviceIno['package_name'];
     deviceInfo.deviceUUID = _deviceIno['device_id'].toString().toUpperCase();

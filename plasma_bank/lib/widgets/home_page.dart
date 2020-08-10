@@ -11,6 +11,7 @@ import 'package:plasma_bank/app_utils/widget_templates.dart';
 import 'package:plasma_bank/network/covid_data_helper.dart';
 import 'package:plasma_bank/network/donor_handler.dart';
 import 'package:plasma_bank/network/firebase_repositories.dart';
+import 'package:plasma_bank/network/imgur_handler.dart';
 import 'package:plasma_bank/network/models/blood_donor.dart';
 import 'package:plasma_bank/widgets/stateful/accounts_widget.dart';
 import 'package:plasma_bank/widgets/stateful/profile_info.dart';
@@ -46,11 +47,38 @@ class _HomePageState extends State<HomePageWidget> {
     donorHandler.readLoginData(this._loginBehavior);
   }
 
-  _openLoginWidget(final String value) {
+  _openLoginWidget(final String value) async {
     donorHandler.verificationEmail = value;
-    this._bottomNavigationBehavior.sink.add(4);
-    this._segmentBehavior.sink.add(1);
-    this._loginBehavior.sink.add(value);
+    final _data = {
+      '\"email\"' : '\"$value\"' ,
+      '\"codes\"': '\"${donorHandler.identifier}\"',
+      '\"channel\"': '\"${deviceInfo.appPlatform}\"',
+      '\"pkg_name\"': '\"${deviceInfo.appBundleID}\"',
+    };
+
+    WidgetProvider.loading(context);
+    final _handler = ImgurHandler();
+    _handler.sendCode(_data).then(_onCodeSend).catchError(_onError);
+  }
+
+  _onCodeSend(final _response) {
+    Navigator.pop(context);
+    if (_response is String) {
+      if (_response == 'success') {
+        this._bottomNavigationBehavior.sink.add(4);
+        this._segmentBehavior.sink.add(1);
+        this._loginBehavior.sink.add(donorHandler.verificationEmail);
+      }
+    }
+  }
+
+  _onError(_error) {
+    Navigator.pop(context);
+    final _email = (this._loginBehavior.value ?? '').toString();
+    Future.delayed(Duration(microseconds: 300), () {
+      WidgetTemplate.message(context,
+          'Could not send the verification code to the email $_email. Please! Try again later.');
+    });
   }
 
   @override
@@ -205,7 +233,7 @@ class _HomePageState extends State<HomePageWidget> {
   }
 
   Widget _getAccountListWidget() {
-    return AccountsWidget();
+    return AccountsWidget(_openLoginWidget);
   }
 
   Widget _getLoginWidget() {
@@ -226,9 +254,9 @@ class _HomePageState extends State<HomePageWidget> {
           }
         }
         return Container(
-
-          child: Center(child:
-            Text('NO  LOGIN  ACCOUNT'),),
+          child: Center(
+            child: Text('NO  LOGIN  ACCOUNT'),
+          ),
           width: MediaQuery.of(context).size.width,
         );
       },
@@ -237,22 +265,27 @@ class _HomePageState extends State<HomePageWidget> {
 
   Map<int, Widget> loadTabs() {
     final map = new Map<int, Widget>();
-    List _data = ['ACCOUNTS', 'LOGIN', 'SWITCH'];
+    final String _middle =
+        donorHandler.loginEmail != null && donorHandler.loginEmail.isNotEmpty
+            ? 'PROFILE'
+            : 'VERIFY';
+    List _data = ['ACCOUNTS', _middle, 'LOGIN'];
     int _selected = this._segmentBehavior.value ?? 0;
 
     for (int i = 0; i < _data.length; i++) {
 //putIfAbsent takes a key and a function callback that has return a value to that key.
 // In our example, since the Map is of type <int,Widget> we have to return widget.
       map.putIfAbsent(
-          i,
-          () => Padding(
-                padding: const EdgeInsets.all(5.0),
-                child: Text(
-                  _data[i],
-                  style: TextStyle(
-                      color: _selected == i ? Colors.white : AppStyle.theme()),
-                ),
-              ));
+        i,
+        () => Padding(
+          padding: const EdgeInsets.all(5.0),
+          child: Text(
+            _data[i],
+            style: TextStyle(
+                color: _selected == i ? Colors.white : AppStyle.theme()),
+          ),
+        ),
+      );
     }
     return map;
   }

@@ -6,6 +6,9 @@ import 'package:plasma_bank/network/models/blood_donor.dart';
 import 'package:plasma_bank/network/models/plasma_donor.dart';
 
 class AccountsWidget extends StatefulWidget {
+
+  final Function(String) onAccountSelected;
+  AccountsWidget(this.onAccountSelected);
   @override
   State<StatefulWidget> createState() {
     // TODO: implement createState
@@ -43,91 +46,97 @@ class _AccountState extends State<AccountsWidget> {
         decoration: AppStyle.listItemDecoration,
         width: MediaQuery.of(context).size.width - 48,
         height: 120,
-        child: Row(
-          children: <Widget>[
-            SizedBox(
-              width: 12,
-            ),
-            Container(
-              width: 75,
-              height: 75,
+        child: Material(
+          child: Ink(
+            child: InkWell(
+              onTap: (){
+                this.widget.onAccountSelected(bloodDonor.emailAddress);
+              },
+              child: Row(
+                children: <Widget>[
+                  SizedBox(
+                    width: 12,
+                  ),
+                  Container(
+                    width: 75,
+                    height: 75,
 
-              decoration: AppStyle.circularShadow(),
-              child: ClipRRect(
-                borderRadius: BorderRadius.all(Radius.circular(110)),
-                child:
-                Image.network(
-                  bloodDonor.profilePicture.thumbUrl,
-                  fit: BoxFit.cover,
-                  loadingBuilder: (BuildContext context, Widget child,
-                      ImageChunkEvent loadingProgress) {
-                    if (loadingProgress == null) return child;
-                    return Center(
-                      child: CircularProgressIndicator(
-                        strokeWidth: 1.75,
-                        backgroundColor: Colors.red,
-                        valueColor: AlwaysStoppedAnimation<Color>(
-                          Color.fromARGB(255, 220, 220, 200),
-                        ),
-                        value: loadingProgress.expectedTotalBytes !=
-                            null
-                            ? loadingProgress.cumulativeBytesLoaded /
-                            loadingProgress.expectedTotalBytes
-                            : null,
+                    decoration: AppStyle.circularShadow(),
+                    child: ClipRRect(
+                      borderRadius: BorderRadius.all(Radius.circular(110)),
+                      child:
+                      Image.network(
+                        bloodDonor.profilePicture.thumbUrl,
+                        fit: BoxFit.cover,
+                        loadingBuilder: (BuildContext context, Widget child,
+                            ImageChunkEvent loadingProgress) {
+                          if (loadingProgress == null) return child;
+                          return Center(
+                            child: CircularProgressIndicator(
+                              strokeWidth: 1.75,
+                              backgroundColor: Colors.red,
+                              valueColor: AlwaysStoppedAnimation<Color>(
+                                Color.fromARGB(255, 220, 220, 200),
+                              ),
+                              value: loadingProgress.expectedTotalBytes !=
+                                  null
+                                  ? loadingProgress.cumulativeBytesLoaded /
+                                  loadingProgress.expectedTotalBytes
+                                  : null,
+                            ),
+                          );
+                        },
                       ),
-                    );
-                  },
-                ),
 
 //                Image(
 //                  image: NetworkImage('https://i.imgur.com/oCb2p45.jpeg'),
 //                  fit: BoxFit.fitWidth,
 //                ),
-              ),
-            ),
-            SizedBox(
-              width: 12,
-            ),
-            Stack(
-              children:<Widget>[
-                Column(
-                  crossAxisAlignment: CrossAxisAlignment.start,
-                  mainAxisAlignment: MainAxisAlignment.end,
-                  children: <Widget>[
-                    Text(bloodDonor.fullName),
-                    Text(
-                      bloodDonor.emailAddress,
-                      style: TextStyle(
-                          fontSize: 12, color: Colors.black54, height: 1.5),
-                    ),
-                    Text(
-                      bloodDonor.mobileNumber,
-                      style:
-                      TextStyle(fontSize: 12, color: Colors.grey, height: 1.5),
-                    ),
-                    Container(
-                      width: MediaQuery.of(context).size.width - 147,
-                      height: 25,
-                    ),
-                  ],
-                ),
-                Positioned(
-
-                  top: 30,
-                  right: 4,
-                  bottom: 30,
-                  child: Container(
-                    width: 35,
-                    height: 35,
-                    color:Colors.white,
-
-                    child: IconButton(
-                      icon: Icon(Icons.chevron_right, color: AppStyle.theme(),),
                     ),
                   ),
-                ),
-              ],
-            ),
+                  SizedBox(
+                    width: 12,
+                  ),
+                  Stack(
+                    children:<Widget>[
+                      Column(
+                        crossAxisAlignment: CrossAxisAlignment.start,
+                        mainAxisAlignment: MainAxisAlignment.end,
+                        children: <Widget>[
+                          Text(bloodDonor.fullName),
+                          Text(
+                            bloodDonor.emailAddress,
+                            style: TextStyle(
+                                fontSize: 12, color: Colors.black54, height: 1.5),
+                          ),
+                          Text(
+                            bloodDonor.mobileNumber,
+                            style:
+                            TextStyle(fontSize: 12, color: Colors.grey, height: 1.5),
+                          ),
+                          Container(
+                            width: MediaQuery.of(context).size.width - 147,
+                            height: 25,
+                          ),
+                        ],
+                      ),
+                      Positioned(
+
+                        top: 30,
+                        right: 4,
+                        bottom: 30,
+                        child: Container(
+                          width: 35,
+                          height: 35,
+                          color:Colors.white,
+
+                          child: IconButton(
+                            icon: Icon(Icons.chevron_right, color: AppStyle.theme(),),
+                          ),
+                        ),
+                      ),
+                    ],
+                  ),
 
 //            Expanded(
 //              child: Row(
@@ -138,7 +147,10 @@ class _AccountState extends State<AccountsWidget> {
 //                ],
 //              ),
 //            )
-          ],
+                ],
+              ),
+            ),
+          ),
         ),
       ),
     );
