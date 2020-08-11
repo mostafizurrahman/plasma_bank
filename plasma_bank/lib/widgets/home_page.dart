@@ -35,7 +35,7 @@ class _HomePageState extends State<HomePageWidget> {
   BehaviorSubject<int> _segmentBehavior = BehaviorSubject();
   BehaviorSubject _loginBehavior = BehaviorSubject();
   final _bottomNavigationBehavior = BehaviorSubject<int>();
-  final Connectivity _connectivity = Connectivity();
+
   final _downloader = CovidDataHelper();
   final _db = FirebaseRepositories();
   bool visible = false;
@@ -99,7 +99,7 @@ class _HomePageState extends State<HomePageWidget> {
   @override
   Widget build(BuildContext context) {
     var mediaQuery = MediaQuery.of(context);
-    double _top = mediaQuery.padding.top;
+
     double _bottom = mediaQuery.padding.bottom;
     double _navigatorHeight = (_bottom > 0 ? 55 : 65) + _bottom;
     return StreamBuilder(
@@ -246,11 +246,11 @@ class _HomePageState extends State<HomePageWidget> {
             return Container(
               width: MediaQuery.of(context).size.width,
               height: MediaQuery.of(context).size.height * 0.75,
-              child: VerificationWidget(snapshot.data),
+              child: VerificationWidget(snapshot.data, _onVerifiedOTP, _resendOTP ),
             );
           }
           if (snapshot.data is BloodDonor) {
-            return ProfileInfoWidget();
+            return ProfileInfoWidget(snapshot.data);
           }
         }
         return Container(
@@ -349,6 +349,18 @@ class _HomePageState extends State<HomePageWidget> {
     }
   }
 
+  _onVerifiedOTP(){
+    donorHandler.loginEmail = donorHandler.verificationEmail;
+    donorHandler.donorBehavior.listen((value) {
+      donorHandler.closeDonor();
+      this._loginBehavior.sink.add(value);
+      this._segmentBehavior.sink.add(1);
+    }).onError((error){
+      donorHandler.closeDonor();
+    });
+
+  }
+
   _openRegistration() async {
     WidgetProvider.loading(context);
     final _status = await locationProvider.updateLocation();
@@ -373,6 +385,10 @@ class _HomePageState extends State<HomePageWidget> {
             arguments: {'country_list': _countryList});
       });
     }
+  }
+
+  _resendOTP(){
+    this._openLoginWidget(donorHandler.verificationEmail);
   }
 
   _onLogout(String _email) {}

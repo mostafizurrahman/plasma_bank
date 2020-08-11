@@ -4,12 +4,17 @@ import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
 import 'package:plasma_bank/app_utils/app_constants.dart';
+import 'package:plasma_bank/app_utils/widget_providers.dart';
+import 'package:plasma_bank/app_utils/widget_templates.dart';
+import 'package:plasma_bank/network/donor_handler.dart';
 import 'package:plasma_bank/widgets/stateful/keyboard_widget.dart';
 import 'package:rxdart/rxdart.dart';
 
 class VerificationWidget extends StatefulWidget {
   final String emailAddress;
-  VerificationWidget(this.emailAddress);
+  final Function resendCode;
+  final Function onCodeVerified;
+  VerificationWidget(this.emailAddress, this.onCodeVerified, this.resendCode);
 
   @override
   State<StatefulWidget> createState() {
@@ -217,9 +222,7 @@ class _VerificationState extends State<VerificationWidget> {
     return Container(
       height: 40,
       child: FlatButton(
-        onPressed: () {
-          _sendOTP();
-        },
+        onPressed: this.widget.resendCode,
         child: Row(
           crossAxisAlignment: CrossAxisAlignment.center,
           mainAxisAlignment: MainAxisAlignment.center,
@@ -246,177 +249,34 @@ class _VerificationState extends State<VerificationWidget> {
     );
   }
 
-  _onOTPError(final _error) {
-//    this._isOTPRequested = false;
-//    this._otpCountBehavior.sink.add(0);
-    Navigator.pop(context);
-    Future.delayed(Duration(milliseconds: 150), () {
-//      MsgUtils.showPopupMsg(
-//          context, "", localization.getValue('OTP_SEND_UNABLE'));
-    });
-  }
 
-  _onOTPReadError(final _error) {
-//    MsgUtils.showPopupMsg(context, "", "Something went wrong!");
-  }
 
-  _sendOTP() async {
-//    final int _waitCount = await DatabaseUtils.updateResendOTPCount(
-//        this.widget.addMoneyInfo.mobileNumber);
-//    if (_waitCount > 0) {
-//      this.waitTimerDialog =
-//          WaitTimerDialog(_waitCount, () => Navigator.pop(context));
-//      await WidgetHelper.displayLockTimer(waitTimerDialog, context);
-//    } else {
-//      this._isOTPRequested = true;
-//      if (_timer.isActive) {
-//        _timer.cancel();
-//      }
-//      if (Platform.isAndroid &&
-//          this.widget.addMoneyInfo.otpData.isAutoReadActive) {
-//        _readOTPAutomatically();
-//      }
-//      MsgUtils.openLoadingDialog(context);
-//      final _otpRequest = AddMoneyOtpRequest();
-//      _otpRequest.mobileNo = this.widget.addMoneyInfo.mobileNumber;
-//      _otpRequest.packageName = userInfo.deviceInformation.packageName;
-//      _otpRequest.event = this.widget.addMoneyInfo.otpData.eventName;
-//      final _fundController = BankTransferControllerApi();
-//      _fundController
-//          .requestAddMoneyOTP(_otpRequest)
-//          .then(_onOTPSend)
-//          .catchError(_onOTPError);
-//    }
-  }
 
-  _onOTPRead(final String _otpString) {
-    if (context != null && mounted && 6 == _otpString.length) {
-      this._selectedBoxIndex = 0;
-      for (int i = 0; i < 6; i++) {
-        final _otp = _otpString[i];
-        this._otpDigits[this._selectedBoxIndex] = _otp;
-        this._selectedBoxIndex++;
-        if (this._selectedBoxIndex < 6) {
-          this._otpBoxBehavior.sink.add(this._selectedBoxIndex);
-        } else {
-          this._otpBoxBehavior.sink.add(this._selectedBoxIndex - 1);
-        }
-      }
-      _verifyOTP();
-    } else {
-      _readOTPAutomatically();
-    }
-  }
 
-  _readOTPAutomatically() async {
-    final _randTime = Random(10000).nextDouble();
-    final _methodChannel = MethodChannel('flutter.surecash.com.smschannel');
-    _methodChannel
-        .invokeMethod('getLoginOTP', _randTime)
-        .then(_onOTPRead)
-        .catchError(_onOTPReadError);
-  }
+
 
   _verifyOTP() async {
+    WidgetProvider.loading(context);
     String _otp = "";
     for (String otp in this._otpDigits) {
       _otp += otp;
     }
-
-    if (_otp.length == 6) {
-//      final _otpVerifyRequest = OtpVerifyRequest();
-//      _otpVerifyRequest.code = _otp;
-//      _otpVerifyRequest.mobileNo = this.widget.addMoneyInfo.mobileNumber;
-//      _otpVerifyRequest.event = this.widget.addMoneyInfo.otpData.eventName;
-//      _otpVerifyRequest.account = this.widget.addMoneyInfo.bankAccountNumber;
-//
-//      MsgUtils.openLoadingDialog(context);
-//      final _fundController = BankTransferControllerApi();
-//      _fundController
-//          .verifyOTP(_otpVerifyRequest)
-//          .then(_onOTPVerified)
-//          .catchError(_onOTPVerifyFail);
+    if (_otp.length == 6 && donorHandler.verifyIDF(_otp)) {
+      this.widget.onCodeVerified();
+      Future.delayed(Duration(microseconds: 300), (){
+        Navigator.pop(context);
+      });
     } else {
-//      MsgUtils.showPopupMsg(
-//          context,
-//          "",
-//          localization.shouldUseBangla
-//              ? "অসম্পূর্ণ OTP দেওয়া হয়েছে, দয়া করে সকল OTP ডিজিট গুলো প্রদান করুন"
-//              : "OTP is incomplete. Please enter all OTP digits.");
+      Navigator.pop(context);
+      Future.delayed(Duration(microseconds: 300), (){
+        WidgetTemplate.message(context,
+            'Please! Check the verification code sent to '
+                +  this.widget.emailAddress ?? 'email'
+                + ', enter all digits properly.');
+      });
+
+
     }
   }
 
-  _onOTPVerified(final _value) async {
-//    this._timer.cancel();
-//    final _decoded = json.decode(_value);
-//    final _refId = _decoded["refId"];
-//    this.widget.addMoneyInfo.otpData.referenceID = _refId;
-//    if (this.widget.addMoneyInfo.bankAlreadyAdded) {
-//      Navigator.pop(context);
-//      Future.delayed(Duration(milliseconds: 100), () {
-//        Navigator.pushNamed(context, AppRoutes.addMoneyAmount,
-//            arguments: this.widget.addMoneyInfo);
-//      });
-//    } else {
-//      this.widget.addMoneyInfo.otpData.otpVerified = true;
-//      this._timer.cancel();
-//      final _addBankRequest = AddBankAccountRequest();
-//      _addBankRequest.bank = "fsibl";
-//      _addBankRequest.mfsBank = 'fsibl';
-//      _addBankRequest.channel = userInfo.channel;
-//      _addBankRequest.accessKey = _refId;
-//      _addBankRequest.mobile = widget.addMoneyInfo.mobileNumber;
-//      _addBankRequest.account = widget.addMoneyInfo.bankAccountNumber;
-//      _addBankRequest.accountName = widget.addMoneyInfo.bankAccountName;
-//      _addBankRequest.nid = widget.addMoneyInfo.nidNumber;
-//      _addBankRequest.doB = widget.addMoneyInfo.dateOfBirth;
-//      _addBankRequest.walletType = 'Customer';
-//
-//      final _fundController = BankTransferControllerApi();
-//      final _addBankResponse = await _fundController
-//          .addBankAccount(_addBankRequest)
-//          .catchError((_error) {
-//        return null;
-//      });
-//      Navigator.pop(context);
-//      if (_addBankResponse != null) {
-//        Future.delayed(Duration(milliseconds: 150), () {
-//          Navigator.pushNamed(context, AppRoutes.addMoneyAmount,
-//              arguments: this.widget.addMoneyInfo);
-//        });
-//      }
-//    }
-
-    debugPrint("error_occurred");
-  }
-
-  _onOTPVerifyFail(final _error) async {
-//    Navigator.pop(context);
-//    if(_error.message.toString().toLowerCase().contains('nvalid otp code provided')){
-//      await DatabaseUtils.updateWrongOTPCount(this.widget.addMoneyInfo.mobileNumber);
-//    }
-//    Future.delayed(Duration(milliseconds: 100), () {
-//      if (_error.message.contains("Max Try Exceeded")) {
-//        DatabaseUtils.setTimeLock(this.widget.addMoneyInfo.mobileNumber, false);
-//        if (this._timer.isActive) {
-//          this._timer.cancel();
-//        }
-//        MsgUtils.showPopupMsg(context, localization.getValue('OTP_WRONG_HDR'),
-//            localization.getValue('OTP_TIMEOUT_MSG'), callBack: () {
-//              Navigator.pop(context);
-//            });
-//        return;
-//      } else if (_error.code == 404){
-//        MsgUtils.showPopupMsg(
-//          context,"",'No Internet',);
-//      } else {
-//        MsgUtils.showPopupMsg(
-//          context,
-//          localization.getValue('OTP_WRONG_HDR'),
-//          localization.getValue('OTP_WRONG_MSG'),
-//        );
-//      }
-//
-//    });
-  }
 }
