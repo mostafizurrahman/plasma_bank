@@ -355,6 +355,7 @@ class _HomePageState extends State<HomePageWidget> {
       donorHandler.closeDonor();
       this._loginBehavior.sink.add(value);
       this._segmentBehavior.sink.add(1);
+      donorHandler.verificationEmail = null;
     }).onError((error){
       donorHandler.closeDonor();
     });
