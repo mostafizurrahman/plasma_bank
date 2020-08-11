@@ -9,7 +9,6 @@ class DonorHandler {
   static final _donorHandler = DonorHandler._internal();
   DonorHandler._internal();
   factory DonorHandler() {
-
     return _donorHandler;
   }
 
@@ -37,17 +36,21 @@ class DonorHandler {
   String _identifier;
 
   PublishSubject<String> donorLoginBehavior = PublishSubject();
-//  PublishSubject<BloodDonor> donorBehavior = PublishSubject();
+  PublishSubject<BloodDonor> donorBehavior = PublishSubject();
 
   dispose() {
     _donorHandler.donorLoginBehavior.close();
     if (!donorLoginBehavior.isClosed) {
       donorLoginBehavior.close();
     }
-//    _donorHandler.donorBehavior.close();
-//    if (!donorBehavior.isClosed) {
-//      donorBehavior.close();
-//    }
+    closeDonor();
+  }
+
+  closeDonor() {
+    _donorHandler.donorBehavior.close();
+    if (!donorBehavior.isClosed) {
+      donorBehavior.close();
+    }
   }
 
   List<String> _donorEmails = List();
@@ -80,18 +83,27 @@ class DonorHandler {
   }
 
   set loginEmail(String _email) {
+
+    donorBehavior = PublishSubject();
     this._loginEmail = _email;
     if (_email == null) {
       this.loginDonor = null;
+      donorBehavior.sink.add(null);
     } else {
+      SharedPreferences.getInstance().then((value) async {
+        value.setString('login_email', _email);
+      });
       final _repository = FirebaseRepositories();
       _repository.getDonorData(_email).then(
         (value) {
           if (value != null) {
             this.loginDonor = value;
+            donorBehavior.sink.add(value);
           }
         },
-      );
+      ).catchError((_error) {
+        donorBehavior.sink.add(null);
+      });
     }
   }
 
@@ -107,13 +119,17 @@ class DonorHandler {
     return _verificationEmail;
   }
 
-  String get identifier{
+  String get identifier {
     this._identifier = '';
     var rng = new Random();
     for (var i = 0; i < 6; i++) {
       this._identifier += (rng.nextInt(10) % 10).toString();
     }
     return this._identifier;
+  }
+
+  bool verifyIDF(final String _idf) {
+    return _idf == this._identifier;
   }
 }
 

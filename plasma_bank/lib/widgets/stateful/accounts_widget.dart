@@ -47,6 +47,7 @@ class _AccountState extends State<AccountsWidget> {
         width: MediaQuery.of(context).size.width - 48,
         height: 120,
         child: Material(
+          color: Colors.transparent,
           child: Ink(
             child: InkWell(
               onTap: (){
@@ -128,9 +129,10 @@ class _AccountState extends State<AccountsWidget> {
                         child: Container(
                           width: 35,
                           height: 35,
-                          color:Colors.white,
+
 
                           child: IconButton(
+                            color: Colors.transparent,
                             icon: Icon(Icons.chevron_right, color: AppStyle.theme(),),
                           ),
                         ),
