@@ -17,13 +17,19 @@ class _ProfileInfoState extends State<ProfileInfoWidget> {
   @override
   Widget build(BuildContext context) {
     final _width = MediaQuery.of(context).size.width;
+    final _height = MediaQuery.of(context).size.height;
 
+    final double _contentH  = _height - MediaQuery.of(context).padding.bottom - MediaQuery.of(context).padding.top - 300;
     String __address = this.widget.bloodDonor.address.city +
         ', ' +
         this.widget.bloodDonor.address.state +
         ', ' +
         this.widget.bloodDonor.address.country;
-    return Scaffold(
+    return
+//      Container(color: Colors.red,);
+
+
+      Scaffold(
       backgroundColor: Colors.transparent,
       body: Container(
         width: _width,
@@ -40,24 +46,30 @@ class _ProfileInfoState extends State<ProfileInfoWidget> {
                 ),
               ),
               _getBasicRow(),
-              Padding(
-                padding: EdgeInsets.only(top: 20, bottom: 24),
-                child: Container(
-                  height: 0.35,
-                  color: AppStyle.theme(),
+              Expanded(
+//                color: Colors.grey,
+//                height: _contentH,
+                child: Column(
+
+
+                  children: <Widget>[
+
+                    SizedBox(height: 24,),
+                    _getDataRow(
+                        'Last Donation : ', this.widget.bloodDonor.lastDonationDate,
+                        isEditable: true),
+                    _getDataRow('Blood Group : ', this.widget.bloodDonor.bloodGroup),
+
+                    _getDataRow(
+                      'Plasma Donor : ', this.widget.bloodDonor is PlasmaDonor ? 'YES' : 'NO',
+                    ),
+                    _getDataRow(
+                      'Address : ', __address.replaceAll('District', '').replaceAll('Division', ''),
+                      isAddress: true,
+                    )
+                  ],
                 ),
               ),
-              _getDataRow(
-                  'Last Donation : ', this.widget.bloodDonor.lastDonationDate,
-                  isEditable: true),
-              _getDataRow('Blood Group : ', this.widget.bloodDonor.bloodGroup),
-
-              _getDataRow(
-                'Plasma Donor : ', this.widget.bloodDonor is PlasmaDonor ? 'YES' : 'NO',
-              ),
-              _getDataRow(
-                  'Address : ', __address.replaceAll('District', '').replaceAll('Division', ''),
-                  ),
 
             ],
           ),
@@ -67,33 +79,29 @@ class _ProfileInfoState extends State<ProfileInfoWidget> {
   }
 
   Widget _getDataRow(final String _title, final String _value,
-      {bool isEditable = false}) {
-    return Row(
-      children: <Widget>[
-        Container(
-          height: 35,
-          child: Column(
-            children: <Widget>[
-              Icon(
-                Icons.fiber_manual_record,
-                size: 15,
-                color: AppStyle.theme(),
+      {bool isEditable = false, isAddress = false}) {
+    return Padding(
+      padding: const EdgeInsets.only(bottom: 16),
+      child: Container(
+        width: MediaQuery.of(context).size.width - 48,
+        height: isAddress ? 100 : 50,
+        decoration: AppStyle.lightDecoration,
+        child: Row(
+          mainAxisAlignment: MainAxisAlignment.center,
+
+          children: <Widget>[
+            SizedBox(width: 8,),
+            Container(
+              height: 35,
+              width: isAddress ? 75 : 115,
+              child: Center(
+                child: Text(
+                  _title,
+                  style: TextStyle(color: Colors.black.withAlpha(140)),
+                ),
               ),
-            ],
-          ),
-        ),
-        Container(
-          height: 35,
-          width: 105,
-          child: Text(
-            _title,
-            style: TextStyle(color: Colors.black.withAlpha(140)),
-          ),
-        ),
-        Expanded(
-          child: Container(
-            height: 35,
-            child: Expanded(
+            ),
+            Expanded(
               child: Text(
                 _value,
                 softWrap: true,
@@ -102,13 +110,13 @@ class _ProfileInfoState extends State<ProfileInfoWidget> {
                     fontWeight: FontWeight.w600),
               ),
             ),
-          ),
-        ),
-        isEditable
-            ? Container(
+            isEditable ? ClipRRect(
+              borderRadius: BorderRadius.all(Radius.circular(100)),
+              child: Container(
                 height: 35,
                 width: 35,
                 child: Material(
+                  color: Colors.transparent,
                   child: Ink(
                     child: InkWell(
                       onTap: () {
@@ -121,9 +129,13 @@ class _ProfileInfoState extends State<ProfileInfoWidget> {
                     ),
                   ),
                 ),
-              )
-            : SizedBox(),
-      ],
+              ),
+            )
+                : SizedBox(),
+            SizedBox(width: 12,),
+          ],
+        ),
+      ),
     );
   }
 

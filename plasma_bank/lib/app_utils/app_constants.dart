@@ -108,6 +108,24 @@ class AppStyle {
   static const fontBold = 'SF_UIFont_Bold';
   static const fontNormal = 'SF_UIFont';
   static const Color colorHighlight = Color.fromARGB(255, 255, 20, 80);
+
+
+  static const BoxDecoration lightDecoration = BoxDecoration(
+    color: Colors.white,
+    boxShadow: [
+      BoxShadow(
+        color: Color.fromARGB(200, 200, 200, 200),
+        offset: Offset(0, 0),
+        blurRadius: 4,
+        spreadRadius: 2.25,
+      ),
+    ],
+    borderRadius: const BorderRadius.all(
+      const Radius.circular(6),
+    ),
+  );
+
+
   static const BoxDecoration shadowDecoration = BoxDecoration(
     color: Colors.white,
     boxShadow: [
@@ -230,17 +248,12 @@ class DeviceInfo {
   factory DeviceInfo() {
     return _device;
   }
-
-
-
-
 }
 
 final DeviceInfo deviceInfo = DeviceInfo();
 
 
 class TextConfig{
-
   final int maxLen;
   Timestamped timestamped;
   final bool isDigit;

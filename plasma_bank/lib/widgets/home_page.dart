@@ -214,7 +214,7 @@ class _HomePageState extends State<HomePageWidget> {
                       ? _getAccountListWidget()
                       : snapshot.data == 1
                           ? _getLoginWidget()
-                          : _getSwitchAccount(),
+                          : snapshot.data == 2 ? _getSwitchAccount() : Container(),
                 ),
               ],
             );
@@ -255,7 +255,7 @@ class _HomePageState extends State<HomePageWidget> {
         }
         return Container(
           child: Center(
-            child: Text('NO  LOGIN  ACCOUNT'),
+            child: Text('NO ACCOUNT TO VERIFY'),
           ),
           width: MediaQuery.of(context).size.width,
         );
@@ -269,7 +269,7 @@ class _HomePageState extends State<HomePageWidget> {
         donorHandler.loginEmail != null && donorHandler.loginEmail.isNotEmpty
             ? 'PROFILE'
             : 'VERIFY';
-    List _data = ['ACCOUNTS', _middle, 'LOGIN'];
+    List _data = ['ACCOUNTS', _middle, 'LOGIN', 'APP ☲'];
     int _selected = this._segmentBehavior.value ?? 0;
 
     for (int i = 0; i < _data.length; i++) {
@@ -282,6 +282,7 @@ class _HomePageState extends State<HomePageWidget> {
           child: Text(
             _data[i],
             style: TextStyle(
+              fontSize: 10,
                 color: _selected == i ? Colors.white : AppStyle.theme()),
           ),
         ),
