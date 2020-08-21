@@ -228,8 +228,12 @@ class _HomePageState extends State<HomePageWidget> {
     return Container(
       width: MediaQuery.of(context).size.width,
       height: MediaQuery.of(context).size.height * 0.75,
-      child: SwitchWidget(_onSwitched, _onLogout),
+      child: SwitchWidget(_onSwitched, _onLogout, _onLoginProfile, donorHandler.loginDonor),
     );
+  }
+
+  _onLoginProfile(){
+    _bottomNavigationBehavior.sink.add(1);
   }
 
   Widget _getAccountListWidget() {
@@ -393,7 +397,12 @@ class _HomePageState extends State<HomePageWidget> {
     this._openLoginWidget(donorHandler.verificationEmail);
   }
 
-  _onLogout(String _email) {}
+  _onLogout(String _email) {
+    donorHandler.logoutEmail(_email);
+    this._loginBehavior.sink.add(null);
+    WidgetTemplate.message(context, "The account associated with $_email is logout successfully!");
+  }
+
   _onSwitched(String _email) {
     this._openLoginWidget(_email);
   }

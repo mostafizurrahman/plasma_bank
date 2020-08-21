@@ -1,8 +1,13 @@
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
+import 'package:intl/intl.dart';
 import 'package:plasma_bank/app_utils/app_constants.dart';
+import 'package:plasma_bank/app_utils/widget_providers.dart';
+import 'package:plasma_bank/app_utils/widget_templates.dart';
+import 'package:plasma_bank/network/firebase_repositories.dart';
 import 'package:plasma_bank/network/models/blood_donor.dart';
 import 'package:plasma_bank/network/models/plasma_donor.dart';
+import 'package:rxdart/rxdart.dart';
 
 class ProfileInfoWidget extends StatefulWidget {
   final BloodDonor bloodDonor;
@@ -14,6 +19,18 @@ class ProfileInfoWidget extends StatefulWidget {
 }
 
 class _ProfileInfoState extends State<ProfileInfoWidget> {
+
+  BehaviorSubject<String> _lastDonation = BehaviorSubject();
+
+  @override
+  void dispose() {
+    // TODO: implement dispose
+    super.dispose();
+    if(_lastDonation != null && !_lastDonation.isClosed) {
+      _lastDonation.close();
+    }
+  }
+
   @override
   Widget build(BuildContext context) {
     final _width = MediaQuery.of(context).size.width;
@@ -31,54 +48,63 @@ class _ProfileInfoState extends State<ProfileInfoWidget> {
 
       Scaffold(
       backgroundColor: Colors.transparent,
-      body: Container(
-        width: _width,
-        child: Padding(
-          padding: EdgeInsets.only(left: 24, right: 24, top: 12),
-          child: Column(
-            crossAxisAlignment: CrossAxisAlignment.start,
-            children: <Widget>[
-              Padding(
-                padding: const EdgeInsets.only(bottom: 8),
-                child: Text(
-                  'logged-in as...',
-                  style: TextStyle(color: Colors.grey.withAlpha(150)),
+      body: SingleChildScrollView(
+        child: Container(
+          height: 550,
+          width: _width,
+          child: Padding(
+            padding: EdgeInsets.only(left: 24, right: 24, top: 12),
+            child: Column(
+              crossAxisAlignment: CrossAxisAlignment.start,
+              children: <Widget>[
+                Padding(
+                  padding: const EdgeInsets.only(bottom: 8),
+                  child: Text(
+                    'logged-in as...',
+                    style: TextStyle(color: Colors.grey.withAlpha(150)),
+                  ),
                 ),
-              ),
-              _getBasicRow(),
-              Expanded(
+                _getBasicRow(),
+                Expanded(
 //                color: Colors.grey,
 //                height: _contentH,
-                child: Column(
+                  child: Column(
 
 
-                  children: <Widget>[
+                    children: <Widget>[
 
-                    SizedBox(height: 24,),
-                    _getDataRow(
-                        'Last Donation : ', this.widget.bloodDonor.lastDonationDate,
-                        isEditable: true),
-                    _getDataRow('Blood Group : ', this.widget.bloodDonor.bloodGroup),
+                      SizedBox(height: 24,),
+                      StreamBuilder<String>(
+                        stream: _lastDonation.stream,
+                        initialData: this.widget.bloodDonor.lastDonationDate,
+                        builder: (context, snapshot) {
+                          return _getDataRow(
+                              'Last Donation : ', snapshot.data, Icons.date_range,
+                              isEditable: true);
+                        }
+                      ),
+                      _getDataRow('Blood Group : ', this.widget.bloodDonor.bloodGroup, Icons.blur_circular),
 
-                    _getDataRow(
-                      'Plasma Donor : ', this.widget.bloodDonor is PlasmaDonor ? 'YES' : 'NO',
-                    ),
-                    _getDataRow(
-                      'Address : ', __address.replaceAll('District', '').replaceAll('Division', ''),
-                      isAddress: true,
-                    )
-                  ],
+                      _getDataRow(
+                        'Plasma Donor : ', this.widget.bloodDonor is PlasmaDonor ? 'YES' : 'NO', Icons.brightness_5
+                      ),
+                      _getDataRow(
+                        'Address : ', __address.replaceAll('District', '').replaceAll('Division', ''), Icons.home,
+                        isAddress: true,
+                      )
+                    ],
+                  ),
                 ),
-              ),
 
-            ],
+              ],
+            ),
           ),
         ),
       ),
     );
   }
 
-  Widget _getDataRow(final String _title, final String _value,
+  Widget _getDataRow(final String _title, final String _value, IconData _data,
       {bool isEditable = false, isAddress = false}) {
     return Padding(
       padding: const EdgeInsets.only(bottom: 16),
@@ -90,7 +116,10 @@ class _ProfileInfoState extends State<ProfileInfoWidget> {
           mainAxisAlignment: MainAxisAlignment.center,
 
           children: <Widget>[
-            SizedBox(width: 8,),
+            Padding(
+              padding: EdgeInsets.only(left: 8),
+              child: Icon(_data, size: 20, color: AppStyle.theme(),),
+            ),
             Container(
               height: 35,
               width: isAddress ? 75 : 115,
@@ -119,8 +148,34 @@ class _ProfileInfoState extends State<ProfileInfoWidget> {
                   color: Colors.transparent,
                   child: Ink(
                     child: InkWell(
-                      onTap: () {
+                      onTap: ()async {
                         debugPrint('show edit tools');
+                        final _dateTime = await showDatePicker(
+                            context: context,
+                            initialDate:  DateTime.now(),
+                            lastDate: DateTime.now(),
+                            firstDate: DateTime(1920));
+                        if (_dateTime != null) {
+
+                          Future.delayed(Duration(microseconds: 100), () async {
+
+
+                            WidgetProvider.loading(context);
+                            String _date = DateFormat("dd MMM, yyyy").format(_dateTime);
+                            this.widget.bloodDonor.lastDonationDate = _date;
+                            this._lastDonation.sink.add(_date);
+
+                            final _repository = FirebaseRepositories();
+                            final _isUpdate = await _repository.updateDonationDate(_date,
+                                this.widget.bloodDonor.emailAddress);
+                            Navigator.pop(context);
+                           if( _isUpdate){
+                             WidgetTemplate.message(context, 'Your last blood donation date updated successfully!');
+                           }
+                          });
+
+//      _controller.timestamped = _dateTime;
+                        }
                       },
                       child: Icon(
                         Icons.edit,

@@ -83,6 +83,19 @@ class FirebaseRepositories {
     return null;
   }
 
+  Future<bool> updateDonationDate(String _date, String _email) async {
+    bool _updated = true;
+    await Firestore.instance
+        .collection('donor')
+        .document(_email)
+        .updateData({'donation_date' : _date})
+        .catchError((_error) {
+      _updated = false;
+      debugPrint('error+occurred  ___________ ' + _error.toString());
+    });
+    return _updated;
+  }
+
   uploadBloodDonor(final BloodDonor bloodDonor, List<String> _emails) async {
     await Firestore.instance
         .collection('donor')
