@@ -230,4 +230,53 @@ class WidgetTemplate {
       ],
     );
   }
+
+
+  static Widget getPageAppBar(BuildContext _context){
+    return Padding(
+      padding: const EdgeInsets.only(bottom: 32),
+      child: Container(
+        child: Column(
+          children: <Widget>[
+            Row(
+              crossAxisAlignment: CrossAxisAlignment.center,
+              children: <Widget>[
+
+                SizedBox(width: 24,),
+                FloatingActionButton(
+                  backgroundColor: Colors.white,
+                  child: Icon(Icons.arrow_back_ios, color: AppStyle.theme(),),
+                  onPressed: ()=>Navigator.pop(_context),
+                ),
+
+                SizedBox(width: 12,),
+                Center(
+                  child: Text(
+                    'BLOOD DONORS',
+                    style: TextStyle(
+                      fontSize: 20,
+                      fontFamily: AppStyle.fontBold,
+                    ),
+                  ),
+                )
+              ],
+            ),
+
+//                              Padding(
+//                                padding: const EdgeInsets.only(top: 12),
+//                                child: Container(
+//                                  width: displayData.width,
+//                                  child: CustomPaint(
+//                                    painter: DashLinePainter(),
+//                                  ),
+//                                ),
+//                              ),
+          ],
+        ),
+//                        height: 110,
+
+//                        color: Colors.red,
+      ),
+    );
+  }
 }

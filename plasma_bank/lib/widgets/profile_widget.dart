@@ -25,10 +25,10 @@ class _ProfileState extends BaseKeyboardState<ProfileWidget> {
   final TextConfig _nameConfig = TextConfig('name');
   final TextConfig _emailConfig = TextConfig('email');
   final TextConfig _phoneConfig = TextConfig('mobile #');
-  final String _message = 'This email has registered as Blood Donor! Please, Login and verify the account';
+  final String _message =
+      'This email has registered as Blood Donor! Please, Login and verify the account';
   String profileImage;
   final BehaviorSubject<String> _profileBehavior = BehaviorSubject();
-
 
   @override
   void initState() {
@@ -36,7 +36,6 @@ class _ProfileState extends BaseKeyboardState<ProfileWidget> {
     this._nameConfig.controller.text = 'mostafizur rahman';
     this._emailConfig.controller.text = 'mostafizur.cse@gmail.com';
     this._phoneConfig.controller.text = '01675876752';
-
   }
 
   @override
@@ -64,9 +63,8 @@ class _ProfileState extends BaseKeyboardState<ProfileWidget> {
   }
 
   _openCamera() async {
-
     var _status = await Permission.camera.status;
-    if(_status.isGranted || _status.isUndetermined){
+    if (_status.isGranted || _status.isUndetermined) {
       this.skipTouch = true;
       final arguments = {
         'image_named': 'profile',
@@ -78,20 +76,23 @@ class _ProfileState extends BaseKeyboardState<ProfileWidget> {
           arguments: arguments);
       Future.delayed(
         Duration(seconds: 1),
-            () {
+        () {
           this.skipTouch = false;
         },
       );
     } else {
       WidgetTemplate.message(context,
           'camera permission is denied. please, go to app settings and grant the camera permission',
-          actionIcon: Icon(Icons.settings, color: Colors.white,),
+          actionIcon: Icon(
+            Icons.settings,
+            color: Colors.white,
+          ),
           onActionTap: this._onCameraDenied,
           actionTitle: 'open app settings');
     }
   }
 
-  _onCameraDenied(){
+  _onCameraDenied() {
     Navigator.pop(context);
     AppSettings.openAppSettings();
   }
@@ -120,20 +121,23 @@ class _ProfileState extends BaseKeyboardState<ProfileWidget> {
             super.setError(this._phoneConfig);
           } else {
             bool hasData = false;
-            if(donorHandler.hasExistingAccount(_email)){
+            if (donorHandler.hasExistingAccount(_email)) {
               this._onEmailExist(_email);
               hasData = true;
             }
-            if(!hasData){
+            if (!hasData) {
               WidgetProvider.loading(context);
               final _repository = FirebaseRepositories();
-              if(await _repository.getDonorData(_email) == null){
+              if (await _repository.getDonorData(_email) == null) {
                 final Map _arguments = Map.from(this.widget.arguments);
                 Navigator.pop(context);
                 _arguments['name'] = _name;
                 _arguments['email'] = _email;
                 _arguments['mobile'] = _mobile;
-                _arguments['profile'] = {'link' : profileImage, 'deletehash' : ''};
+                _arguments['profile'] = {
+                  'link': profileImage,
+                  'deletehash': ''
+                };
                 Navigator.pop(context);
                 Navigator.pushNamed(context, AppRoutes.pageHealthData,
                     arguments: _arguments);
@@ -149,16 +153,13 @@ class _ProfileState extends BaseKeyboardState<ProfileWidget> {
     }
   }
 
-  _onEmailExist(final String _email){
-
-    WidgetTemplate.message(context,
-        this._message,
-        actionTitle: 'OPEN LOGIN',
-        onActionTap: (){
-        Navigator.popUntil(context, ModalRoute.withName(AppRoutes.pageRouteHome));
-        Future.delayed(Duration(microseconds: 200), () async {
-          donorHandler.donorLoginBehavior.sink.add(_email);
-        });
+  _onEmailExist(final String _email) {
+    WidgetTemplate.message(context, this._message, actionTitle: 'OPEN LOGIN',
+        onActionTap: () {
+      Navigator.popUntil(context, ModalRoute.withName(AppRoutes.pageRouteHome));
+      Future.delayed(Duration(microseconds: 200), () async {
+        donorHandler.donorLoginBehavior.sink.add(_email);
+      });
     });
   }
 
@@ -180,32 +181,9 @@ class _ProfileState extends BaseKeyboardState<ProfileWidget> {
           initialData: this.profileImage,
           builder: (context, snapshot) {
             return snapshot.data == null
-                ? Container(
-                    width: _width,
-                    height: _width,
-                    child: new Material(
-                      child: new InkWell(
-                        onTap: _openCamera,
-                        child: new Center(
-                          child: Container(
-                            height: 80,
-                            width: 150,
-                            child: Column(
-                              mainAxisAlignment: MainAxisAlignment.center,
-                              children: [
-                                Icon(
-                                  Icons.person,
-                                  size: 50,
-                                ),
-                                Text('PICTURE')
-                              ],
-                            ),
-                          ),
-                        ),
-                      ),
-                      color: Colors.transparent,
-                    ),
-                  )
+                ? WidgetProvider.getInkButton(
+                    _width, _width, _openCamera, Icons.person,
+                    title: 'PICTURE', iconSize: 50)
                 : _getProfileImage(snapshot.data, _width);
           },
         ),
@@ -244,7 +222,6 @@ class _ProfileState extends BaseKeyboardState<ProfileWidget> {
             ),
           ),
           CustomPaint(
-            size: Size(displayData.width, 1.0),
             painter: DashLinePainter(),
           ),
           WidgetTemplate.getTextField(

@@ -291,4 +291,42 @@ class WidgetProvider {
         ),
     );
   }
+
+  static Widget getInkButton(
+      final double _width,
+      final double _height,
+      final Function _onTap,
+      final IconData _iconName,
+  {final String title, final double iconSize = 25,
+    final Color iconColor = Colors.black,}
+
+      ){
+    return Container(
+      width: _width,
+      height: _width,
+      child: new Material(
+        child: new InkWell(
+          onTap: _onTap,
+          child: new Center(
+            child: Container(
+              height: 80,
+              width: 150,
+              child: Column(
+                mainAxisAlignment: MainAxisAlignment.center,
+                children: [
+                  Icon(
+                    _iconName,
+                    size: iconSize,
+                    color: iconColor,
+                  ),
+                  title != null ? Text(title??'') : SizedBox(),
+                ],
+              ),
+            ),
+          ),
+        ),
+        color: Colors.transparent,
+      ),
+    );
+  }
 }

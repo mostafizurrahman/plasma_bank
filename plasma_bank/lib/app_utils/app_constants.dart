@@ -55,8 +55,8 @@ class AppStyle {
         BoxShadow(
           color: Color.fromRGBO(0, 0, 0, 0.15),
           offset: Offset(0, 0),
-          blurRadius: 12,
-          spreadRadius: 8,
+          blurRadius: 8,
+          spreadRadius: 5,
         ),
       ],
       borderRadius: BorderRadius.all(
