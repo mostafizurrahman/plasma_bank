@@ -13,20 +13,22 @@ class ImgurResponse {
   String thumbUrl;
   ImgurResponse(
       {this.imageUrl, this.deleteHash, Map<dynamic, dynamic> jsonData}) {
-    if (jsonData == null) {
-      assert(this.imageUrl != null, 'url is null');
-    } else {
+    if (jsonData != null) {
       this.imageUrl = jsonData['link'];
-      if (this.imageUrl != null && this.imageUrl.isNotEmpty) {
-        if (this.imageUrl.endsWith('.jpg')) {
-          this.thumbUrl = this.imageUrl.replaceAll('.jpg', 'm.jpg');
-        } else if (this.imageUrl.endsWith('.jpeg')) {
-          this.thumbUrl = this.imageUrl.replaceAll('.jpg', 'm.jpeg');
-        } else {
-          this.thumbUrl = imageUrl;
-        }
-      }
       this.deleteHash = jsonData['deletehash'];
+      setThumb();
+    }
+  }
+
+  setThumb(){
+    if (this.imageUrl != null && this.imageUrl.isNotEmpty) {
+      if (this.imageUrl.endsWith('.jpg')) {
+        this.thumbUrl = this.imageUrl.replaceAll('.jpg', 'm.jpg');
+      } else if (this.imageUrl.endsWith('.jpeg')) {
+        this.thumbUrl = this.imageUrl.replaceAll('.jpg', 'm.jpeg');
+      } else {
+        this.thumbUrl = imageUrl;
+      }
     }
   }
 
@@ -64,8 +66,10 @@ class ImgurHandler {
     } else if (response.body != null) {
       final map = json.decode(response.body)['data'];
       if (map is Map) {
-        return ImgurResponse(
+        final _imgResp = ImgurResponse(
             imageUrl: map['link'], deleteHash: map['deletehash']);
+        _imgResp.setThumb();
+        return _imgResp;
       }
     }
     return null;

@@ -78,7 +78,7 @@ class _AccountState extends State<AccountsWidget> {
           return ListView.builder(
             scrollDirection: Axis.vertical,
             itemCount: donorHandler.donorDataList.length,
-            itemExtent: 120,
+//            itemExtent: 120,
             itemBuilder: (_context, _index) {
               final _data = donorHandler.donorDataList[_index];
               return _getDonorWidget(_data);
@@ -95,11 +95,11 @@ class _AccountState extends State<AccountsWidget> {
     bool _isPlasmaDonor = bloodDonor is PlasmaDonor;
 
     return Padding(
-      padding: const EdgeInsets.only(left: 24, right: 24, top: 10, bottom: 10),
+      padding: const EdgeInsets.only(left: 24, right: 24, top: 0, bottom: 24),
       child: Container(
         decoration: AppStyle.listItemDecoration,
         width: displayData.width - 48,
-        height: 120,
+        height: 95,
         child: Material(
           color: Colors.transparent,
           child: Ink(
@@ -119,7 +119,7 @@ class _AccountState extends State<AccountsWidget> {
                     decoration: AppStyle.circularShadow(),
                     child: ClipRRect(
                       borderRadius: BorderRadius.all(Radius.circular(110)),
-                      child:
+                      child: bloodDonor.profilePicture?.thumbUrl != null ?
                       Image.network(
                         bloodDonor.profilePicture.thumbUrl,
                         fit: BoxFit.cover,
@@ -141,7 +141,7 @@ class _AccountState extends State<AccountsWidget> {
                             ),
                           );
                         },
-                      ),
+                      ) : Center(child: CircularProgressIndicator(strokeWidth: 1.75,),),
 
 //                Image(
 //                  image: NetworkImage('https://i.imgur.com/oCb2p45.jpeg'),

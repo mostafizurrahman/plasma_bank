@@ -34,7 +34,6 @@ class _AddressState extends BaseKeyboardState<AddressWidget> {
   void initState() {
     super.initState();
     _setLocation();
-
   }
 
   _setLocation() {
@@ -72,59 +71,59 @@ class _AddressState extends BaseKeyboardState<AddressWidget> {
 
   @override
   onSubmitData() async {
+    WidgetProvider.loading(context);
     FocusScope.of(context).requestFocus(FocusNode());
-    if (this.skipPopup) {
-      return;
-    }
-    skipPopup = true;
+
+    bool popLoading = true;
     final _zip = this._zipConfig.controller.text;
     final _countryCode = this._countryCodeConfig.controller.text;
 
-    Future.delayed(Duration(seconds: 1), () async {
-      final _country = this._countryConfig.controller.text;
-      final _state = this._regionConfig.controller.text;
-      final _city = this._cityConfig.controller.text;
-      final _road = this._streetConfig.controller.text;
-      final _house = this._houseConfig.controller.text;
-      if (_country.isEmpty) {
-        _errorMessage(this._countryConfig);
-      } else if (_state.isEmpty) {
-        _errorMessage(this._regionConfig);
-      } else if (_city.isEmpty) {
-        _errorMessage(this._cityConfig);
-      } else if (_road.isEmpty) {
-        _errorMessage(_streetConfig);
-      } else if (_road.isEmpty) {
-        _errorMessage(_streetConfig);
-      } else if (_zip.isEmpty) {
-        _errorMessage(_zipConfig);
-      } else if (_house.isEmpty) {
-        _errorMessage(_houseConfig);
-      } else {
-        final _zipData = await locationProvider
-            .getZipData(_zip, _countryCode)
-            .catchError(_onError);
-        final _addressMap = {
-          'country': _country,
-          'code': _countryCode,
-          'state': _state,
-          'city': _city,
-          'street': _road,
-          'zip': _zip,
-          'house': _house,
-          'is_valid_postal' : _zipData != null,
-        };
+    final _country = this._countryConfig.controller.text;
+    final _state = this._regionConfig.controller.text;
+    final _city = this._cityConfig.controller.text;
+    final _road = this._streetConfig.controller.text;
+    final _house = this._houseConfig.controller.text;
+    if (_country.isEmpty) {
+      _errorMessage(this._countryConfig);
+    } else if (_state.isEmpty) {
+      _errorMessage(this._regionConfig);
+    } else if (_city.isEmpty) {
+      _errorMessage(this._cityConfig);
+    } else if (_road.isEmpty) {
+      _errorMessage(_streetConfig);
+    } else if (_road.isEmpty) {
+      _errorMessage(_streetConfig);
+    } else if (_zip.isEmpty) {
+      _errorMessage(_zipConfig);
+    } else if (_house.isEmpty) {
+      _errorMessage(_houseConfig);
+    } else {
+      final _zipData = await locationProvider
+          .getZipData(_zip, _countryCode)
+          .catchError(_onError);
+      final _addressMap = {
+        'country': _country,
+        'code': _countryCode,
+        'state': _state,
+        'city': _city,
+        'street': _road,
+        'zip': _zip,
+        'house': _house,
+        'is_valid_postal': _zipData != null,
+      };
 
 //        final _address = Address.fromMap(_addressMap);
-
-        Navigator.pushNamed(
-          context,
-          AppRoutes.pagePersonData,
-          arguments: {'address': _addressMap},
-        );
-      }
-      skipPopup = false;
-    });
+      popLoading = false;
+      Navigator.pop(context);
+      Navigator.pushNamed(
+        context,
+        AppRoutes.pagePersonData,
+        arguments: {'address': _addressMap},
+      );
+    }
+    if(popLoading) {
+      Navigator.pop(context);
+    }
   }
 
   _onChangedStreet(String value) {}

@@ -205,6 +205,7 @@ class _HomePageState extends State<HomePageWidget> {
                   groupValue: snapshot.data,
                   children: loadTabs(),
                 ),
+                SizedBox(height: 4,),
                 Expanded(
                   child: snapshot.data == 0
                       ? _getAccountListWidget()

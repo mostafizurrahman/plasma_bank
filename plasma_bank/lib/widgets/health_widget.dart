@@ -305,7 +305,18 @@ class _HealthState extends BaseKeyboardState<HealthWidget> {
   }
 
   _openDataUploader(final BloodDonor donor){
-    showDialog(context: this.context, builder: (_)=>UploaderWidget(donor, donorHandler.donorEmails));
+    showDialog(context: this.context, builder: (_)=>UploaderWidget(donor, donorHandler.donorEmails, onCompleted));
+  }
+
+
+  onCompleted(final bool _isSuccess){
+    if(_isSuccess){
+      Navigator.popUntil(
+          context,
+          ModalRoute.withName( AppRoutes.pageRouteHome));
+    } else {
+      WidgetTemplate.message(context, 'network error occurred! we are unable to create this account right now, please try again.\nthank your!');
+    }
   }
 
 

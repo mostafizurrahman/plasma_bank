@@ -115,7 +115,7 @@ class _VerificationState extends State<VerificationWidget> {
           ),
         ),
         floatingActionButton: SizedBox(
-          width:  - 48,
+          width: displayData.width - 48,
           height: 45,
           child: RaisedButton(
             color: AppStyle.theme(),
