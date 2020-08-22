@@ -20,6 +20,7 @@ class AppRoutes {
   static const String pageHealthData = '/home/personal/health';
 
   static const String pageDonorList = '/home/donor/list';
+  static const String pagePrivateChat =  '/home/private/chat';
 }
 
 class AppConfig {

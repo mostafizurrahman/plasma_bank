@@ -166,15 +166,15 @@ class _DonorListState extends State<DonorListWidget> {
                       mainAxisAlignment: MainAxisAlignment.start,
                       crossAxisAlignment: CrossAxisAlignment.center,
                       children: <Widget>[
-                        _getAction(Icons.phone, 0),
+                        _getAction(Icons.phone, 0, bloodDonor),
                         SizedBox(
                           width: 24,
                         ),
-                        _getAction(Icons.mail_outline, 1),
+                        _getAction(Icons.mail_outline, 1, bloodDonor),
                         SizedBox(
                           width: 24,
                         ),
-                        _getAction(Icons.chat_bubble_outline, 2)
+                        _getAction(Icons.chat_bubble_outline, 2, bloodDonor)
                       ],
                     ),
                   ),
@@ -188,63 +188,23 @@ class _DonorListState extends State<DonorListWidget> {
     );
   }
 
-  _communicate(int index){
+  _communicate(int index, BloodDonor bloodDonor){
 
+    if(index == 2){
+      Navigator.pushNamed(context, AppRoutes.pagePrivateChat, arguments: {'donor' : bloodDonor});
+    }
   }
 
-  Widget _getAction(IconData _iconData, int index){
+  Widget _getAction(IconData _iconData, int index, BloodDonor bloodDonor){
     return Container(
       decoration: AppStyle.circularShadow(),
       child: ClipRRect(
         borderRadius: BorderRadius.all(Radius.circular(100)),
         child: WidgetProvider.getInkButton(
-            40, 40, ()=>_communicate(index), _iconData, iconColor: AppStyle.theme(),
-        ),
-      ),
-    );
-    return Container(
-      decoration: AppStyle.circularShadow(),
-      child:  ClipRRect(
-        borderRadius: BorderRadius.all(Radius.circular(100)),
-        child: Container(
-          width: 40,
-          height: 40,
-          color: Colors.green,
-          child: ClipRRect(
-            borderRadius: BorderRadius.all(Radius.circular(100)),
-            child: Ink(
-              child: InkWell(
-                onTap: (){
-                  debugPrint("DON");
-                },
-              ),
-            ),
-          ),
+            40, 40, ()=>_communicate(index, bloodDonor), _iconData, iconColor: AppStyle.theme(),
         ),
       ),
     );
   }
 
-  /*
-  Ink(
-        color: Colors.transparent,
-          child: ClipRRect(
-
-            child: InkWell(
-              onTap: (){
-                debugPrint("DONT");
-              },
-              child: Container(
-                color: Colors.transparent,
-                width: 40, height: 40,
-                child: Icon(
-                  _iconData,
-                      color: AppStyle.theme(),
-                ),
-              ),
-            ),
-          ),
-
-      )
-   */
 }
