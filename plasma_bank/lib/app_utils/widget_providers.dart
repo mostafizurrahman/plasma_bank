@@ -100,28 +100,32 @@ class WidgetProvider {
                   borderRadius:
                       new BorderRadius.all(const Radius.circular(12.0)),
                 ),
-                child: Center(
-                  child: Column(
-                    mainAxisAlignment: MainAxisAlignment.center,
-                    crossAxisAlignment: CrossAxisAlignment.center,
-                    children: <Widget>[
-                      Center(
-                        child: WidgetTemplate.indicator(),
-                      ),
-                      Padding(
-                        padding: const EdgeInsets.only(top: 8),
-                        child: Text(
-                          "LOADING...",
-                          style: TextStyle(color: Colors.white),
-                        ),
-                      )
-                    ],
-                  ),
-                ),
+                child: WidgetProvider.loadingBox() ,
               ),
             ),
           ),
         ),
+      ),
+    );
+  }
+
+  static Widget loadingBox(){
+    return Center(
+      child: Column(
+        mainAxisAlignment: MainAxisAlignment.center,
+        crossAxisAlignment: CrossAxisAlignment.center,
+        children: <Widget>[
+          Center(
+            child: WidgetTemplate.indicator(),
+          ),
+          Padding(
+            padding: const EdgeInsets.only(top: 8),
+            child: Text(
+              "LOADING...",
+              style: TextStyle(color: Colors.white),
+            ),
+          )
+        ],
       ),
     );
   }

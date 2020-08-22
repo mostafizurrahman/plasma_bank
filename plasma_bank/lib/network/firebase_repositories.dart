@@ -133,4 +133,12 @@ class FirebaseRepositories {
       debugPrint('error+occurred  ___________ ' + _error.toString());
     });
   }
+
+
+  Stream<QuerySnapshot> getDonorList(final Map _queryParameters) {
+
+    final _reference = Firestore.instance.collection('donor');
+    _reference.getDocuments();
+    return _reference.where('disease', isNull: true).snapshots();
+  }
 }
