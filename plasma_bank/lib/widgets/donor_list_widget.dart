@@ -170,11 +170,11 @@ class _DonorListState extends State<DonorListWidget> {
                         SizedBox(
                           width: 24,
                         ),
-                        _getAction(Icons.chat_bubble_outline, 1),
+                        _getAction(Icons.mail_outline, 1),
                         SizedBox(
                           width: 24,
                         ),
-                        _getAction(Icons.mail_outline, 2)
+                        _getAction(Icons.chat_bubble_outline, 2)
                       ],
                     ),
                   ),
