@@ -171,7 +171,7 @@ class _ProfileState extends BaseKeyboardState<ProfileWidget> {
   }
 
   Widget getImageWidget() {
-    final _width = MediaQuery.of(context).size.width * 0.3;
+    final _width = displayData.width * 0.3;
     return Container(
       decoration: AppStyle.circularShadow(),
       child: ClipRRect(
@@ -244,7 +244,7 @@ class _ProfileState extends BaseKeyboardState<ProfileWidget> {
             ),
           ),
           CustomPaint(
-            size: Size(MediaQuery.of(context).size.width, 1.0),
+            size: Size(displayData.width, 1.0),
             painter: DashLinePainter(),
           ),
           WidgetTemplate.getTextField(

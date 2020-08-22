@@ -150,7 +150,7 @@ class WidgetProvider {
     ];
 
     final int _buttonCount = 5;
-    final _width = (MediaQuery.of(_context).size.width) / _buttonCount;
+    final _width = displayData.width / _buttonCount;
     List _widgets = List<Widget>();
 
     for (int i = 0; i < _buttonCount; i++) {
@@ -214,7 +214,7 @@ class WidgetProvider {
           borderRadius: BorderRadius.all(Radius.circular(100)),
         ),
         height: 50,
-        width: MediaQuery.of(context).size.width - padding,
+        width: displayData.width - padding,
         child: RaisedButton(
           shape: RoundedRectangleBorder(
             borderRadius: BorderRadius.circular(120.0),
@@ -244,7 +244,7 @@ class WidgetProvider {
           borderRadius: BorderRadius.all(Radius.circular(100)),
         ),
         height: 50,
-        width: MediaQuery.of(context).size.width - padding,
+        width:  - padding,
         child: RaisedButton(
 
           shape: RoundedRectangleBorder(

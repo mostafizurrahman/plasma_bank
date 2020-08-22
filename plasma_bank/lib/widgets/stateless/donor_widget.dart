@@ -1,13 +1,9 @@
-
-
-
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
 import 'package:plasma_bank/app_utils/app_constants.dart';
 import 'package:plasma_bank/app_utils/image_helper.dart';
 
 class DonorWidget extends StatelessWidget {
-
   final bool visible;
 
   final Function(bool) _onTap;
@@ -15,10 +11,6 @@ class DonorWidget extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    var mediaQuery = MediaQuery.of(context);
-    double _top = mediaQuery.padding.top;
-    double _bottom = mediaQuery.padding.bottom;
-    final _width = MediaQuery.of(context).size.width;
     return Container(
       child: AnimatedOpacity(
         opacity: visible ? 1.0 : 0.0,
@@ -27,8 +19,11 @@ class DonorWidget extends StatelessWidget {
         },
         duration: Duration(seconds: 1),
         child: Container(
-          width: _width,
-          height: MediaQuery.of(context).size.height - (_top > 0 ? 50 : 60) - _bottom - _top ,
+          width: displayData.width,
+          height: MediaQuery.of(context).size.height -
+              (displayData.top > 0 ? 50 : 60) -
+              displayData.bottom -
+              displayData.top,
           //color: Color.fromARGB(255, _background, _background, _background),
           decoration: BoxDecoration(
             color: AppStyle.greyBackground(),
@@ -40,7 +35,7 @@ class DonorWidget extends StatelessWidget {
           ),
           child: Padding(
             padding: EdgeInsets.only(
-                top: (24 + _top), bottom: 24, left: 24, right: 24),
+                top: (24 + displayData.top), bottom: 24, left: 24, right: 24),
             child: Column(
               crossAxisAlignment: CrossAxisAlignment.start,
               children: [
@@ -55,14 +50,15 @@ class DonorWidget extends StatelessWidget {
                   padding: EdgeInsets.only(top: 32, bottom: 12),
                   child: Text(
                     'life saving heroes come in all types and sizes, a single pint can save three lives, a single gesture can create a million smiles',
-                    style: TextStyle(fontSize: 16, height: 1.3, color: Colors.black.withAlpha(200)),
+                    style: TextStyle(
+                        fontSize: 16,
+                        height: 1.3,
+                        color: Colors.black.withAlpha(200)),
                   ),
                 ),
                 Expanded(
-                  child:
-                  Container(
-                    width: _width,
-
+                  child: Container(
+                    width: displayData.width,
                     child: Column(
                       crossAxisAlignment: CrossAxisAlignment.end,
                       mainAxisAlignment: MainAxisAlignment.end,
@@ -73,13 +69,14 @@ class DonorWidget extends StatelessWidget {
                           children: [
                             FloatingActionButton(
                               heroTag: '__hero',
-                              onPressed: (){
+                              onPressed: () {
                                 this._onTap(false);
                               },
                               backgroundColor: Colors.white,
                               child: Icon(
                                 Icons.group,
-                                color: AppStyle.theme(), //Color.fromARGB(255, 240, 10, 80),
+                                color: AppStyle
+                                    .theme(), //Color.fromARGB(255, 240, 10, 80),
                                 size: 35,
                               ),
                             ),
@@ -93,8 +90,8 @@ class DonorWidget extends StatelessWidget {
                           mainAxisAlignment: MainAxisAlignment.end,
                           children: [
                             FloatingActionButton(
-                              onPressed: (){
-                                this._onTap(false);
+                              onPressed: () {
+                                this._onTap(true);
                               },
                               backgroundColor: Colors.white,
                               child: Icon(

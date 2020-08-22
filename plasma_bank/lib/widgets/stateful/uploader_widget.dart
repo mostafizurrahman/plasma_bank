@@ -50,7 +50,7 @@ class _UploaderState extends State<UploaderWidget> {
         body: BackdropFilter(
           filter: ui.ImageFilter.blur(sigmaX: 8, sigmaY: 8),
           child: Container(
-            width: MediaQuery.of(context).size.width,
+            width: displayData.width,
             child: Column(
               crossAxisAlignment: CrossAxisAlignment.center,
               children: [
@@ -158,6 +158,7 @@ class _UploaderState extends State<UploaderWidget> {
   }
 
   _startUploading() async {
+    return;
     final _uploader = ImgurHandler();
     if (this.widget.bloodDonor.profilePicture != null) {
       if (this.widget.bloodDonor.profilePicture.imageUrl != null &&

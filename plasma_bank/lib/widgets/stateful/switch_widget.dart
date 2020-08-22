@@ -65,7 +65,7 @@ class _SwitchState extends State<SwitchWidget> {
               height: 12,
             ),
             SizedBox(
-              width: MediaQuery.of(context).size.width - 48,
+              width: displayData.width - 48,
               height: 45,
               child: RaisedButton(
                 color: AppStyle.theme(),
@@ -91,7 +91,7 @@ class _SwitchState extends State<SwitchWidget> {
                       Container(
                         decoration: AppStyle.lightDecoration,
                         height: 99,
-                        width: MediaQuery.of(context).size.width - 48,
+                        width: displayData.width - 48,
                         child: Row(
                           children: <Widget>[
                             SizedBox(
@@ -123,7 +123,7 @@ class _SwitchState extends State<SwitchWidget> {
                                 Container(
 
                                   width:
-                                      MediaQuery.of(context).size.width - 48 - 99,
+                                  displayData.width - 48 - 99,
 //                                color: Colors.grey,
                                   child: Row(
                                     crossAxisAlignment: CrossAxisAlignment.end,

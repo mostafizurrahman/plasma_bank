@@ -57,7 +57,7 @@ class _AccountState extends State<AccountsWidget> {
           if(!snapshot.data){
             return Center(
               child: Container(
-                width: MediaQuery.of(context).size.width - 48,
+                width: displayData.width - 48,
                 height: 140,
                 child: Column(
                   children: <Widget>[
@@ -98,7 +98,7 @@ class _AccountState extends State<AccountsWidget> {
       padding: const EdgeInsets.only(left: 24, right: 24, top: 10, bottom: 10),
       child: Container(
         decoration: AppStyle.listItemDecoration,
-        width: MediaQuery.of(context).size.width - 48,
+        width: displayData.width - 48,
         height: 120,
         child: Material(
           color: Colors.transparent,
@@ -170,7 +170,7 @@ class _AccountState extends State<AccountsWidget> {
                             TextStyle(fontSize: 12, color: Colors.grey, height: 1.5),
                           ),
                           Container(
-                            width: MediaQuery.of(context).size.width - 147,
+                            width: displayData.width - 147,
                             height: 25,
                           ),
                         ],

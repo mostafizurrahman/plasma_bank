@@ -243,16 +243,16 @@ class _AddressState extends BaseKeyboardState<AddressWidget> {
     if (_data is Region) {
       this._regionConfig.controller.text = _data.regionName;
       this._cityConfig.controller.text = '';
-      this._streetConfig.controller.text = '';
-      this._zipConfig.controller.text = '';
+//      this._streetConfig.controller.text = '';
+//      this._zipConfig.controller.text = '';
     }
   }
 
   _onCitySelected(final _data) {
     if (_data is City) {
       this._cityConfig.controller.text = _data.cityName;
-      this._streetConfig.controller.text = '';
-      this._zipConfig.controller.text = '';
+//      this._streetConfig.controller.text = '';
+//      this._zipConfig.controller.text = '';
     }
   }
 
@@ -263,8 +263,8 @@ class _AddressState extends BaseKeyboardState<AddressWidget> {
       this._countryCodeConfig.controller.text = _data.countryCode.toUpperCase();
       this._regionConfig.controller.text = '';
       this._cityConfig.controller.text = '';
-      this._streetConfig.controller.text = '';
-      this._zipConfig.controller.text = '';
+//      this._streetConfig.controller.text = '';
+//      this._zipConfig.controller.text = '';
     }
   }
 

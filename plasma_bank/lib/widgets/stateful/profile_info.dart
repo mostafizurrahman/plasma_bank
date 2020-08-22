@@ -33,10 +33,10 @@ class _ProfileInfoState extends State<ProfileInfoWidget> {
 
   @override
   Widget build(BuildContext context) {
-    final _width = MediaQuery.of(context).size.width;
-    final _height = MediaQuery.of(context).size.height;
+    final _width = displayData.width;
+    final _height = displayData.height;
 
-    final double _contentH  = _height - MediaQuery.of(context).padding.bottom - MediaQuery.of(context).padding.top - 300;
+    final double _contentH  = _height - displayData.bottom - displayData.top - 300;
     String __address = this.widget.bloodDonor.address.city +
         ', ' +
         this.widget.bloodDonor.address.state +
@@ -109,7 +109,7 @@ class _ProfileInfoState extends State<ProfileInfoWidget> {
     return Padding(
       padding: const EdgeInsets.only(bottom: 16),
       child: Container(
-        width: MediaQuery.of(context).size.width - 48,
+        width: displayData.width - 48,
         height: isAddress ? 100 : 50,
         decoration: AppStyle.lightDecoration,
         child: Row(
