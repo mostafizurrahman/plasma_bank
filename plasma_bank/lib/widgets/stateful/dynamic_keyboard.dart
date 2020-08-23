@@ -1,26 +1,18 @@
-
-
-
 import 'dart:io';
 
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
 import 'package:plasma_bank/app_utils/app_constants.dart';
 
-class DynamicKeyboardWidget extends StatefulWidget{
-
+class DynamicKeyboardWidget extends StatefulWidget {
   @override
   State<StatefulWidget> createState() {
     // TODO: implement createState
     return _DynamicKeyboardState();
   }
-
 }
 
-
 class _DynamicKeyboardState extends State<DynamicKeyboardWidget> {
-
-
   double _keyboardHeight = 200;
 
   @override
@@ -32,19 +24,17 @@ class _DynamicKeyboardState extends State<DynamicKeyboardWidget> {
   @override
   Widget build(BuildContext context) {
     // TODO: implement build
-    _keyboardHeight = 215;
+    _keyboardHeight = 210;
     displayData.setData(context);
     return Container(
       child: Scaffold(
-
-
 //        body: Container(height: 100, color: Colors.green,),
         backgroundColor: Colors.white,
         bottomNavigationBar: Padding(
           padding: EdgeInsets.only(bottom: displayData.bottom),
           child: Container(
 //            decoration: AppStyle.lightDecoration,
-          color: Color.fromARGB(200, 230, 230, 230),
+            color: Color.fromARGB(200, 230, 230, 230),
             width: MediaQuery.of(context).size.width,
             height: _keyboardHeight,
             child: _getKeyboard(),
@@ -54,138 +44,257 @@ class _DynamicKeyboardState extends State<DynamicKeyboardWidget> {
     );
   }
 
-
-  Widget _getKeyboard(){
-
+  Widget _getKeyboard() {
     List<List<String>> _keyDataTxt = [
       ['Q', 'W', 'E', 'R', 'T', "Y", 'U', 'I', "O", "P"],
       ["A", "S", "D", "F", "G", "H", "J", "K", "L"],
-      ["⬆", 'Z', "X", "C", "V", "B", "N", "M", "⌫"],//'⬇'
-      ["123",  "space", "✅"]];
-
+      ["TOG", 'Z', "X", "C", "V", "B", "N", "M", "DEL"], //'⬇'
+      ["123", "space", "DONE"]
+    ];
 
     List<List<String>> _keyDataNum = [
       ['0', '1', '2', '3', '4', "5", '6', '7', "8", "9"],
       ["-", "/", ":", ";", "(", ")", "~", "&", "@", "\""],
       ["#+=", '.', ",", "?", "!", "\'", "DEL"],
-      ["ABC", "SMILE", "SPACE", "DONE"]];
+      ["ABC", "space", "DONE"]
+    ];
 
     List<List<String>> _keyDataChar = [
       ['[', ']', '{', '}', '#', "%", '^', '*', "+", "="],
       ["_", "\\", "|", "~", "<", ">", "€", "\$", "￥", "•"],
       ["#+=", '.', ",", "?", "!", "\'", "DEL"],
-      ["ABC",  "SPACE", "DONE"]];
+      ["ABC", "space", "DONE"]
+    ];
 
+    List<Widget> _columnWidgets = [
+      _get10CharactersRow(_keyDataTxt[0], isFirstRow: true),
+      _get9CharactersRow(_keyDataTxt[1]),
+      _get9TCharactersRow(_keyDataTxt[2]),
+     _get3CharactersRow(_keyDataTxt[3]),
+    ];
+
+//    List<Widget> _columnWidgets = [
+//      _get10CharactersRow(_keyDataChar[0], isFirstRow: true),
+//      _get10CharactersRow(_keyDataChar[1]),
+//      _get7CharactersRow(_keyDataChar[2]),
+//      _get3CharactersRow(_keyDataChar[3]),
+//    ];
+
+
+//    List<Widget> _columnWidgets = [
+//      _get10CharactersRow(_keyDataNum[0], isFirstRow: true),
+//      _get10CharactersRow(_keyDataNum[1]),
+//      _get7CharactersRow(_keyDataNum[2]),
+//      _get3CharactersRow(_keyDataNum[3]),
+//    ];
+
+    return Column(
+      mainAxisAlignment: MainAxisAlignment.spaceEvenly,
+      children: _columnWidgets,
+    );
+  }
+
+  Widget _get10CharactersRow(final List<String> _dataList,
+      {bool isFirstRow = false}) {
     final double _keyHeight = (_keyboardHeight - 52) / 4;
-    List<Widget> _columnWidgets = [];
+    final double _paddingTop = isFirstRow ? 0 : 6;
+    final double _paddingLR = 2.5;
+    double _keyWidth = (displayData.width - (_paddingLR * (10 * 2 + 1))) / 10.0;
 
-    double charWidth = 0;
-    for(int i = 0; i < 4; i++){
-      List<String> _dataArray = _keyDataTxt[i];
-      final int len = _dataArray.length;
-      final double _space = (len+1).toDouble() * 5;
-      final double _paddingTop = i == 0 ? 6 : 10;
-      final double _paddingBottom = i == 3 ? 8 : 0;
-      List<Widget> _rowData = [];
+    List<Widget> _widgets = List();
+    for (int i = 0; i < _dataList.length; i++) {
+      final Widget _widget = _getKeyWidget(
+          _paddingLR, _paddingTop, _keyWidth, _keyHeight, _dataList[i]);
+      _widgets.add(_widget);
+    }
 
-      double _keyWidth =  (displayData.width - _space) / len;
-      if(charWidth == 0){
-        charWidth = _keyWidth;
-      }
+    return Row(
+      mainAxisAlignment: MainAxisAlignment.spaceEvenly,
+      children: _widgets,
+    );
+  }
 
-      if(i == 1){
-        _rowData.add(SizedBox(width: 12,));
-      }
-      for(int j = 0; j < len; j++){
-        final String _key = _dataArray[j];
-        final _spacial = "⬆" == _key || "⌫" == _key;
-        final double _paddingLeft = 2.5 + ( _key == "⌫" ? 6 : 0);
-        final double _paddingRight = _paddingLeft + ("⬆" == _key ? 6 : 0);//j == len - 1 ? 2.5 : 5;
+  Widget _get9CharactersRow(final List<String> _dataList) {
+    final double _keyHeight = (_keyboardHeight - 52) / 4;
+    final double _paddingTop = 6;
+    final double _paddingLR = 2.5;
+    double _keyWidth =
+        (displayData.width - (_paddingLR * (10 * 2 + 1)) - 28) / 9.0;
+
+    List<Widget> _widgets = List();
+    _widgets.add(SizedBox(
+      width: 14,
+    ));
+    for (int i = 0; i < _dataList.length; i++) {
+      final Widget _widget = _getKeyWidget(
+          _paddingLR, _paddingTop, _keyWidth, _keyHeight, _dataList[i]);
+      _widgets.add(_widget);
+    }
+    _widgets.add(SizedBox(
+      width: 14,
+    ));
+    return Row(
+      mainAxisAlignment: MainAxisAlignment.spaceEvenly,
+      children: _widgets,
+    );
+  }
+
+  Widget _get9TCharactersRow(final List<String> _dataList) {
+    final double _keyHeight = (_keyboardHeight - 52) / 4;
+    final double _paddingTop = 6;
+    final double _paddingLR = 2.5;
+    double discarding = 2.5 * 8 + 12 * 2 + 2 * _keyHeight + 12;
+    double _keyWidth = (displayData.width - discarding) / 7.0;
 
 
-        if(i == 3){
-          if(j == 0 || j == 2){
-            _keyWidth = (displayData.width - _space) * 0.2;
-          } else {
-            _keyWidth = (displayData.width - _space) * 0.6;
-          }
-        }
-        final Widget _keyWidget =  Padding(
-          padding: EdgeInsets.only(left: _paddingLeft,
-              right: _paddingRight, bottom: _paddingBottom, top: _paddingTop),
-          child: Container(
-            width: _spacial ? _keyHeight : _isText(_key)? charWidth  : _keyWidth , height: _keyHeight,
 
-            decoration: BoxDecoration(
-              color: Colors.white,
-              boxShadow: [
-                BoxShadow(
-                  color: Color.fromRGBO(0, 0, 0, 0.15),
-                  offset: Offset(0, 0),
-                  blurRadius: 1,
-                  spreadRadius: 0.5,
-                ),
-              ],
-              borderRadius: const BorderRadius.all(
-                const Radius.circular(5),
-              ),
+
+    List<Widget> _widgets = List();
+    Widget _widget = Padding(
+      padding: EdgeInsets.only(left: _paddingLR, top: _paddingTop, right: 8),
+      child: _getKeyWidget(0, 0, _keyHeight, _keyHeight, _dataList[0],
+          isSpecial: true),
+    );
+    _widgets.add(_widget);
+    for (int i = 1; i < _dataList.length - 1; i++) {
+      final Widget _widget = _getKeyWidget(
+          _paddingLR, _paddingTop, _keyWidth, _keyHeight, _dataList[i]);
+      _widgets.add(_widget);
+    }
+    _widget = Padding(
+      padding: EdgeInsets.only(left: 8, top: _paddingTop, right: _paddingLR),
+      child: _getKeyWidget(
+          0, 0, _keyHeight, _keyHeight, _dataList[_dataList.length - 1],
+          isSpecial: true),
+    );
+    _widgets.add(_widget);
+    return Row(
+      mainAxisAlignment: MainAxisAlignment.spaceEvenly,
+      children: _widgets,
+    );
+  }
+
+  Widget _get7CharactersRow(final List<String> _dataList) {
+    final double _keyDimension = (_keyboardHeight - 47) / 4;
+    final double _paddingTop = 6;
+    final double _paddingLR = 2.5;
+    List<Widget> _widgets = List();
+    Widget _widget = Padding(
+      padding: EdgeInsets.only(left: _paddingLR, top: _paddingTop, right: 12),
+      child: _getKeyWidget(0, 0, _keyDimension, _keyDimension, _dataList[0],
+          isSpecial: true),
+    );
+    _widgets.add(_widget);
+    for (int i = 1; i < _dataList.length - 1; i++) {
+      final Widget _widget = _getKeyWidget(
+          _paddingLR, _paddingTop, _keyDimension, _keyDimension, _dataList[i]);
+      _widgets.add(_widget);
+    }
+    _widget = Padding(
+      padding: EdgeInsets.only(left: 12, top: _paddingTop, right: _paddingLR),
+      child: _getKeyWidget(
+          0, 0, _keyDimension, _keyDimension, _dataList[_dataList.length - 1],
+          isSpecial: true),
+    );
+    _widgets.add(_widget);
+    return Row(
+      mainAxisAlignment: MainAxisAlignment.spaceEvenly,
+      children: _widgets,
+    );
+  }
+
+  Widget _get3CharactersRow(final List<String> _dataList) {
+
+    final double _contentWidth = displayData.width - 70;
+    final double _keyHeight = (_keyboardHeight - 52) / 4;
+    final double _paddingTop = 4;
+    final double _paddingLR = 2.5;
+    List<Widget> _widgets = List();
+    Widget _widget = _getKeyWidget(_paddingLR, _paddingTop, _contentWidth * 0.2, _keyHeight, _dataList[0],
+        isSpecial: true);
+    _widgets.add(_widget);
+
+    _widget = _getKeyWidget(16, _paddingTop, _contentWidth * 0.6 + 27.5, _keyHeight, _dataList[1],
+        isSpecial: false);
+    _widgets.add(_widget);
+    _widget = _getKeyWidget(_paddingLR, _paddingTop, _contentWidth * 0.2, _keyHeight, _dataList[2],
+        isSpecial: true);
+    _widgets.add(_widget);
+    return Row(
+      mainAxisAlignment: MainAxisAlignment.start,
+      children: _widgets,
+    );
+  }
+
+  Widget _getKeyWidget(final double _paddingLR, final double _paddingTop,
+      final double _keyWidth, final double _keyHeight, final String _key,
+      {bool isSpecial = false}) {
+    return Padding(
+      padding: EdgeInsets.only(
+        left: _paddingLR,
+        right: _paddingLR,
+        top: _paddingTop,
+      ),
+      child: Container(
+        width: _keyWidth,
+        height: _keyHeight,
+        decoration: BoxDecoration(
+          boxShadow: [
+            BoxShadow(
+              color: Color.fromRGBO(0, 0, 0, 0.15),
+              offset: Offset(0, 0),
+              blurRadius: 1,
+              spreadRadius: 0.5,
             ),
-            child: ClipRRect(
-              borderRadius: const BorderRadius.all(
-                const Radius.circular(5),
-              ),
-              child: Material(
-                child: Ink(
-                  child: InkWell(
-                    onTap: (){
-                      debugPrint("I AM DONE");
-                    },
-                    child:
-                    Center(
-                      child: Text(
-                        _key,
-                        style: TextStyle(fontSize: 20, fontFamily: AppStyle.fontBold),
-                      ),
+          ],
+          borderRadius: const BorderRadius.all(
+            const Radius.circular(5),
+          ),
+        ),
+        child: ClipRRect(
+          borderRadius: const BorderRadius.all(
+            const Radius.circular(5),
+          ),
+          child: Material(
+            color: isSpecial ? Colors.grey : Colors.white,
+            child: Ink(
+              child: InkWell(
+                onTap: () {
+                  debugPrint("I A,");
+                },
+                child: Center(
+                  child: _key == 'DEL' ? _getDeleteIcon() : _key == 'DONE' ? _getDoneIcon() :
+
+
+                  Text(
+                    _key,
+                    style: TextStyle(
+                      fontSize: isSpecial || _key == 'space' ? 16 : 20,
+                      fontFamily:
+                          isSpecial || _key == 'space' ? AppStyle.fontNormal : AppStyle.fontBold,
                     ),
                   ),
                 ),
               ),
             ),
           ),
-        );
-        _rowData.add(_keyWidget);
-      }
-
-      if(i == 1){
-        _rowData.add(SizedBox(width: 12,));
-      }
-      final Row _row = Row(
-        mainAxisAlignment: MainAxisAlignment.spaceEvenly,
-        children: _rowData,
-      );
-      _columnWidgets.add(_row);
-    }
-
-    return Column(
-      mainAxisAlignment: MainAxisAlignment.spaceEvenly,
-      children:_columnWidgets,
+        ),
+      ),
     );
   }
 
-
-  bool _isText(String key){
-
-    if(key.length > 1){
-      return false;
-    }
-    int _i = key.codeUnitAt(0);
-    return _i >= 65 && _i <= 90 || _i >= 97 && _i <= 122;
-
+  Widget _getDeleteIcon(){
+    return Icon(
+      Icons.backspace,
+      color: Colors.black,
+    );
   }
 
-//  Widget _getKeyWidget(final String key,
-//      final double _width, final dou)
+  Widget _getDoneIcon(){
 
-
-
+    return Icon(
+      Icons.check_circle_outline,
+      color: Colors.black,
+    );
+  }
 }
