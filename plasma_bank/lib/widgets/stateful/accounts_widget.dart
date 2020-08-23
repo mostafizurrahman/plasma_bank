@@ -4,6 +4,7 @@ import 'package:plasma_bank/app_utils/app_constants.dart';
 import 'package:plasma_bank/network/donor_handler.dart';
 import 'package:plasma_bank/network/models/blood_donor.dart';
 import 'package:plasma_bank/network/models/plasma_donor.dart';
+import 'package:rxdart/rxdart.dart';
 
 class AccountsWidget extends StatefulWidget {
 
@@ -17,22 +18,75 @@ class AccountsWidget extends StatefulWidget {
 }
 
 class _AccountState extends State<AccountsWidget> {
+
+  BehaviorSubject<bool> _cautionBehavior = BehaviorSubject();
+  @override
+  void dispose() {
+    // TODO: implement dispose
+    super.dispose();
+    if(!_cautionBehavior.isClosed){
+      _cautionBehavior.close();
+    }
+  }
+
+  @override
+  void initState() {
+    // TODO: implement initState
+    super.initState();
+    Future.delayed(Duration(seconds: 2), _onLoaded);
+  }
+
+
+  _onLoaded(){
+    this._cautionBehavior.sink.add(true);
+  }
+
   @override
   Widget build(BuildContext context) {
     // TODO: implement build
 
     return Scaffold(
       backgroundColor: Colors.white,
-      body: ListView.builder(
-        scrollDirection: Axis.vertical,
-        itemCount: donorHandler.donorDataList.length,
-        itemExtent: 120,
-        itemBuilder: (_context, _index) {
-          final _data = donorHandler.donorDataList[_index];
-          return _getDonorWidget(_data);
+      body:
+
+
+      StreamBuilder<bool>(
+        stream: _cautionBehavior.stream,
+        initialData: false,
+        builder: (context, snapshot) {
+          if(!snapshot.data){
+            return Center(
+              child: Container(
+                width: displayData.width - 48,
+                height: 140,
+                child: Column(
+                  children: <Widget>[
+                    Padding(
+                      padding: EdgeInsets.all(12),
+                      child: CircularProgressIndicator(strokeWidth: 1.75,),
+                    ),
+                    Text(
+                      'Loading all accounts, created by this device. Tap an item to login.',
+                      textAlign: TextAlign.center,
+                    )
+                  ],
+                ),
+
+              ),
+            );
+          }
+          return ListView.builder(
+            scrollDirection: Axis.vertical,
+            itemCount: donorHandler.donorDataList.length,
+//            itemExtent: 120,
+            itemBuilder: (_context, _index) {
+              final _data = donorHandler.donorDataList[_index];
+              return _getDonorWidget(_data);
 
 //                            this.getCountryItem(_data);
-        },
+            },
+          );
+        }
       ),
     );
   }
@@ -41,11 +95,11 @@ class _AccountState extends State<AccountsWidget> {
     bool _isPlasmaDonor = bloodDonor is PlasmaDonor;
 
     return Padding(
-      padding: const EdgeInsets.only(left: 24, right: 24, top: 10, bottom: 10),
+      padding: const EdgeInsets.only(left: 24, right: 24, top: 0, bottom: 24),
       child: Container(
         decoration: AppStyle.listItemDecoration,
-        width: MediaQuery.of(context).size.width - 48,
-        height: 120,
+        width: displayData.width - 48,
+        height: 95,
         child: Material(
           color: Colors.transparent,
           child: Ink(
@@ -65,7 +119,7 @@ class _AccountState extends State<AccountsWidget> {
                     decoration: AppStyle.circularShadow(),
                     child: ClipRRect(
                       borderRadius: BorderRadius.all(Radius.circular(110)),
-                      child:
+                      child: bloodDonor.profilePicture?.thumbUrl != null ?
                       Image.network(
                         bloodDonor.profilePicture.thumbUrl,
                         fit: BoxFit.cover,
@@ -87,7 +141,7 @@ class _AccountState extends State<AccountsWidget> {
                             ),
                           );
                         },
-                      ),
+                      ) : Center(child: CircularProgressIndicator(strokeWidth: 1.75,),),
 
 //                Image(
 //                  image: NetworkImage('https://i.imgur.com/oCb2p45.jpeg'),
@@ -104,7 +158,7 @@ class _AccountState extends State<AccountsWidget> {
                         crossAxisAlignment: CrossAxisAlignment.start,
                         mainAxisAlignment: MainAxisAlignment.end,
                         children: <Widget>[
-                          Text(bloodDonor.fullName),
+                          Text(bloodDonor.fullName.toUpperCase()),
                           Text(
                             bloodDonor.emailAddress,
                             style: TextStyle(
@@ -116,7 +170,7 @@ class _AccountState extends State<AccountsWidget> {
                             TextStyle(fontSize: 12, color: Colors.grey, height: 1.5),
                           ),
                           Container(
-                            width: MediaQuery.of(context).size.width - 147,
+                            width: displayData.width - 147,
                             height: 25,
                           ),
                         ],

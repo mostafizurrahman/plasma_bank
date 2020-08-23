@@ -57,7 +57,7 @@ class MessageWidget extends StatelessWidget {
                   mainAxisAlignment: MainAxisAlignment.end,
                   children: <Widget>[
                     Container(
-                      width: MediaQuery.of(context).size.width,
+                      width: displayData.width,
                       decoration: new BoxDecoration(
                         boxShadow: <BoxShadow>[
                           BoxShadow(

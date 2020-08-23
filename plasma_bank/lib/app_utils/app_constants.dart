@@ -19,6 +19,8 @@ class AppRoutes {
   static const String pagePersonData = '/home/personal';
   static const String pageHealthData = '/home/personal/health';
 
+  static const String pageDonorList = '/home/donor/list';
+  static const String pagePrivateChat =  '/home/private/chat';
 }
 
 class AppConfig {
@@ -32,33 +34,30 @@ class AppConfig {
 }
 
 class AppStyle {
-
   static const double PADDING = 24;
   static const double PADDING_M = 12;
   static const double PADDING_S = 8;
 
   static const double ICON_SIZE_S = 26;
 
-  static Color greyBackground({ alpha = 255}){
-
+  static Color greyBackground({alpha = 255}) {
     final _background = (0.9 * 255).toInt();
     return Color.fromARGB(alpha, _background, _background, _background);
   }
 
-
-  static Color txtLine(){
+  static Color txtLine() {
     return Color.fromARGB(255, 150, 150, 150);
   }
 
-  static BoxDecoration circularShadow(){
+  static BoxDecoration circularShadow() {
     return BoxDecoration(
       color: Colors.white,
       boxShadow: [
         BoxShadow(
           color: Color.fromRGBO(0, 0, 0, 0.15),
           offset: Offset(0, 0),
-          blurRadius: 12,
-          spreadRadius: 8,
+          blurRadius: 8,
+          spreadRadius: 5,
         ),
       ],
       borderRadius: BorderRadius.all(
@@ -67,8 +66,7 @@ class AppStyle {
     );
   }
 
-
-  static BoxDecoration lightShadow(){
+  static BoxDecoration lightShadow() {
     return BoxDecoration(
       color: Colors.white,
       boxShadow: [
@@ -85,8 +83,8 @@ class AppStyle {
     );
   }
 
-  static BoxDecoration highlightShadow({Color color }){
-    if (color == null){
+  static BoxDecoration highlightShadow({Color color}) {
+    if (color == null) {
       color = Color.fromARGB(255, 255, 20, 80);
     }
     return BoxDecoration(
@@ -108,6 +106,22 @@ class AppStyle {
   static const fontBold = 'SF_UIFont_Bold';
   static const fontNormal = 'SF_UIFont';
   static const Color colorHighlight = Color.fromARGB(255, 255, 20, 80);
+
+  static const BoxDecoration lightDecoration = BoxDecoration(
+    color: Colors.white,
+    boxShadow: [
+      BoxShadow(
+        color: Color.fromARGB(200, 200, 200, 200),
+        offset: Offset(0, 0),
+        blurRadius: 4,
+        spreadRadius: 2.25,
+      ),
+    ],
+    borderRadius: const BorderRadius.all(
+      const Radius.circular(6),
+    ),
+  );
+
   static const BoxDecoration shadowDecoration = BoxDecoration(
     color: Colors.white,
     boxShadow: [
@@ -173,11 +187,11 @@ class AppStyle {
     return _formatter.format(number).toString();
   }
 
-  static Color theme(){
+  static Color theme() {
     return Color.fromARGB(255, 240, 10, 80);
   }
 
-  static Color titleTxtColor(){
+  static Color titleTxtColor() {
     return Color.fromARGB(255, 60, 50, 70);
   }
 
@@ -228,13 +242,9 @@ class AppStyle {
 //
 //    );
   }
-  
-  
 }
 
-
 class DeviceInfo {
-
   String appPlatform;
   String appBundleID;
   String deviceNamed;
@@ -245,17 +255,11 @@ class DeviceInfo {
   factory DeviceInfo() {
     return _device;
   }
-
-
-
-
 }
 
 final DeviceInfo deviceInfo = DeviceInfo();
 
-
-class TextConfig{
-
+class TextConfig {
   final int maxLen;
   Timestamped timestamped;
   final bool isDigit;
@@ -264,5 +268,56 @@ class TextConfig{
   final String labelText;
   TextConfig(this.labelText, {this.isDigit = false, this.maxLen = 25});
 }
+
+class DisplayData {
+  
+  
+  double _height = 0;
+  double _width = 0;
+  double _navHeight = 0;
+  double _padBottom = 0;
+  double _padTop = 0;
+  static final _device = DisplayData._internal();
+  DisplayData._internal();
+  factory DisplayData() {
+    return _device;
+  }
+  
+  
+  setData(final BuildContext _context){
+    _padTop = MediaQuery.of(_context).padding.top;
+    _height = MediaQuery.of(_context).size.height;
+    _width = MediaQuery.of(_context).size.width;
+    _padBottom = MediaQuery.of(_context).padding.bottom;
+    _navHeight = (_padBottom > 0 ? 55 : 65) + _padBottom;
+
+//    double _height = MediaQuery.of(_context).size.height;
+//    double _width = MediaQuery.of(_context).size.width;
+  }
+
+
+  double get height  {
+    return _height;
+  }
+
+  double get top {
+    return _padTop;
+  }
+
+  double get bottom {
+    return _padBottom;
+  }
+
+  double get width {
+    return _width;
+  }
+
+  double get navHeight{
+    return _navHeight;
+  }
+
+}
+
+final DisplayData displayData = DisplayData();
 
 enum ImageType { profile, prescription, document }

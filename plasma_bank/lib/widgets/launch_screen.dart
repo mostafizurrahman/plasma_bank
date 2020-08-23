@@ -84,6 +84,8 @@ class _LaunchScreenState extends State<LaunchScreenWidget> {
 >>>>>>> 07ec83756422bca318c6c5d11e312426e7d1dc3f
   @override
   Widget build(BuildContext context) {
+
+    displayData.setData(context);
     final keyWidth = 250.0;
     return Container(
       color: Colors.white,
@@ -91,7 +93,7 @@ class _LaunchScreenState extends State<LaunchScreenWidget> {
         child: Scaffold(
           body: Container(
 
-            width: MediaQuery.of(context).size.width,
+            width: displayData.width,
             color: Colors.white,
             child: Column(
               mainAxisAlignment: MainAxisAlignment.spaceEvenly,

@@ -316,8 +316,23 @@ class _HealthState extends BaseKeyboardState<HealthWidget> {
     showDialog(context: this.context, builder: (_)=>UploaderWidget(donor));
 =======
   _openDataUploader(final BloodDonor donor){
+<<<<<<< HEAD
     showDialog(context: this.context, builder: (_)=>UploaderWidget(donor, donorHandler.donorEmails));
 >>>>>>> 07ec83756422bca318c6c5d11e312426e7d1dc3f
+=======
+    showDialog(context: this.context, builder: (_)=>UploaderWidget(donor, donorHandler.donorEmails, onCompleted));
+  }
+
+
+  onCompleted(final bool _isSuccess){
+    if(_isSuccess){
+      Navigator.popUntil(
+          context,
+          ModalRoute.withName( AppRoutes.pageRouteHome));
+    } else {
+      WidgetTemplate.message(context, 'network error occurred! we are unable to create this account right now, please try again.\nthank your!');
+    }
+>>>>>>> feature/Messaging
   }
 
 
@@ -443,9 +458,9 @@ class _HealthState extends BaseKeyboardState<HealthWidget> {
 
   @override
   Widget getSingleChildContent() {
-    final _width = MediaQuery.of(context).size.width;
+
     return Container(
-      width: _width,
+      width: displayData.width,
       height: 1310,
       child: Column(
         crossAxisAlignment: CrossAxisAlignment.start,
@@ -458,14 +473,14 @@ class _HealthState extends BaseKeyboardState<HealthWidget> {
           Row(
             children: [
               Container(
-                width: (_width - 48) / 2 - 8,
+                width: (displayData.width - 48) / 2 - 8,
                 child: this._getTextField(this._bloodConfig),
               ),
               SizedBox(
                 width: 16,
               ),
               Container(
-                width: (_width - 48) / 2 - 8,
+                width: (displayData.width - 48) / 2 - 8,
                 child: this._getTextField(this._ageConfig),
               ),
             ],
@@ -473,14 +488,14 @@ class _HealthState extends BaseKeyboardState<HealthWidget> {
           Row(
             children: [
               Container(
-                width: (_width - 48) / 2 - 8,
+                width: (displayData.width - 48) / 2 - 8,
                 child: this._getTextField(this._weightConfig),
               ),
               SizedBox(
                 width: 16,
               ),
               Container(
-                width: (_width - 48) / 2 - 8,
+                width: (displayData.width - 48) / 2 - 8,
                 child: this._getTextField(this._heightConfig),
               ),
             ],
@@ -542,7 +557,7 @@ class _HealthState extends BaseKeyboardState<HealthWidget> {
                 return SizedBox();
               }
               return Container(
-                width: _width - 48,
+                width: displayData.width - 48,
                 child: Column(
                   children: [
                     WidgetTemplate.getTextField(
@@ -573,7 +588,7 @@ class _HealthState extends BaseKeyboardState<HealthWidget> {
               stream: _prescriptionBehavior.stream,
               initialData: ['p1', 'p2'],
               builder: (context, snapshot) {
-                return _getPrescription(snapshot.data, _width, 0.325);
+                return _getPrescription(snapshot.data, displayData.width, 0.325);
               },
             ),
           ),

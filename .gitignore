@@ -1,3 +1,4 @@
 plasma_bank/android/.gitignore
 plasma_bank/android/app/google-services.json
 plasma_bank/ios/Runner/GoogleService-Info.plist
+https://github.com/mostafizurrahman/plasma_bank/blob/master/plasma_bank/lib/network/auth.dart

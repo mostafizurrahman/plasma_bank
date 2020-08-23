@@ -130,6 +130,19 @@ class FirebaseRepositories {
     return null;
   }
 
+  Future<bool> updateDonationDate(String _date, String _email) async {
+    bool _updated = true;
+    await Firestore.instance
+        .collection('donor')
+        .document(_email)
+        .updateData({'donation_date' : _date})
+        .catchError((_error) {
+      _updated = false;
+      debugPrint('error+occurred  ___________ ' + _error.toString());
+    });
+    return _updated;
+  }
+
   uploadBloodDonor(final BloodDonor bloodDonor, List<String> _emails) async {
     await Firestore.instance
         .collection('donor')
@@ -167,5 +180,13 @@ class FirebaseRepositories {
       debugPrint('error+occurred  ___________ ' + _error.toString());
     });
 >>>>>>> 07ec83756422bca318c6c5d11e312426e7d1dc3f
+  }
+
+
+  Stream<QuerySnapshot> getDonorList(final Map _queryParameters) {
+
+    final _reference = Firestore.instance.collection('donor');
+    _reference.getDocuments();
+    return _reference.where('disease', isNull: true).snapshots();
   }
 }

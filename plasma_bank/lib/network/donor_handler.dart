@@ -107,6 +107,17 @@ class DonorHandler {
     }
   }
 
+  logoutEmail(final String _email) async {
+    if(_email == this.loginEmail){
+      this.loginEmail = null;
+      final _pref = await SharedPreferences.getInstance();
+      _pref.remove('login_email');
+      loginDonor = null;
+    }
+  }
+
+
+
   String get loginEmail {
     return this._loginEmail;
   }

@@ -92,7 +92,7 @@ class _DataPickerState extends State<DataPickerWidget> {
                     ),
                   ),
                   CustomPaint(
-                    size: Size(MediaQuery.of(context).size.width, 1.0),
+                    size: Size(displayData.width, 1.0),
                     painter: DashLinePainter(),
                   ),
                   Expanded(
