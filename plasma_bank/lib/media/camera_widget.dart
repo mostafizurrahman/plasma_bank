@@ -21,6 +21,7 @@ class CameraWidget extends BaseWidget {
     final _onCaptured = super.getData('on_captured_function');
     final _routeName = super.getData('route_name');
     return _CameraState(_onCaptured, _frontCamera, _routeName);
+    //
   }
 }
 
