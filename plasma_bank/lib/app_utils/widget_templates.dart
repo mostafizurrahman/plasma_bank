@@ -93,7 +93,11 @@ class WidgetTemplate {
         return null;
       };
     }
+<<<<<<< HEAD
     final _inputFormatter = isDigit
+=======
+    final _inputFormatter = isDigit || _config.isDigit
+>>>>>>> 91d5bde7e182f349837b51c29c061962546dca35
         ? [
             new LengthLimitingTextInputFormatter(maxLen),
             WhitelistingTextInputFormatter.digitsOnly
@@ -105,7 +109,11 @@ class WidgetTemplate {
     return Padding(
       padding: EdgeInsets.only(top: 8, bottom: 8),
       child: new TextField(
+<<<<<<< HEAD
         autofillHints: null,
+=======
+
+>>>>>>> 91d5bde7e182f349837b51c29c061962546dca35
         enableSuggestions: false,
 
         controller: _config.controller,
@@ -138,7 +146,11 @@ class WidgetTemplate {
     );
   }
 
+<<<<<<< HEAD
   static Widget gateRadio(BuildContext _contex, final BehaviorSubject<int> _radioStream, final String _title,
+=======
+  static Widget gateRadio(final BehaviorSubject<int> _radioStream, final String _title,
+>>>>>>> 91d5bde7e182f349837b51c29c061962546dca35
 
       {IconButton button}) {
     return Row(

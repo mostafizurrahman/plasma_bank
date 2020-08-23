@@ -150,7 +150,11 @@ class WidgetProvider {
     ];
 
     final int _buttonCount = 5;
+<<<<<<< HEAD
     final _width = (MediaQuery.of(_context).size.width) / _buttonCount;
+=======
+    final _width = displayData.width / _buttonCount;
+>>>>>>> 91d5bde7e182f349837b51c29c061962546dca35
     List _widgets = List<Widget>();
 
     for (int i = 0; i < _buttonCount; i++) {
@@ -214,7 +218,11 @@ class WidgetProvider {
           borderRadius: BorderRadius.all(Radius.circular(100)),
         ),
         height: 50,
+<<<<<<< HEAD
         width: MediaQuery.of(context).size.width - padding,
+=======
+        width: displayData.width - padding,
+>>>>>>> 91d5bde7e182f349837b51c29c061962546dca35
         child: RaisedButton(
           shape: RoundedRectangleBorder(
             borderRadius: BorderRadius.circular(120.0),
@@ -244,7 +252,11 @@ class WidgetProvider {
           borderRadius: BorderRadius.all(Radius.circular(100)),
         ),
         height: 50,
+<<<<<<< HEAD
         width: MediaQuery.of(context).size.width - padding,
+=======
+        width:  - padding,
+>>>>>>> 91d5bde7e182f349837b51c29c061962546dca35
         child: RaisedButton(
 
           shape: RoundedRectangleBorder(

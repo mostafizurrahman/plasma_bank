@@ -1,9 +1,17 @@
+<<<<<<< HEAD
 import 'dart:typed_data';
+=======
+import 'dart:convert';
+>>>>>>> 91d5bde7e182f349837b51c29c061962546dca35
 
 import 'package:flutter/cupertino.dart';
 import 'package:geolocator/geolocator.dart';
 import 'package:plasma_bank/network/api_client.dart';
 import 'package:plasma_bank/network/auth.dart';
+<<<<<<< HEAD
+=======
+import 'package:plasma_bank/network/models/zip_data.dart';
+>>>>>>> 91d5bde7e182f349837b51c29c061962546dca35
 //import 'package:restcountries/restcountries.dart';
 
 class LocationProvider {
@@ -84,10 +92,17 @@ class LocationProvider {
     final _client = ApiClient();
     final String _url = this.getUrl();
     final List _data = await _client.getGlobList(_url);
+<<<<<<< HEAD
     if( _data == null){
       return  List<Country>();
     }
     for(final _item in _data){
+=======
+    if( _data == null) {
+      return  List<Country>();
+    }
+    for(final _item in _data) {
+>>>>>>> 91d5bde7e182f349837b51c29c061962546dca35
       Country _c = tryCast(_item);
       _response.add(_c);
     }
@@ -146,6 +161,44 @@ class LocationProvider {
     }
     return "http://battuta.medunes.net/api/country/all/?key=$_key";
   }
+<<<<<<< HEAD
+=======
+
+  Future<ZipData> getZipData(final String zipCode, String countryCode) async {
+
+
+    // verify required params are set
+
+    // create path and map variables
+    String path = "https://community-zippopotamus.p.rapidapi.com/$countryCode/$zipCode";
+
+    // query params
+    List<QueryParam> queryParams = [];
+    Map<String, String> headerParams = {
+      "x-rapidapi-host": "community-zippopotamus.p.rapidapi.com",
+      "x-rapidapi-key": Auth.ZIP_KEY,
+    };
+    Map<String, String> formParams = {};
+
+
+
+    String contentType = "application/json";
+    List<String> authNames = [];
+    final _client = ApiClient();
+    var response = await _client.invokeAPI(path, 'GET', queryParams, null,
+        headerParams, formParams, contentType, authNames);
+
+    if (response.statusCode >= 400) {
+      throw new ApiException(response.statusCode, response.body);
+    } else if (response.body != null) {
+      final map = json.decode(response.body);
+      if(map is Map) {
+        return _client.deserialize(response.body, 'ZipData') as ZipData;
+      }
+    }
+    return null;
+  }
+>>>>>>> 91d5bde7e182f349837b51c29c061962546dca35
 }
 
 final LocationProvider locationProvider = LocationProvider();

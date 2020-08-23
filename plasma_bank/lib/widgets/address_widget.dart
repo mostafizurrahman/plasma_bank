@@ -2,6 +2,10 @@ import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter/painting.dart';
 import 'package:plasma_bank/app_utils/widget_templates.dart';
+<<<<<<< HEAD
+=======
+import 'package:plasma_bank/network/firebase_repositories.dart';
+>>>>>>> 91d5bde7e182f349837b51c29c061962546dca35
 import 'package:plasma_bank/network/models/abstract_person.dart';
 import '../widgets/base_widget.dart';
 import 'package:plasma_bank/app_utils/app_constants.dart';
@@ -10,7 +14,10 @@ import 'package:plasma_bank/app_utils/widget_providers.dart';
 import 'package:plasma_bank/widgets/stateful/data_picker_widget.dart';
 import 'package:plasma_bank/widgets/base/base_state.dart';
 
+<<<<<<< HEAD
 
+=======
+>>>>>>> 91d5bde7e182f349837b51c29c061962546dca35
 class AddressWidget extends BaseWidget {
   AddressWidget(Map arguments) : super(arguments);
   @override
@@ -19,7 +26,11 @@ class AddressWidget extends BaseWidget {
   }
 }
 
+<<<<<<< HEAD
 class _AddressState extends BaseKeyboardState<AddressWidget>  {
+=======
+class _AddressState extends BaseKeyboardState<AddressWidget> {
+>>>>>>> 91d5bde7e182f349837b51c29c061962546dca35
   bool skipPopup = false;
   final TextConfig _countryConfig = TextConfig('country');
 
@@ -27,7 +38,11 @@ class _AddressState extends BaseKeyboardState<AddressWidget>  {
   final TextConfig _regionConfig = TextConfig('region/state');
   final TextConfig _cityConfig = TextConfig('city/county/division');
   final TextConfig _streetConfig = TextConfig('street/locality');
+<<<<<<< HEAD
   final TextConfig _zipConfig = TextConfig('zip/po');
+=======
+  final TextConfig _zipConfig = TextConfig('zip/po', isDigit: true);
+>>>>>>> 91d5bde7e182f349837b51c29c061962546dca35
   final TextConfig _houseConfig = TextConfig('house/other');
 
   @override
@@ -37,7 +52,10 @@ class _AddressState extends BaseKeyboardState<AddressWidget>  {
   }
 
   _setLocation() {
+<<<<<<< HEAD
 
+=======
+>>>>>>> 91d5bde7e182f349837b51c29c061962546dca35
     final _city = locationProvider.gpsCity;
     if (_city != null) {
       this._countryConfig.controller.text = _city.fullName ?? '';
@@ -51,25 +69,39 @@ class _AddressState extends BaseKeyboardState<AddressWidget>  {
     }
   }
 
+<<<<<<< HEAD
 
 
   @override
   void dispose() {
     super.dispose();
 
+=======
+  @override
+  void dispose() {
+    super.dispose();
+>>>>>>> 91d5bde7e182f349837b51c29c061962546dca35
   }
 
   @override
   Widget build(BuildContext context) {
+<<<<<<< HEAD
     return super.build(context);
   }
 
 
 
+=======
+    skipPopup = false;
+    return super.build(context);
+  }
+
+>>>>>>> 91d5bde7e182f349837b51c29c061962546dca35
   _errorMessage(final TextConfig _config) {
     super.setError(_config);
   }
 
+<<<<<<< HEAD
   @override
   onSubmitData() {
     FocusScope.of(context).requestFocus(FocusNode());
@@ -120,6 +152,67 @@ class _AddressState extends BaseKeyboardState<AddressWidget>  {
       }
       skipPopup = false;
     });
+=======
+  _onError(final _error) {
+    this.skipPopup = false;
+  }
+
+  @override
+  onSubmitData() async {
+    WidgetProvider.loading(context);
+    FocusScope.of(context).requestFocus(FocusNode());
+
+    bool popLoading = true;
+    final _zip = this._zipConfig.controller.text;
+    final _countryCode = this._countryCodeConfig.controller.text;
+
+    final _country = this._countryConfig.controller.text;
+    final _state = this._regionConfig.controller.text;
+    final _city = this._cityConfig.controller.text;
+    final _road = this._streetConfig.controller.text;
+    final _house = this._houseConfig.controller.text;
+    if (_country.isEmpty) {
+      _errorMessage(this._countryConfig);
+    } else if (_state.isEmpty) {
+      _errorMessage(this._regionConfig);
+    } else if (_city.isEmpty) {
+      _errorMessage(this._cityConfig);
+    } else if (_road.isEmpty) {
+      _errorMessage(_streetConfig);
+    } else if (_road.isEmpty) {
+      _errorMessage(_streetConfig);
+    } else if (_zip.isEmpty) {
+      _errorMessage(_zipConfig);
+    } else if (_house.isEmpty) {
+      _errorMessage(_houseConfig);
+    } else {
+      final _zipData = await locationProvider
+          .getZipData(_zip, _countryCode)
+          .catchError(_onError);
+      final _addressMap = {
+        'country': _country,
+        'code': _countryCode,
+        'state': _state,
+        'city': _city,
+        'street': _road,
+        'zip': _zip,
+        'house': _house,
+        'is_valid_postal': _zipData != null,
+      };
+
+//        final _address = Address.fromMap(_addressMap);
+      popLoading = false;
+      Navigator.pop(context);
+      Navigator.pushNamed(
+        context,
+        AppRoutes.pagePersonData,
+        arguments: {'address': _addressMap},
+      );
+    }
+    if(popLoading) {
+      Navigator.pop(context);
+    }
+>>>>>>> 91d5bde7e182f349837b51c29c061962546dca35
   }
 
   _onChangedStreet(String value) {}
@@ -168,7 +261,11 @@ class _AddressState extends BaseKeyboardState<AddressWidget>  {
         Expanded(
           child: WidgetTemplate.getTextField(
             this._countryConfig,
+<<<<<<< HEAD
             onTap:_openCountryList,
+=======
+            onTap: _openCountryList,
+>>>>>>> 91d5bde7e182f349837b51c29c061962546dca35
           ),
         ),
         SizedBox(
@@ -238,16 +335,26 @@ class _AddressState extends BaseKeyboardState<AddressWidget>  {
     if (_data is Region) {
       this._regionConfig.controller.text = _data.regionName;
       this._cityConfig.controller.text = '';
+<<<<<<< HEAD
       this._streetConfig.controller.text = '';
       this._zipConfig.controller.text = '';
+=======
+//      this._streetConfig.controller.text = '';
+//      this._zipConfig.controller.text = '';
+>>>>>>> 91d5bde7e182f349837b51c29c061962546dca35
     }
   }
 
   _onCitySelected(final _data) {
     if (_data is City) {
       this._cityConfig.controller.text = _data.cityName;
+<<<<<<< HEAD
       this._streetConfig.controller.text = '';
       this._zipConfig.controller.text = '';
+=======
+//      this._streetConfig.controller.text = '';
+//      this._zipConfig.controller.text = '';
+>>>>>>> 91d5bde7e182f349837b51c29c061962546dca35
     }
   }
 
@@ -258,8 +365,13 @@ class _AddressState extends BaseKeyboardState<AddressWidget>  {
       this._countryCodeConfig.controller.text = _data.countryCode.toUpperCase();
       this._regionConfig.controller.text = '';
       this._cityConfig.controller.text = '';
+<<<<<<< HEAD
       this._streetConfig.controller.text = '';
       this._zipConfig.controller.text = '';
+=======
+//      this._streetConfig.controller.text = '';
+//      this._zipConfig.controller.text = '';
+>>>>>>> 91d5bde7e182f349837b51c29c061962546dca35
     }
   }
 
@@ -321,7 +433,10 @@ class _AddressState extends BaseKeyboardState<AddressWidget>  {
     return _state;
   }
 
+<<<<<<< HEAD
 
+=======
+>>>>>>> 91d5bde7e182f349837b51c29c061962546dca35
   ///OVERRIDEN METHODS
 
   @override
@@ -347,13 +462,19 @@ class _AddressState extends BaseKeyboardState<AddressWidget>  {
   }
 
   @override
+<<<<<<< HEAD
  Widget getSingleChildContent(){
     return  Container(
+=======
+  Widget getSingleChildContent() {
+    return Container(
+>>>>>>> 91d5bde7e182f349837b51c29c061962546dca35
       height: super.getContentHeight(),
       child: Column(
         crossAxisAlignment: CrossAxisAlignment.start,
         children: [
           Padding(
+<<<<<<< HEAD
             padding:
             EdgeInsets.only(top: 24, bottom: 12),
             child: Row(
@@ -367,25 +488,60 @@ class _AddressState extends BaseKeyboardState<AddressWidget>  {
                   'ENTER ADDRESS',
                   textAlign: TextAlign.left,
                   style: TextStyle( fontSize: 24,
+=======
+            padding: EdgeInsets.only(top: 24, bottom: 12),
+            child: Row(
+              children: [
+                WidgetProvider.circledIcon(
+                  Icon(
+                    Icons.place,
+                    color: AppStyle.theme(),
+                    size: 25,
+                  ),
+                ),
+                SizedBox(
+                  width: 12,
+                ),
+                Text(
+                  'ENTER ADDRESS',
+                  textAlign: TextAlign.left,
+                  style: TextStyle(
+                    fontSize: 24,
+>>>>>>> 91d5bde7e182f349837b51c29c061962546dca35
                     fontFamily: AppStyle.fontBold,
                   ),
                 ),
               ],
+<<<<<<< HEAD
               crossAxisAlignment:
               CrossAxisAlignment.center,
+=======
+              crossAxisAlignment: CrossAxisAlignment.center,
+>>>>>>> 91d5bde7e182f349837b51c29c061962546dca35
             ),
           ),
           _getCountry(),
           _getRegion(),
           _getCity(),
           _geStreet(),
+<<<<<<< HEAD
           WidgetTemplate.getTextField(this._houseConfig,
             maxLen: 30, isReadOnly: false, showCursor: true,
+=======
+          WidgetTemplate.getTextField(
+            this._houseConfig,
+            maxLen: 30,
+            isReadOnly: false,
+            showCursor: true,
+>>>>>>> 91d5bde7e182f349837b51c29c061962546dca35
           ),
         ],
       ),
     );
   }
+<<<<<<< HEAD
 
 
+=======
+>>>>>>> 91d5bde7e182f349837b51c29c061962546dca35
 }

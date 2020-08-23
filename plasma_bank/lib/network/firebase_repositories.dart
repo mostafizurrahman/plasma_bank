@@ -1,9 +1,20 @@
 import 'package:cloud_firestore/cloud_firestore.dart';
+<<<<<<< HEAD
 import 'package:plasma_bank/network/models/blood_collector.dart';
 
 
 class FirebaseRepositories {
 
+=======
+import 'package:flutter/cupertino.dart';
+import 'package:plasma_bank/app_utils/app_constants.dart';
+import 'package:plasma_bank/network/models/abstract_person.dart';
+import 'package:plasma_bank/network/models/blood_collector.dart';
+import 'package:plasma_bank/network/models/blood_donor.dart';
+import 'package:plasma_bank/network/models/plasma_donor.dart';
+
+class FirebaseRepositories {
+>>>>>>> 91d5bde7e182f349837b51c29c061962546dca35
   //  Future<List<Country>> getCountries() async {
 //    return await this._globeAPI.getCountries();
 //  }
@@ -13,7 +24,10 @@ class FirebaseRepositories {
 //  }
 
   CollectionReference _globalCovidData;
+<<<<<<< HEAD
 
+=======
+>>>>>>> 91d5bde7e182f349837b51c29c061962546dca35
   CollectionReference _patientCollection;
   CollectionReference _plasmaCollection;
   DocumentReference _documentCollection;
@@ -31,8 +45,12 @@ class FirebaseRepositories {
         this._documentCollection.collection('01675876752');
   }
 
+<<<<<<< HEAD
 
   Stream<QuerySnapshot> getGlobalCovidData(){
+=======
+  Stream<QuerySnapshot> getGlobalCovidData() {
+>>>>>>> 91d5bde7e182f349837b51c29c061962546dca35
     return this._globalCovidData.snapshots();
   }
 
@@ -41,12 +59,19 @@ class FirebaseRepositories {
   }
 
   Future<DocumentReference> addBloodHunter(dynamic bloodHunter) async {
+<<<<<<< HEAD
     if(bloodHunter is BloodCollector){
+=======
+    if (bloodHunter is BloodCollector) {
+>>>>>>> 91d5bde7e182f349837b51c29c061962546dca35
       final _json = bloodHunter.toJson();
       final _data = {bloodHunter.mobileNumber: _json};
       return await _patientCollection.add(_data);
     } else {
+<<<<<<< HEAD
 //      final _data = {bloodHunter['mobile']: bloodHunter};
+=======
+>>>>>>> 91d5bde7e182f349837b51c29c061962546dca35
       return await _patientCollection.add(bloodHunter);
     }
   }
@@ -56,4 +81,84 @@ class FirebaseRepositories {
         .document(bloodHunter.reference.documentID)
         .updateData(bloodHunter.toJson());
   }
+<<<<<<< HEAD
+=======
+
+  Stream<DocumentSnapshot> getEmails() {
+    return Firestore.instance
+        .collection('donor')
+        .document(deviceInfo.deviceUUID)
+        .snapshots();
+  }
+
+  Future<BloodDonor> getDonorData(final String _email) async {
+    DocumentSnapshot _data = await Firestore.instance
+        .collection('donor')
+        .document(_email)
+        .get()
+        .catchError((error) {
+      return null;
+    });
+    if (_data.exists) {
+      if (_data.data.isNotEmpty) {
+        if (_data.data.keys.contains('covid_date')) {
+          return PlasmaDonor.fromMap(_data.data);
+        }
+        return BloodDonor.fromMap(_data.data);
+      }
+    }
+    return null;
+  }
+
+  Future<bool> updateDonationDate(String _date, String _email) async {
+    bool _updated = true;
+    await Firestore.instance
+        .collection('donor')
+        .document(_email)
+        .updateData({'donation_date' : _date})
+        .catchError((_error) {
+      _updated = false;
+      debugPrint('error+occurred  ___________ ' + _error.toString());
+    });
+    return _updated;
+  }
+
+  uploadBloodDonor(final BloodDonor bloodDonor, List<String> _emails) async {
+    await Firestore.instance
+        .collection('donor')
+        .document(bloodDonor.emailAddress)
+        .setData(bloodDonor.toJson())
+        .catchError((_error) {
+      debugPrint('error+occurred  ___________ ' + _error.toString());
+    });
+    _emails.add(bloodDonor.emailAddress);
+    final devices = {'acc': _emails};
+    await Firestore.instance
+        .collection('donor')
+        .document(deviceInfo.deviceUUID)
+        .setData(devices)
+        .catchError((_error) {
+      debugPrint('error+occurred  ___________ ' + _error.toString());
+    });
+    final _code = (bloodDonor?.hasValidPostal ?? false)
+        ? bloodDonor.address.postalCode
+        : '-1';
+    await Firestore.instance
+        .collection('donor')
+        .document(bloodDonor.address.country)
+        .collection(bloodDonor.address.state)
+        .document(bloodDonor.address.city)
+        .collection('data')
+        .document(bloodDonor.emailAddress)
+        .setData({
+      'group': bloodDonor.bloodGroup,
+      'weight': bloodDonor.weight,
+      'height': bloodDonor.height,
+      'covid': bloodDonor is PlasmaDonor,
+      'postal': _code,
+    }).catchError((_error) {
+      debugPrint('error+occurred  ___________ ' + _error.toString());
+    });
+  }
+>>>>>>> 91d5bde7e182f349837b51c29c061962546dca35
 }

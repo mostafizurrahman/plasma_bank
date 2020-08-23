@@ -203,7 +203,11 @@ class _CameraState extends State<CameraWidget> with WidgetsBindingObserver {
                                       Icons.camera_alt,
                                       size: 30,
                                       color: _snap.data
+<<<<<<< HEAD
                                           ? AppStyle.colorHighlight
+=======
+                                          ? Colors.white
+>>>>>>> 91d5bde7e182f349837b51c29c061962546dca35
                                           : Colors.black,
                                     ),
                                   ),

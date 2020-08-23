@@ -10,8 +10,17 @@ import 'package:plasma_bank/app_utils/app_constants.dart';
 import 'package:plasma_bank/app_utils/widget_providers.dart';
 import 'package:plasma_bank/app_utils/widget_templates.dart';
 import 'package:plasma_bank/media/dash_painter.dart';
+<<<<<<< HEAD
 import 'package:plasma_bank/widgets/base_widget.dart';
 import 'package:plasma_bank/widgets/stateful/data_picker_widget.dart';
+=======
+import 'package:plasma_bank/network/donor_handler.dart';
+import 'package:plasma_bank/network/models/blood_donor.dart';
+import 'package:plasma_bank/network/models/plasma_donor.dart';
+import 'package:plasma_bank/widgets/base_widget.dart';
+import 'package:plasma_bank/widgets/stateful/data_picker_widget.dart';
+import 'package:plasma_bank/widgets/stateful/uploader_widget.dart';
+>>>>>>> 91d5bde7e182f349837b51c29c061962546dca35
 import 'package:rxdart/rxdart.dart';
 import 'package:plasma_bank/widgets/base/base_state.dart';
 
@@ -46,7 +55,11 @@ class _HealthState extends BaseKeyboardState<HealthWidget> {
 
   final TextConfig _weightConfig = TextConfig('body weight');
   final TextConfig _bloodConfig = TextConfig('blood group');
+<<<<<<< HEAD
   final TextConfig _medicineConfig = TextConfig('remarks/disease');
+=======
+  final TextConfig _lastDonationConfig = TextConfig('last donation date');
+>>>>>>> 91d5bde7e182f349837b51c29c061962546dca35
   final TextConfig _infectionConfig = TextConfig('infection date');
   final TextConfig _recoveryConfig = TextConfig('recovery date');
   final TextConfig _ageConfig = TextConfig('age');
@@ -75,6 +88,10 @@ class _HealthState extends BaseKeyboardState<HealthWidget> {
 
   @override
   Widget build(BuildContext context) {
+<<<<<<< HEAD
+=======
+//    Navigator.pop(context);
+>>>>>>> 91d5bde7e182f349837b51c29c061962546dca35
     return super.build(context);
   }
 
@@ -104,7 +121,11 @@ class _HealthState extends BaseKeyboardState<HealthWidget> {
     );
   }
 
+<<<<<<< HEAD
   Widget _getPButton(String _data, final _width, final ratio ){
+=======
+  Widget _getPButton(String _data, final _width, final ratio) {
+>>>>>>> 91d5bde7e182f349837b51c29c061962546dca35
     return Container(
       decoration: AppStyle.shadowDecoration,
       width: _width * ratio,
@@ -143,7 +164,13 @@ class _HealthState extends BaseKeyboardState<HealthWidget> {
         data[0] == 'p1'
             ? _widget1
             : _getPrescriptionImage(data[0], _width * ratio),
+<<<<<<< HEAD
         SizedBox(width: 8,),
+=======
+        SizedBox(
+          width: 8,
+        ),
+>>>>>>> 91d5bde7e182f349837b51c29c061962546dca35
         data[1] == 'p2'
             ? _widget2
             : _getPrescriptionImage(data[1], _width * ratio),
@@ -177,7 +204,11 @@ class _HealthState extends BaseKeyboardState<HealthWidget> {
     );
   }
 
+<<<<<<< HEAD
   _onCameraDenied(){
+=======
+  _onCameraDenied() {
+>>>>>>> 91d5bde7e182f349837b51c29c061962546dca35
     AppSettings.openAppSettings();
   }
 
@@ -186,28 +217,51 @@ class _HealthState extends BaseKeyboardState<HealthWidget> {
     if (status.isDenied) {
       WidgetTemplate.message(context,
           'camera permission is denied. please, go to app settings and grant the camera permission',
+<<<<<<< HEAD
           onTapped: this._onCameraDenied,
           actionTitle: 'open app settings');
+=======
+          onTapped: this._onCameraDenied, actionTitle: 'open app settings');
+>>>>>>> 91d5bde7e182f349837b51c29c061962546dca35
     } else if (!this.skipTouch) {
       this._imagePath = _path;
       this.skipTouch = true;
 
       final arguments = {
+<<<<<<< HEAD
         'image_named' : _path.contains("/") ? _path.split('/').last : _path,
+=======
+        'image_named': _path.contains("/") ? _path.split('/').last : _path,
+>>>>>>> 91d5bde7e182f349837b51c29c061962546dca35
         'is_front_camera': false,
         'on_captured_function': _onCaptured,
         'route_name': AppRoutes.pageHealthData,
       };
+<<<<<<< HEAD
       Navigator.pushNamed(context, AppRoutes.pageRouteCamera,
           arguments: arguments);
       Future.delayed(Duration(seconds: 1), () {
         this.skipTouch = false;
       },);
+=======
+      Navigator.pushNamed(context,
+          AppRoutes.pageRouteCamera,
+          arguments: arguments);
+      Future.delayed(
+        Duration(seconds: 1), (){
+          this.skipTouch = false;
+        },
+      );
+>>>>>>> 91d5bde7e182f349837b51c29c061962546dca35
     }
   }
 
   _onCaptured(final String _imagePath) {
+<<<<<<< HEAD
     if (_imagePath != null){
+=======
+    if (_imagePath != null) {
+>>>>>>> 91d5bde7e182f349837b51c29c061962546dca35
       final _list = List.from(this._prescriptionBehavior.value ?? ['p1', 'p2']);
       if (_list[0] == 'p1' || _list[0] == this._imagePath) {
         this._prescriptionBehavior.sink.add([_imagePath, _list[1]]);
@@ -217,7 +271,103 @@ class _HealthState extends BaseKeyboardState<HealthWidget> {
     }
   }
 
+<<<<<<< HEAD
   _createDonor() {}
+=======
+  _createDonor() {
+    final _bloodGroup = this._bloodConfig.controller.text;
+    final _age = this._ageConfig.controller.text;
+    final _weight = this._weightConfig.controller.text;
+    final _height = this._heightConfig.controller.text;
+    if (_bloodGroup.isEmpty) {
+      super.setError(this._bloodConfig);
+    } else if (_age.isEmpty) {
+      super.setError(this._ageConfig);
+    } else if (_weight.isEmpty) {
+      super.setError(this._weightConfig);
+    } else if (_height.isEmpty) {
+      super.setError(this._heightConfig);
+    } else {
+      final _donorData = Map.from(this.widget.arguments);
+      final _donate = this._lastDonationConfig.controller.text;
+      final _drinking = (this._drinkBehavior.value ?? 0) == 1;
+      final _smoking = (this._smokeBehavior.value ?? 0) == 1;
+      final _disease = (this._diseaseBehavior.value ?? 0) == 1;
+      final _isCovid = (this._covidBehavior.value ?? 0) == 1;
+
+      _donorData['package'] = deviceInfo.appBundleID;
+      _donorData['devices'] = [deviceInfo.deviceUUID];
+      _donorData['blood_group'] = _bloodGroup;
+      _donorData['covid'] = _isCovid;
+      _donorData['smoke'] = _smoking;
+      _donorData['drink'] = _drinking;
+      _donorData['sick'] = _disease;
+      _donorData['donation_date'] = this._lastDonationConfig.controller.text;
+      _donorData['code'] = '123445';
+
+      List<Map> _dataList = List();
+      for(final String url in this._prescriptionBehavior.value ?? ['p1', 'p2']){
+        Map _data = {'link' : url, 'deletehash' : ''};
+        _dataList.add(_data);
+      }
+      _donorData['prescriptions'] = _dataList;
+      _donorData['age'] = _age;
+      _donorData['donation_date'] = _donate;
+      _donorData['weight'] = _weight;
+      _donorData['height'] = _height;
+
+      /*
+      this.weight = map['weight'];
+    this.hasSickness = map['sick'];
+    this.diseaseName = map['disease'];
+    this.hasSmokeHabit = map['smoke'];
+    this.hasDrinkHabit = map['drink'];
+
+
+
+
+    this.medicineList = map['medicines'];
+    this.prescriptionList = map['prescriptions'];
+    this.lastDonationDate = map['donation_date'] == null ? null : (map['donation_date'] as Timestamp).toDate();
+      */
+
+
+      if (_isCovid) {
+        final _infectionDate = this._infectionConfig.controller.text;
+        final _infectionEnd = this._recoveryConfig.controller.text;
+        if (_infectionDate.isEmpty) {
+          FocusScope.of(context).requestFocus(this._infectionConfig.focusNode);
+        } else {
+          _donorData['covid_date'] = _infectionDate;
+          _donorData['recovered_date'] = _infectionEnd;
+        }
+        final _donor = PlasmaDonor.fromMap(_donorData);
+        debugPrint('done');
+        _openDataUploader(_donor);
+      } else{
+        final _bloodDonor = BloodDonor.fromMap(_donorData);
+        debugPrint('done');
+        _openDataUploader(_bloodDonor);
+      }
+    }
+  }
+
+  _openDataUploader(final BloodDonor donor){
+    showDialog(context: this.context, builder: (_)=>UploaderWidget(donor, donorHandler.donorEmails, onCompleted));
+  }
+
+
+  onCompleted(final bool _isSuccess){
+    if(_isSuccess){
+      Navigator.popUntil(
+          context,
+          ModalRoute.withName( AppRoutes.pageRouteHome));
+    } else {
+      WidgetTemplate.message(context, 'network error occurred! we are unable to create this account right now, please try again.\nthank your!');
+    }
+  }
+
+>>>>>>> 91d5bde7e182f349837b51c29c061962546dca35
 
   _getTextField(
     TextConfig _config, {
@@ -310,7 +460,11 @@ class _HealthState extends BaseKeyboardState<HealthWidget> {
     );
   }
 
+<<<<<<< HEAD
   _showDatePicker(TextEditingController _controller) async {
+=======
+  _showDatePicker(TextConfig _controller) async {
+>>>>>>> 91d5bde7e182f349837b51c29c061962546dca35
     _dateTime = await showDatePicker(
         context: context,
         initialDate: _dateTime ?? DateTime.now(),
@@ -318,7 +472,12 @@ class _HealthState extends BaseKeyboardState<HealthWidget> {
         firstDate: DateTime(1920));
     if (_dateTime != null) {
       String date = DateFormat("dd MMM, yyyy").format(_dateTime);
+<<<<<<< HEAD
       _controller.text = date;
+=======
+      _controller.controller.text = date;
+//      _controller.timestamped = _dateTime;
+>>>>>>> 91d5bde7e182f349837b51c29c061962546dca35
     }
   }
 
@@ -340,9 +499,15 @@ class _HealthState extends BaseKeyboardState<HealthWidget> {
 
   @override
   Widget getSingleChildContent() {
+<<<<<<< HEAD
     final _width = MediaQuery.of(context).size.width;
     return Container(
       width: _width,
+=======
+
+    return Container(
+      width: displayData.width,
+>>>>>>> 91d5bde7e182f349837b51c29c061962546dca35
       height: 1310,
       child: Column(
         crossAxisAlignment: CrossAxisAlignment.start,
@@ -355,14 +520,22 @@ class _HealthState extends BaseKeyboardState<HealthWidget> {
           Row(
             children: [
               Container(
+<<<<<<< HEAD
                 width: (_width - 48) / 2 - 8,
+=======
+                width: (displayData.width - 48) / 2 - 8,
+>>>>>>> 91d5bde7e182f349837b51c29c061962546dca35
                 child: this._getTextField(this._bloodConfig),
               ),
               SizedBox(
                 width: 16,
               ),
               Container(
+<<<<<<< HEAD
                 width: (_width - 48) / 2 - 8,
+=======
+                width: (displayData.width - 48) / 2 - 8,
+>>>>>>> 91d5bde7e182f349837b51c29c061962546dca35
                 child: this._getTextField(this._ageConfig),
               ),
             ],
@@ -370,20 +543,37 @@ class _HealthState extends BaseKeyboardState<HealthWidget> {
           Row(
             children: [
               Container(
+<<<<<<< HEAD
                 width: (_width - 48) / 2 - 8,
+=======
+                width: (displayData.width - 48) / 2 - 8,
+>>>>>>> 91d5bde7e182f349837b51c29c061962546dca35
                 child: this._getTextField(this._weightConfig),
               ),
               SizedBox(
                 width: 16,
               ),
               Container(
+<<<<<<< HEAD
                 width: (_width - 48) / 2 - 8,
+=======
+                width: (displayData.width - 48) / 2 - 8,
+>>>>>>> 91d5bde7e182f349837b51c29c061962546dca35
                 child: this._getTextField(this._heightConfig),
               ),
             ],
           ),
+<<<<<<< HEAD
           this._getTextField(this._medicineConfig,
               isReadOnly: false, isDigit: false),
+=======
+          WidgetTemplate.getTextField(
+            this._lastDonationConfig,
+            isReadOnly: true,
+            showCursor: false,
+            onTap: () => this._showDatePicker(this._lastDonationConfig),
+          ),
+>>>>>>> 91d5bde7e182f349837b51c29c061962546dca35
           this._getTitle('BEHAVIOR INFO', Icons.accessibility),
           CustomPaint(
             size: Size(MediaQuery.of(context).size.width, 1.0),
@@ -393,17 +583,26 @@ class _HealthState extends BaseKeyboardState<HealthWidget> {
             height: 16,
           ),
           WidgetTemplate.gateRadio(
+<<<<<<< HEAD
             context,
+=======
+>>>>>>> 91d5bde7e182f349837b51c29c061962546dca35
             this._drinkBehavior,
             'DRINKING',
           ),
           WidgetTemplate.gateRadio(
+<<<<<<< HEAD
             context,
+=======
+>>>>>>> 91d5bde7e182f349837b51c29c061962546dca35
             this._smokeBehavior,
             'SMOKING',
           ),
           WidgetTemplate.gateRadio(
+<<<<<<< HEAD
             context,
+=======
+>>>>>>> 91d5bde7e182f349837b51c29c061962546dca35
             this._diseaseBehavior,
             'DISEASE',
             button: IconButton(
@@ -411,9 +610,13 @@ class _HealthState extends BaseKeyboardState<HealthWidget> {
               icon: Icon(
                 Icons.error,
               ),
+<<<<<<< HEAD
               onPressed: () {
                 WidgetTemplate.message(context, _disease);
               },
+=======
+              onPressed: () => WidgetTemplate.message(context, _disease),
+>>>>>>> 91d5bde7e182f349837b51c29c061962546dca35
             ),
           ),
           this._getTitle('COVID-19 INFO', Icons.brightness_high),
@@ -422,7 +625,10 @@ class _HealthState extends BaseKeyboardState<HealthWidget> {
             painter: DashLinePainter(),
           ),
           WidgetTemplate.gateRadio(
+<<<<<<< HEAD
             context,
+=======
+>>>>>>> 91d5bde7e182f349837b51c29c061962546dca35
             this._covidBehavior,
             'COVID-19 :',
             button: IconButton(
@@ -430,9 +636,13 @@ class _HealthState extends BaseKeyboardState<HealthWidget> {
               icon: Icon(
                 Icons.error,
               ),
+<<<<<<< HEAD
               onPressed: () {
                 WidgetTemplate.message(context, _covidInfo);
               },
+=======
+              onPressed: () => WidgetTemplate.message(context, _covidInfo),
+>>>>>>> 91d5bde7e182f349837b51c29c061962546dca35
             ),
           ),
           StreamBuilder(
@@ -443,26 +653,38 @@ class _HealthState extends BaseKeyboardState<HealthWidget> {
                 return SizedBox();
               }
               return Container(
+<<<<<<< HEAD
                 width: _width - 48,
+=======
+                width: displayData.width - 48,
+>>>>>>> 91d5bde7e182f349837b51c29c061962546dca35
                 child: Column(
                   children: [
                     WidgetTemplate.getTextField(
                       this._infectionConfig,
                       isReadOnly: true,
                       showCursor: false,
+<<<<<<< HEAD
                       onTap: () {
                         this._showDatePicker(
                             this._infectionConfig.controller);
                       },
+=======
+                      onTap: () => this._showDatePicker(this._infectionConfig),
+>>>>>>> 91d5bde7e182f349837b51c29c061962546dca35
                     ),
                     WidgetTemplate.getTextField(
                       this._recoveryConfig,
                       isReadOnly: true,
                       showCursor: false,
+<<<<<<< HEAD
                       onTap: () {
                         this._showDatePicker(
                             this._recoveryConfig.controller);
                       },
+=======
+                      onTap: () => this._showDatePicker(this._recoveryConfig),
+>>>>>>> 91d5bde7e182f349837b51c29c061962546dca35
                     ),
                   ],
                 ),
@@ -480,7 +702,11 @@ class _HealthState extends BaseKeyboardState<HealthWidget> {
               stream: _prescriptionBehavior.stream,
               initialData: ['p1', 'p2'],
               builder: (context, snapshot) {
+<<<<<<< HEAD
                 return _getPrescription(snapshot.data, _width, 0.325);
+=======
+                return _getPrescription(snapshot.data, displayData.width, 0.325);
+>>>>>>> 91d5bde7e182f349837b51c29c061962546dca35
               },
             ),
           ),

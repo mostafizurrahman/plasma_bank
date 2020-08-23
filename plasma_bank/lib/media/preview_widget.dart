@@ -40,7 +40,11 @@ class _PreviewState extends State<PreviewWidget> {
   }
   @override
   Widget build(BuildContext context) {
+<<<<<<< HEAD
     final _height = MediaQuery.of(context).size.height;
+=======
+
+>>>>>>> 91d5bde7e182f349837b51c29c061962546dca35
 
     return Container(
       color: Colors.white,
@@ -80,7 +84,12 @@ class _PreviewState extends State<PreviewWidget> {
                     color: Colors.white,
                   ),
                   _onUploadStart,
+<<<<<<< HEAD
                   buttonWidth: MediaQuery.of(context).size.width - 48),
+=======
+                  buttonWidth:
+                  displayData.width - 48),
+>>>>>>> 91d5bde7e182f349837b51c29c061962546dca35
             ),
           ),
         ),

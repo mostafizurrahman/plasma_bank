@@ -19,7 +19,11 @@ class BloodCollector extends Person{
 //        bloodGroup = map['blood_group'],
 //        this.birthDate = map['birth_date'] == null ? null : (map['birth_date'] as Timestamp).toDate(),
 //        address = Address.fromMap(map['address'] ?? {});
+<<<<<<< HEAD
   BloodCollector(final Map<String, dynamic> _map, {DocumentReference reference}) : super(_map){
+=======
+  BloodCollector(final Map<dynamic, dynamic> _map, {DocumentReference reference}) : super(_map){
+>>>>>>> 91d5bde7e182f349837b51c29c061962546dca35
     this.reference = reference;
     this.hospitalAddress = Address.fromMap(_map['hospital_address']);
     this.injectionDate = _map['injection_date'] == null ? null : (_map['injection_date'] as Timestamp).toDate();
