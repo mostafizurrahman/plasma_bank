@@ -1,5 +1,8 @@
 import 'dart:convert';
+<<<<<<< HEAD
 import 'dart:typed_data';
+=======
+>>>>>>> 07ec83756422bca318c6c5d11e312426e7d1dc3f
 
 import 'package:flutter/cupertino.dart';
 import 'package:geolocator/geolocator.dart';

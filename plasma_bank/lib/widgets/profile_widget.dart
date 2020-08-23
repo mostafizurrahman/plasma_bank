@@ -1,5 +1,6 @@
 import 'dart:io';
 import 'package:app_settings/app_settings.dart';
+<<<<<<< HEAD
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter/src/widgets/framework.dart';
@@ -7,6 +8,16 @@ import 'package:permission_handler/permission_handler.dart';
 import 'package:plasma_bank/app_utils/app_constants.dart';
 import 'package:plasma_bank/app_utils/widget_templates.dart';
 import 'package:plasma_bank/media/dash_painter.dart';
+=======
+import 'package:flutter/material.dart';
+import 'package:permission_handler/permission_handler.dart';
+import 'package:plasma_bank/app_utils/app_constants.dart';
+import 'package:plasma_bank/app_utils/widget_providers.dart';
+import 'package:plasma_bank/app_utils/widget_templates.dart';
+import 'package:plasma_bank/media/dash_painter.dart';
+import 'package:plasma_bank/network/donor_handler.dart';
+import 'package:plasma_bank/network/firebase_repositories.dart';
+>>>>>>> 07ec83756422bca318c6c5d11e312426e7d1dc3f
 import 'package:plasma_bank/widgets/base/base_state.dart';
 import 'package:plasma_bank/widgets/base_widget.dart';
 import 'package:rxdart/rxdart.dart';
@@ -24,16 +35,28 @@ class _ProfileState extends BaseKeyboardState<ProfileWidget> {
   final TextConfig _nameConfig = TextConfig('name');
   final TextConfig _emailConfig = TextConfig('email');
   final TextConfig _phoneConfig = TextConfig('mobile #');
+<<<<<<< HEAD
 
   String profileImage;
   final BehaviorSubject<String> _profileBehavior = BehaviorSubject();
 
+=======
+  final String _message = 'This email has registered as Blood Donor! Please, Login and verify the account';
+  String profileImage;
+  final BehaviorSubject<String> _profileBehavior = BehaviorSubject();
+
+
+>>>>>>> 07ec83756422bca318c6c5d11e312426e7d1dc3f
   @override
   void initState() {
     super.initState();
     this._nameConfig.controller.text = 'mostafizur rahman';
     this._emailConfig.controller.text = 'mostafizur.cse@gmail.com';
     this._phoneConfig.controller.text = '01675876752';
+<<<<<<< HEAD
+=======
+
+>>>>>>> 07ec83756422bca318c6c5d11e312426e7d1dc3f
   }
 
   @override
@@ -105,7 +128,11 @@ class _ProfileState extends BaseKeyboardState<ProfileWidget> {
       this.skipTouch = true;
       Future.delayed(
         Duration(seconds: 1),
+<<<<<<< HEAD
         () {
+=======
+        () async {
+>>>>>>> 07ec83756422bca318c6c5d11e312426e7d1dc3f
           final String _name = this._nameConfig.controller.text;
           final String _email = this._emailConfig.controller.text;
           final String _mobile = this._phoneConfig.controller.text;
@@ -116,6 +143,7 @@ class _ProfileState extends BaseKeyboardState<ProfileWidget> {
           } else if (_mobile.isEmpty) {
             super.setError(this._phoneConfig);
           } else {
+<<<<<<< HEAD
             final Map _arguments = Map.from(this.widget.arguments);
             _arguments['name'] = _name;
             _arguments['email'] = _email;
@@ -123,6 +151,31 @@ class _ProfileState extends BaseKeyboardState<ProfileWidget> {
             _arguments['profile'] = {'link' : profileImage, 'deletehash' : ''};
             Navigator.pushNamed(context, AppRoutes.pageHealthData,
                 arguments: _arguments);
+=======
+            bool hasData = false;
+            if(donorHandler.hasExistingAccount(_email)){
+              this._onEmailExist(_email);
+              hasData = true;
+            }
+            if(!hasData){
+              WidgetProvider.loading(context);
+              final _repository = FirebaseRepositories();
+              if(await _repository.getDonorData(_email) == null){
+                final Map _arguments = Map.from(this.widget.arguments);
+                Navigator.pop(context);
+                _arguments['name'] = _name;
+                _arguments['email'] = _email;
+                _arguments['mobile'] = _mobile;
+                _arguments['profile'] = {'link' : profileImage, 'deletehash' : ''};
+                Navigator.pop(context);
+                Navigator.pushNamed(context, AppRoutes.pageHealthData,
+                    arguments: _arguments);
+              } else {
+                Navigator.pop(context);
+                this._onEmailExist(_email);
+              }
+            }
+>>>>>>> 07ec83756422bca318c6c5d11e312426e7d1dc3f
           }
           this.skipTouch = false;
         },
@@ -130,6 +183,22 @@ class _ProfileState extends BaseKeyboardState<ProfileWidget> {
     }
   }
 
+<<<<<<< HEAD
+=======
+  _onEmailExist(final String _email){
+
+    WidgetTemplate.message(context,
+        this._message,
+        actionTitle: 'OPEN LOGIN',
+        onActionTap: (){
+        Navigator.popUntil(context, ModalRoute.withName(AppRoutes.pageRouteHome));
+        Future.delayed(Duration(microseconds: 200), () async {
+          donorHandler.donorLoginBehavior.sink.add(_email);
+        });
+    });
+  }
+
+>>>>>>> 07ec83756422bca318c6c5d11e312426e7d1dc3f
   @override
   void dispose() {
     super.dispose();

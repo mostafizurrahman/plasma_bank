@@ -10,6 +10,10 @@ import 'package:plasma_bank/app_utils/app_constants.dart';
 import 'package:plasma_bank/app_utils/widget_providers.dart';
 import 'package:plasma_bank/app_utils/widget_templates.dart';
 import 'package:plasma_bank/media/dash_painter.dart';
+<<<<<<< HEAD
+=======
+import 'package:plasma_bank/network/donor_handler.dart';
+>>>>>>> 07ec83756422bca318c6c5d11e312426e7d1dc3f
 import 'package:plasma_bank/network/models/blood_donor.dart';
 import 'package:plasma_bank/network/models/plasma_donor.dart';
 import 'package:plasma_bank/widgets/base_widget.dart';
@@ -246,6 +250,11 @@ class _HealthState extends BaseKeyboardState<HealthWidget> {
       final _disease = (this._diseaseBehavior.value ?? 0) == 1;
       final _isCovid = (this._covidBehavior.value ?? 0) == 1;
 
+<<<<<<< HEAD
+=======
+      _donorData['package'] = deviceInfo.appBundleID;
+      _donorData['devices'] = [deviceInfo.deviceUUID];
+>>>>>>> 07ec83756422bca318c6c5d11e312426e7d1dc3f
       _donorData['blood_group'] = _bloodGroup;
       _donorData['covid'] = _isCovid;
       _donorData['smoke'] = _smoking;
@@ -301,9 +310,14 @@ class _HealthState extends BaseKeyboardState<HealthWidget> {
     }
   }
 
+<<<<<<< HEAD
 
   _openDataUploader(final BloodDonor donor){
     showDialog(context: this.context, builder: (_)=>UploaderWidget(donor));
+=======
+  _openDataUploader(final BloodDonor donor){
+    showDialog(context: this.context, builder: (_)=>UploaderWidget(donor, donorHandler.donorEmails));
+>>>>>>> 07ec83756422bca318c6c5d11e312426e7d1dc3f
   }
 
 

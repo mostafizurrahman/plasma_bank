@@ -123,6 +123,35 @@ class AppStyle {
     ),
   );
 
+<<<<<<< HEAD
+  static const BoxDecoration selectedDecoration = BoxDecoration(
+    color: Colors.white,
+    boxShadow: [
+      BoxShadow(
+        color: Color.fromARGB(255, 255, 20, 80),
+=======
+  static const BoxDecoration listItemDecoration = BoxDecoration(
+    color: Colors.white,
+    boxShadow: [
+      BoxShadow(
+        color: Color.fromRGBO(0, 0, 0, 0.15),
+>>>>>>> 07ec83756422bca318c6c5d11e312426e7d1dc3f
+        offset: Offset(0, 0),
+        blurRadius: 12,
+        spreadRadius: 8,
+      ),
+    ],
+    borderRadius: const BorderRadius.all(
+<<<<<<< HEAD
+      const Radius.circular(16),
+    ),
+  );
+
+=======
+      const Radius.circular(8),
+    ),
+  );
+
   static const BoxDecoration selectedDecoration = BoxDecoration(
     color: Colors.white,
     boxShadow: [
@@ -138,6 +167,7 @@ class AppStyle {
     ),
   );
 
+>>>>>>> 07ec83756422bca318c6c5d11e312426e7d1dc3f
   static String format(final int number) {
     final _formatter = new NumberFormat("###,###,###", "en_US");
     return _formatter.format(number).toString();

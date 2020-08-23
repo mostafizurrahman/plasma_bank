@@ -16,7 +16,11 @@ class BloodDonor extends Person {
   String diseaseName;
   String moneyAmount;
   String lastDonationDate;
+<<<<<<< HEAD
   List<String> medicineList;
+=======
+  List<String> deviceList;
+>>>>>>> 07ec83756422bca318c6c5d11e312426e7d1dc3f
   List<ImgurResponse> prescriptionList;
 
 //  CBar(int a, int b, int cParam) :
@@ -24,12 +28,36 @@ class BloodDonor extends Person {
 //        super(a, b);
 
 
+<<<<<<< HEAD
   static List<ImgurResponse> getImages(final List<Map>_dataList){
 
     List<ImgurResponse> _images = List();
     for(final image in _dataList){
       ImgurResponse _response = ImgurResponse(jsonData:image);
       _images.add(_response);
+=======
+  static List<String> _getList(List<dynamic> _data){
+    List<String> _list = List();
+    _data.forEach((element) {
+      if(element is String ){
+        if(element.isNotEmpty) {
+          _list.add(element);
+        }
+      }
+    });
+    return _list;
+  }
+
+
+  static List<ImgurResponse> getImages(final List<dynamic>_dataList){
+
+    List<ImgurResponse> _images = List();
+    for(final image in _dataList){
+      if(image is Map){
+        ImgurResponse _response = ImgurResponse(jsonData:image);
+        _images.add(_response);
+      }
+>>>>>>> 07ec83756422bca318c6c5d11e312426e7d1dc3f
     }
     return _images;
   }
@@ -41,7 +69,11 @@ class BloodDonor extends Person {
         this.diseaseName = map['disease'],
         this.hasSmokeHabit = map['smoke'],
         this.hasDrinkHabit = map['drink'],
+<<<<<<< HEAD
         this.medicineList = map['medicines'],
+=======
+        this.deviceList = _getList(map['devices']),
+>>>>>>> 07ec83756422bca318c6c5d11e312426e7d1dc3f
         this.prescriptionList = getImages(map['prescriptions']),
         this.lastDonationDate = map['donation_date'],
         super.fromMap(map);
@@ -54,7 +86,11 @@ class BloodDonor extends Person {
     _data['disease'] = this.diseaseName;
     _data['smoke'] = this.hasSmokeHabit;
     _data['drink'] = this.hasDrinkHabit;
+<<<<<<< HEAD
     _data['medicines'] = this.medicineList;
+=======
+    _data['devices'] = this.deviceList;
+>>>>>>> 07ec83756422bca318c6c5d11e312426e7d1dc3f
     _data['prescriptions'] = [
       this.prescriptionList.first.toJson() ?? {},
       this.prescriptionList.last.toJson() ?? {},];

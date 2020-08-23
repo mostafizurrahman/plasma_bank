@@ -8,6 +8,11 @@ import 'package:plasma_bank/app_utils/app_constants.dart';
 import 'package:plasma_bank/app_utils/image_helper.dart';
 import 'package:plasma_bank/app_utils/localization_helper.dart';
 import 'package:plasma_bank/app_utils/widget_templates.dart';
+<<<<<<< HEAD
+=======
+import 'package:plasma_bank/network/donor_handler.dart';
+import 'package:plasma_bank/network/firebase_repositories.dart';
+>>>>>>> 07ec83756422bca318c6c5d11e312426e7d1dc3f
 
 class LaunchScreenWidget extends StatefulWidget {
   @override
@@ -24,9 +29,45 @@ class _LaunchScreenState extends State<LaunchScreenWidget> {
     Future.delayed(const Duration(seconds: 2), () async {
       await this._setDeviceInfo();
       Navigator.popAndPushNamed(context, AppRoutes.pageRouteHome);
+<<<<<<< HEAD
+=======
     });
   }
 
+
+  _setDeviceInfo() async {
+
+    const platform = const MethodChannel('flutter.plasma.com.device_info');
+    final Map<dynamic, dynamic> _deviceIno = await platform.invokeMethod('getPackageInfo');
+
+    deviceInfo.appPlatform = Platform.isIOS ? 'iOS' : Platform.isAndroid ? 'Android' : 'unknown';
+    deviceInfo.appBundleID = _deviceIno['package_name'];
+    deviceInfo.deviceUUID = _deviceIno['device_id'].toString().toUpperCase();
+    deviceInfo.deviceNamed = _deviceIno['device_name'];
+    final _repository = FirebaseRepositories();
+    _repository.getEmails().listen((event) {
+      if(event.data.isNotEmpty){
+        event.data.forEach((k,v) {
+          debugPrint('key :' + k.toString() + ' value ' + v.toString());
+          if(v is List<dynamic>){
+            List<String> _list = List();
+            v.forEach((value) {
+              if(value is String) {
+                _list.add(value);
+              }
+            });
+            donorHandler.donorEmails = _list;
+          }
+        });
+      } else {
+        debugPrint('empty');
+      }
+>>>>>>> 07ec83756422bca318c6c5d11e312426e7d1dc3f
+    });
+    debugPrint('done');
+  }
+
+<<<<<<< HEAD
 
   _setDeviceInfo() async {
 
@@ -39,6 +80,8 @@ class _LaunchScreenState extends State<LaunchScreenWidget> {
     debugPrint('done');
   }
 
+=======
+>>>>>>> 07ec83756422bca318c6c5d11e312426e7d1dc3f
   @override
   Widget build(BuildContext context) {
     final keyWidth = 250.0;

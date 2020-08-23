@@ -99,6 +99,10 @@ abstract class Person {
         age = map['age'],
         birthDate = getDOB(map['age']),
         this.hasValidPostal = map['is_valid_postal'] ?? false,
+<<<<<<< HEAD
+=======
+        this.verificationCode = map['code'] ?? '',
+>>>>>>> 07ec83756422bca318c6c5d11e312426e7d1dc3f
         address = Address.fromMap(map['address'] ?? {});
 
   Person.fromSnapshot(DocumentSnapshot snapshot)
