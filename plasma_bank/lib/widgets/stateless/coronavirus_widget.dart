@@ -64,11 +64,7 @@ class CoronavirusWidget extends StatelessWidget {
                         ),
                         CustomPaint(
                           size:
-<<<<<<< HEAD
-                              Size(MediaQuery.of(context).size.width - 48, 1.0),
-=======
                               Size(displayData.width - 48, 1.0),
->>>>>>> 91d5bde7e182f349837b51c29c061962546dca35
                           painter: DashLinePainter(),
                         ),
                         Column(

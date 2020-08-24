@@ -100,28 +100,32 @@ class WidgetProvider {
                   borderRadius:
                       new BorderRadius.all(const Radius.circular(12.0)),
                 ),
-                child: Center(
-                  child: Column(
-                    mainAxisAlignment: MainAxisAlignment.center,
-                    crossAxisAlignment: CrossAxisAlignment.center,
-                    children: <Widget>[
-                      Center(
-                        child: WidgetTemplate.indicator(),
-                      ),
-                      Padding(
-                        padding: const EdgeInsets.only(top: 8),
-                        child: Text(
-                          "LOADING...",
-                          style: TextStyle(color: Colors.white),
-                        ),
-                      )
-                    ],
-                  ),
-                ),
+                child: WidgetProvider.loadingBox() ,
               ),
             ),
           ),
         ),
+      ),
+    );
+  }
+
+  static Widget loadingBox(){
+    return Center(
+      child: Column(
+        mainAxisAlignment: MainAxisAlignment.center,
+        crossAxisAlignment: CrossAxisAlignment.center,
+        children: <Widget>[
+          Center(
+            child: WidgetTemplate.indicator(),
+          ),
+          Padding(
+            padding: const EdgeInsets.only(top: 8),
+            child: Text(
+              "LOADING...",
+              style: TextStyle(color: Colors.white),
+            ),
+          )
+        ],
       ),
     );
   }
@@ -150,11 +154,7 @@ class WidgetProvider {
     ];
 
     final int _buttonCount = 5;
-<<<<<<< HEAD
-    final _width = (MediaQuery.of(_context).size.width) / _buttonCount;
-=======
     final _width = displayData.width / _buttonCount;
->>>>>>> 91d5bde7e182f349837b51c29c061962546dca35
     List _widgets = List<Widget>();
 
     for (int i = 0; i < _buttonCount; i++) {
@@ -218,11 +218,7 @@ class WidgetProvider {
           borderRadius: BorderRadius.all(Radius.circular(100)),
         ),
         height: 50,
-<<<<<<< HEAD
-        width: MediaQuery.of(context).size.width - padding,
-=======
         width: displayData.width - padding,
->>>>>>> 91d5bde7e182f349837b51c29c061962546dca35
         child: RaisedButton(
           shape: RoundedRectangleBorder(
             borderRadius: BorderRadius.circular(120.0),
@@ -252,11 +248,7 @@ class WidgetProvider {
           borderRadius: BorderRadius.all(Radius.circular(100)),
         ),
         height: 50,
-<<<<<<< HEAD
-        width: MediaQuery.of(context).size.width - padding,
-=======
         width:  - padding,
->>>>>>> 91d5bde7e182f349837b51c29c061962546dca35
         child: RaisedButton(
 
           shape: RoundedRectangleBorder(
@@ -297,6 +289,44 @@ class WidgetProvider {
             titleSpacing: 0,
           ),
         ),
+    );
+  }
+
+  static Widget getInkButton(
+      final double _width,
+      final double _height,
+      final Function _onTap,
+      final IconData _iconName,
+  {final String title, final double iconSize = 25,
+    final Color iconColor = Colors.black,}
+
+      ){
+    return Container(
+      width: _width,
+      height: _width,
+      child: new Material(
+        child: new InkWell(
+          onTap: _onTap,
+          child: new Center(
+            child: Container(
+              height: 80,
+              width: 150,
+              child: Column(
+                mainAxisAlignment: MainAxisAlignment.center,
+                children: [
+                  Icon(
+                    _iconName,
+                    size: iconSize,
+                    color: iconColor,
+                  ),
+                  title != null ? Text(title??'') : SizedBox(),
+                ],
+              ),
+            ),
+          ),
+        ),
+        color: Colors.transparent,
+      ),
     );
   }
 }

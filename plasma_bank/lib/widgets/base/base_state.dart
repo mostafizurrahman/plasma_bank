@@ -47,21 +47,13 @@ abstract class BaseKeyboardState<T extends BaseWidget> extends State<T> {
   @override
   Widget build(BuildContext context) {
     FlutterStatusbarcolor.setStatusBarWhiteForeground(false);
-<<<<<<< HEAD
-    final _paddingBottom = MediaQuery.of(context).padding.bottom;
-=======
 
->>>>>>> 91d5bde7e182f349837b51c29c061962546dca35
     final _width = MediaQuery.of(context).size.width;
     final _contentHeight = this.getContentHeight();
     return Container(
       color: AppStyle.greyBackground(),
       child: Padding(
-<<<<<<< HEAD
-        padding: EdgeInsets.only(bottom: _paddingBottom),
-=======
         padding: EdgeInsets.only(bottom: displayData.bottom),
->>>>>>> 91d5bde7e182f349837b51c29c061962546dca35
         child: Scaffold(
             appBar: WidgetProvider.appBar(
               this.getAppBarTitle(),
@@ -109,11 +101,7 @@ abstract class BaseKeyboardState<T extends BaseWidget> extends State<T> {
     );
   }
 
-<<<<<<< HEAD
-  onSubmitData() {
-=======
   onSubmitData() async {
->>>>>>> 91d5bde7e182f349837b51c29c061962546dca35
     FlutterStatusbarcolor.setStatusBarWhiteForeground(false);
   }
 

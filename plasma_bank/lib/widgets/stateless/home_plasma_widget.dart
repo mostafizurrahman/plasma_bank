@@ -42,11 +42,7 @@ class HomePlasmaWidget extends StatelessWidget {
                       ),
                     ),
                     CustomPaint(
-<<<<<<< HEAD
-                      size: Size(MediaQuery.of(context).size.width - 48, 1.0),
-=======
                       size: Size(displayData.width - 48, 1.0),
->>>>>>> 91d5bde7e182f349837b51c29c061962546dca35
                       painter: DashLinePainter(),
                     ),
                     Padding(
@@ -134,11 +130,7 @@ class HomePlasmaWidget extends StatelessWidget {
                     ),
                     SizedBox(height: 16,),
                     CustomPaint(
-<<<<<<< HEAD
-                      size: Size(MediaQuery.of(context).size.width - 48, 1.0),
-=======
                       size: Size(displayData.width - 48, 1.0),
->>>>>>> 91d5bde7e182f349837b51c29c061962546dca35
                       painter: DashLinePainter(),
                     ),
                     Expanded(

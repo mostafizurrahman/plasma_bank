@@ -1,14 +1,4 @@
 import 'dart:io';
-<<<<<<< HEAD
-import 'package:connectivity/connectivity.dart';
-import 'package:flutter/cupertino.dart';
-import 'package:flutter/material.dart';
-import 'package:plasma_bank/app_utils/app_constants.dart';
-import 'package:plasma_bank/app_utils/image_helper.dart';
-import 'package:plasma_bank/app_utils/widget_providers.dart';
-import 'package:plasma_bank/network/covid_data_helper.dart';
-import 'package:plasma_bank/network/firebase_repositories.dart';
-=======
 import 'package:app_settings/app_settings.dart';
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
@@ -25,19 +15,15 @@ import 'package:plasma_bank/network/models/blood_donor.dart';
 import 'package:plasma_bank/widgets/stateful/accounts_widget.dart';
 import 'package:plasma_bank/widgets/stateful/profile_info.dart';
 import 'package:plasma_bank/widgets/stateful/switch_widget.dart';
->>>>>>> 91d5bde7e182f349837b51c29c061962546dca35
 import 'package:plasma_bank/widgets/stateless/collector_widget.dart';
 import 'package:plasma_bank/widgets/stateless/coronavirus_widget.dart';
 import 'package:plasma_bank/widgets/stateless/donor_widget.dart';
 import 'package:plasma_bank/widgets/stateless/home_plasma_widget.dart';
 import 'package:rxdart/rxdart.dart';
 
-<<<<<<< HEAD
-=======
 import 'messaging/message_list_widget.dart';
 import 'verification_widget.dart';
 
->>>>>>> 91d5bde7e182f349837b51c29c061962546dca35
 class HomePageWidget extends StatefulWidget {
   @override
   State<StatefulWidget> createState() {
@@ -46,23 +32,6 @@ class HomePageWidget extends StatefulWidget {
 }
 
 class _HomePageState extends State<HomePageWidget> {
-<<<<<<< HEAD
-  bool visible = false;
-  final _db = FirebaseRepositories();
-  final _downloader = CovidDataHelper();
-  final _bottomNavigationBehavior = BehaviorSubject<int>();
-
-
-
-  final Connectivity _connectivity = Connectivity();
-
-  @override
-  void initState() {
-    // TODO: implement initState
-    super.initState();
-  }
-
-=======
   BehaviorSubject<int> _segmentBehavior = BehaviorSubject();
   BehaviorSubject _loginBehavior = BehaviorSubject();
   final _bottomNavigationBehavior = BehaviorSubject<int>();
@@ -112,15 +81,12 @@ class _HomePageState extends State<HomePageWidget> {
     });
   }
 
->>>>>>> 91d5bde7e182f349837b51c29c061962546dca35
   @override
   void dispose() {
     super.dispose();
     if (_bottomNavigationBehavior != null) {
       _bottomNavigationBehavior.close();
     }
-<<<<<<< HEAD
-=======
     if (!_segmentBehavior.isClosed) {
       _segmentBehavior.close();
     }
@@ -128,18 +94,11 @@ class _HomePageState extends State<HomePageWidget> {
     if (!_loginBehavior.isClosed) {
       _loginBehavior.close();
     }
->>>>>>> 91d5bde7e182f349837b51c29c061962546dca35
   }
 
   @override
   Widget build(BuildContext context) {
-<<<<<<< HEAD
-    var mediaQuery = MediaQuery.of(context);
-    double _top = mediaQuery.padding.top;
-    double _bottom = mediaQuery.padding.bottom;
-=======
 
->>>>>>> 91d5bde7e182f349837b51c29c061962546dca35
     return StreamBuilder(
       stream: this._bottomNavigationBehavior.stream,
       initialData: 2,
@@ -153,13 +112,10 @@ class _HomePageState extends State<HomePageWidget> {
           _widget = _getDonateScreen(_context);
         } else if (_snap.data == 1) {
           _widget = _getCollectScreen(_context);
-<<<<<<< HEAD
-=======
         } else if (_snap.data == 3) {
           _widget = _getMessageWidget();
         } else if (_snap.data == 4) {
           _widget = _getSettingsWidget(_context, displayData.navHeight);
->>>>>>> 91d5bde7e182f349837b51c29c061962546dca35
         }
 
         return Container(
@@ -178,11 +134,7 @@ class _HomePageState extends State<HomePageWidget> {
               initialData: 2,
               builder: (_context, _snap) {
                 return Container(
-<<<<<<< HEAD
-                  height: (_bottom > 0 ? 55 : 65) + _bottom,
-=======
                   height: displayData.navHeight,
->>>>>>> 91d5bde7e182f349837b51c29c061962546dca35
                   decoration: AppStyle.bottomNavigatorBox(),
                   child: Row(
                     crossAxisAlignment: CrossAxisAlignment.start,
@@ -200,16 +152,6 @@ class _HomePageState extends State<HomePageWidget> {
   }
 
   _getHomeScreen(BuildContext _context) {
-<<<<<<< HEAD
-    var mediaQuery = MediaQuery.of(context);
-    double _top = mediaQuery.padding.top;
-    final _height = 1340.0;
-    final _width = MediaQuery.of(_context).size.width;
-    final _profileWidth = _width * 0.2;
-    final _profileHeight = _profileWidth * 4 / 3.0;
-    return Container(
-      width: _width,
-=======
 
     double _top = displayData.top;
     final _height = 1340.0;
@@ -218,7 +160,6 @@ class _HomePageState extends State<HomePageWidget> {
     final _profileHeight = _profileWidth * 4 / 3.0;
     return Container(
       width: displayData.width,
->>>>>>> 91d5bde7e182f349837b51c29c061962546dca35
       height: _height,
       child: Padding(
         padding: EdgeInsets.only(
@@ -227,11 +168,7 @@ class _HomePageState extends State<HomePageWidget> {
           mainAxisAlignment: MainAxisAlignment.start,
           crossAxisAlignment: CrossAxisAlignment.center,
           children: [
-<<<<<<< HEAD
-            CoronavirusWidget(this._db.getGlobalCovidData(), _width),
-=======
             CoronavirusWidget(this._db.getGlobalCovidData(), displayData.width),
->>>>>>> 91d5bde7e182f349837b51c29c061962546dca35
             HomePlasmaWidget(_profileHeight, _onTapDonor),
             HomePlasmaWidget(_profileHeight, _onTapDonor, isBloodDonor: true),
           ],
@@ -240,54 +177,6 @@ class _HomePageState extends State<HomePageWidget> {
     );
   }
 
-<<<<<<< HEAD
-  Widget _getCollectScreen(BuildContext _context) {
-
-    if (!this.visible) {
-      Future.delayed(Duration(microseconds: 600), () {
-        this.visible = true;
-        this._bottomNavigationBehavior.sink.add(1);
-      });
-    }
-    return CollectorWidget(this.visible, _onCollectTap);
-  }
-
-  Widget _getDonateScreen(BuildContext _context) {
-    if (!this.visible) {
-      Future.delayed(Duration(microseconds: 600), () {
-        this.visible = true;
-        this._bottomNavigationBehavior.sink.add(0);
-      });
-    }
-    return DonorWidget(this.visible, _registerDonorTap);
-  }
-
-  Widget _getMessageWidget(){
-    if (!this.visible) {
-      Future.delayed(Duration(microseconds: 600), () {
-        this.visible = true;
-        this._bottomNavigationBehavior.sink.add(0);
-      });
-    }
-
-
-  }
-
-  _registerDonorTap(final bool isRegistration) {
-    if (isRegistration) {
-      Navigator.pushNamed(context, AppRoutes.pageLocateTerms);
-      //star registration
-    } else {
-      Navigator.pushNamed(context, AppRoutes.pageLocateTerms);
-      //display donor list
-    }
-  }
-
-  _onProgress(File _dataFile) {
-    this._downloader.readCovidJSON(_dataFile);
-  }
-
-=======
   Widget _getSettingsWidget(
       BuildContext _context, final double _navigatorHeight) {
 
@@ -448,28 +337,20 @@ class _HomePageState extends State<HomePageWidget> {
     this._downloader.readCovidJSON(_dataFile);
   }
 
->>>>>>> 91d5bde7e182f349837b51c29c061962546dca35
   _onTapDonor(final bool _isBloodDonor) {}
 
   _onNavigationButtonTap(int i) {
     visible = false;
     this._bottomNavigationBehavior.sink.add(i);
   }
-<<<<<<< HEAD
-  _onCollectTap(bool isCollection){
-    if(isCollection){
-=======
 
   _onCollectTap(bool isCollection) {
     if (isCollection) {
->>>>>>> 91d5bde7e182f349837b51c29c061962546dca35
       //register collection
     } else {
       //show previous list
     }
   }
-<<<<<<< HEAD
-=======
 
   _onVerifiedOTP(){
     donorHandler.loginEmail = donorHandler.verificationEmail;
@@ -523,5 +404,4 @@ class _HomePageState extends State<HomePageWidget> {
   _onSwitched(String _email) {
     this._openLoginWidget(_email);
   }
->>>>>>> 91d5bde7e182f349837b51c29c061962546dca35
 }

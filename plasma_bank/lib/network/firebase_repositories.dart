@@ -1,11 +1,4 @@
 import 'package:cloud_firestore/cloud_firestore.dart';
-<<<<<<< HEAD
-import 'package:plasma_bank/network/models/blood_collector.dart';
-
-
-class FirebaseRepositories {
-
-=======
 import 'package:flutter/cupertino.dart';
 import 'package:plasma_bank/app_utils/app_constants.dart';
 import 'package:plasma_bank/network/models/abstract_person.dart';
@@ -14,7 +7,6 @@ import 'package:plasma_bank/network/models/blood_donor.dart';
 import 'package:plasma_bank/network/models/plasma_donor.dart';
 
 class FirebaseRepositories {
->>>>>>> 91d5bde7e182f349837b51c29c061962546dca35
   //  Future<List<Country>> getCountries() async {
 //    return await this._globeAPI.getCountries();
 //  }
@@ -24,10 +16,6 @@ class FirebaseRepositories {
 //  }
 
   CollectionReference _globalCovidData;
-<<<<<<< HEAD
-
-=======
->>>>>>> 91d5bde7e182f349837b51c29c061962546dca35
   CollectionReference _patientCollection;
   CollectionReference _plasmaCollection;
   DocumentReference _documentCollection;
@@ -45,12 +33,7 @@ class FirebaseRepositories {
         this._documentCollection.collection('01675876752');
   }
 
-<<<<<<< HEAD
-
-  Stream<QuerySnapshot> getGlobalCovidData(){
-=======
   Stream<QuerySnapshot> getGlobalCovidData() {
->>>>>>> 91d5bde7e182f349837b51c29c061962546dca35
     return this._globalCovidData.snapshots();
   }
 
@@ -59,19 +42,11 @@ class FirebaseRepositories {
   }
 
   Future<DocumentReference> addBloodHunter(dynamic bloodHunter) async {
-<<<<<<< HEAD
-    if(bloodHunter is BloodCollector){
-=======
     if (bloodHunter is BloodCollector) {
->>>>>>> 91d5bde7e182f349837b51c29c061962546dca35
       final _json = bloodHunter.toJson();
       final _data = {bloodHunter.mobileNumber: _json};
       return await _patientCollection.add(_data);
     } else {
-<<<<<<< HEAD
-//      final _data = {bloodHunter['mobile']: bloodHunter};
-=======
->>>>>>> 91d5bde7e182f349837b51c29c061962546dca35
       return await _patientCollection.add(bloodHunter);
     }
   }
@@ -81,8 +56,6 @@ class FirebaseRepositories {
         .document(bloodHunter.reference.documentID)
         .updateData(bloodHunter.toJson());
   }
-<<<<<<< HEAD
-=======
 
   Stream<DocumentSnapshot> getEmails() {
     return Firestore.instance
@@ -160,5 +133,12 @@ class FirebaseRepositories {
       debugPrint('error+occurred  ___________ ' + _error.toString());
     });
   }
->>>>>>> 91d5bde7e182f349837b51c29c061962546dca35
+
+
+  Stream<QuerySnapshot> getDonorList(final Map _queryParameters) {
+
+    final _reference = Firestore.instance.collection('donor');
+    _reference.getDocuments();
+    return _reference.where('disease', isNull: true).snapshots();
+  }
 }

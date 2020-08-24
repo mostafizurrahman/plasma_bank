@@ -1,17 +1,8 @@
 import 'dart:convert';
-<<<<<<< HEAD
-
-import 'package:csv/csv.dart';
-import 'package:flutter/cupertino.dart';
-import 'package:http/http.dart' as http;
-import 'package:http/http.dart';
-import 'dart:typed_data';
-=======
 import 'package:http/http.dart';
 
 import 'package:flutter/cupertino.dart';
 import 'package:http/http.dart' as http;
->>>>>>> 91d5bde7e182f349837b51c29c061962546dca35
 import 'dart:io';
 import 'package:path_provider/path_provider.dart';
 import 'package:shared_preferences/shared_preferences.dart';

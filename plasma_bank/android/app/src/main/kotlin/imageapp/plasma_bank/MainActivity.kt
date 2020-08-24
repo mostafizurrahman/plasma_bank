@@ -1,19 +1,11 @@
 package imageapp.plasma_bank
 
-<<<<<<< HEAD
-import android.os.Build
-import android.os.Bundle
-import android.view.View
-import androidx.annotation.NonNull;
-import androidx.core.content.ContextCompat
-=======
 import android.annotation.SuppressLint
 import android.os.Build
 import android.os.Bundle
 import android.provider.Settings
 import android.text.TextUtils
 import androidx.annotation.NonNull
->>>>>>> 91d5bde7e182f349837b51c29c061962546dca35
 import io.flutter.embedding.android.FlutterActivity
 import io.flutter.embedding.engine.FlutterEngine
 import io.flutter.plugin.common.MethodChannel
@@ -115,9 +107,5 @@ class MainActivity: FlutterActivity() {
             phrase.append(c)
         }
         return phrase.toString()
-    }
-
-    override fun onCreate(savedInstanceState: Bundle?) {
-        super.onCreate(savedInstanceState)
     }
 }

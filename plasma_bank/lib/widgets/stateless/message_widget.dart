@@ -41,15 +41,7 @@ class MessageWidget extends StatelessWidget {
           body: Ink(
             child: InkWell(
               onTap: () {
-<<<<<<< HEAD
-                if (this.onTapped != null) {
-                  this.onTapped();
-                } else {
-                  Navigator.pop(context);
-                }
-=======
                 Navigator.pop(context);
->>>>>>> 91d5bde7e182f349837b51c29c061962546dca35
               },
               child: BackdropFilter(
                 filter: ui.ImageFilter.blur(sigmaX: 20, sigmaY: 20),
@@ -57,11 +49,7 @@ class MessageWidget extends StatelessWidget {
                   mainAxisAlignment: MainAxisAlignment.end,
                   children: <Widget>[
                     Container(
-<<<<<<< HEAD
-                      width: MediaQuery.of(context).size.width,
-=======
                       width: displayData.width,
->>>>>>> 91d5bde7e182f349837b51c29c061962546dca35
                       decoration: new BoxDecoration(
                         boxShadow: <BoxShadow>[
                           BoxShadow(
@@ -174,11 +162,7 @@ class MessageWidget extends StatelessWidget {
           color: AppStyle.theme(),
           shape: RoundedRectangleBorder(
             borderRadius: new BorderRadius.circular(40),
-<<<<<<< HEAD
-            side: BorderSide(color: Colors.cyan, width: 0.75),
-=======
             side: BorderSide(color: Colors.white, width: 1.25),
->>>>>>> 91d5bde7e182f349837b51c29c061962546dca35
           ),
           child: Row(
             mainAxisAlignment: MainAxisAlignment.center,
@@ -189,11 +173,7 @@ class MessageWidget extends StatelessWidget {
                 style: TextStyle(
                     fontSize: 18,
                     fontWeight: FontWeight.w500,
-<<<<<<< HEAD
-                    color: Colors.white),
-=======
                     color: Colors.white,),
->>>>>>> 91d5bde7e182f349837b51c29c061962546dca35
               ),
               Padding(
                 padding: const EdgeInsets.all(8.0),

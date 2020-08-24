@@ -93,11 +93,7 @@ class WidgetTemplate {
         return null;
       };
     }
-<<<<<<< HEAD
-    final _inputFormatter = isDigit
-=======
     final _inputFormatter = isDigit || _config.isDigit
->>>>>>> 91d5bde7e182f349837b51c29c061962546dca35
         ? [
             new LengthLimitingTextInputFormatter(maxLen),
             WhitelistingTextInputFormatter.digitsOnly
@@ -109,11 +105,7 @@ class WidgetTemplate {
     return Padding(
       padding: EdgeInsets.only(top: 8, bottom: 8),
       child: new TextField(
-<<<<<<< HEAD
-        autofillHints: null,
-=======
 
->>>>>>> 91d5bde7e182f349837b51c29c061962546dca35
         enableSuggestions: false,
 
         controller: _config.controller,
@@ -146,11 +138,7 @@ class WidgetTemplate {
     );
   }
 
-<<<<<<< HEAD
-  static Widget gateRadio(BuildContext _contex, final BehaviorSubject<int> _radioStream, final String _title,
-=======
   static Widget gateRadio(final BehaviorSubject<int> _radioStream, final String _title,
->>>>>>> 91d5bde7e182f349837b51c29c061962546dca35
 
       {IconButton button}) {
     return Row(
@@ -240,6 +228,55 @@ class WidgetTemplate {
           ),
         ),
       ],
+    );
+  }
+
+
+  static Widget getPageAppBar(BuildContext _context){
+    return Padding(
+      padding: const EdgeInsets.only(bottom: 32),
+      child: Container(
+        child: Column(
+          children: <Widget>[
+            Row(
+              crossAxisAlignment: CrossAxisAlignment.center,
+              children: <Widget>[
+
+                SizedBox(width: 24,),
+                FloatingActionButton(
+                  backgroundColor: Colors.white,
+                  child: Icon(Icons.arrow_back_ios, color: AppStyle.theme(),),
+                  onPressed: ()=>Navigator.pop(_context),
+                ),
+
+                SizedBox(width: 12,),
+                Center(
+                  child: Text(
+                    'BLOOD DONORS',
+                    style: TextStyle(
+                      fontSize: 20,
+                      fontFamily: AppStyle.fontBold,
+                    ),
+                  ),
+                )
+              ],
+            ),
+
+//                              Padding(
+//                                padding: const EdgeInsets.only(top: 12),
+//                                child: Container(
+//                                  width: displayData.width,
+//                                  child: CustomPaint(
+//                                    painter: DashLinePainter(),
+//                                  ),
+//                                ),
+//                              ),
+          ],
+        ),
+//                        height: 110,
+
+//                        color: Colors.red,
+      ),
     );
   }
 }

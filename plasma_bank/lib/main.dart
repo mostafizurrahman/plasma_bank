@@ -6,14 +6,12 @@ import 'package:flutter/services.dart';
 import 'package:plasma_bank/app_utils/app_constants.dart';
 import 'package:plasma_bank/media/preview_widget.dart';
 import 'package:plasma_bank/widgets/address_widget.dart';
-<<<<<<< HEAD
-=======
 import 'package:plasma_bank/widgets/donor_list_widget.dart';
->>>>>>> 91d5bde7e182f349837b51c29c061962546dca35
 import 'package:plasma_bank/widgets/health_widget.dart';
 import 'package:plasma_bank/widgets/home_page.dart';
 import 'package:plasma_bank/widgets/launch_screen.dart';
 import 'package:plasma_bank/widgets/location_terms.dart';
+import 'package:plasma_bank/widgets/messaging/chat_widget.dart';
 import 'package:plasma_bank/widgets/patient_info.dart';
 import 'package:flutter_statusbarcolor/flutter_statusbarcolor.dart';
 import 'package:plasma_bank/widgets/profile_widget.dart';
@@ -21,11 +19,12 @@ import 'app_utils/image_helper.dart';
 import 'media/camera_widget.dart';
 import 'package:flutter_localizations/flutter_localizations.dart';
 
+import 'widgets/stateful/dynamic_keyboard.dart';
+
 //https://www.fda.gov/vaccines-blood-biologics/investigational-new-drug-ind-or-device-exemption-ide-process-cber/recommendations-investigational-covid-19-convalescent-plasma#Recordkeeping
 void main() {
   runApp(PlasmaBank());
 }
-<<<<<<< HEAD
 
 class PlasmaBank extends StatefulWidget {
   @override
@@ -38,20 +37,6 @@ class _PlasmaState extends State<PlasmaBank> {
 
   final Connectivity _connectivity = Connectivity();
 
-=======
-
-class PlasmaBank extends StatefulWidget {
-  @override
-  State<StatefulWidget> createState() {
-    return _PlasmaState();
-  }
-}
-
-class _PlasmaState extends State<PlasmaBank> {
-
-  final Connectivity _connectivity = Connectivity();
-
->>>>>>> 91d5bde7e182f349837b51c29c061962546dca35
   @override
   void initState() {
     super.initState();
@@ -84,7 +69,7 @@ class _PlasmaState extends State<PlasmaBank> {
             theme: ThemeData(
               fontFamily: 'SF_UIFont',
             ),
-            home: LaunchScreenWidget(),
+            home: DynamicKeyboardWidget(), //LaunchScreenWidget(),
             onGenerateRoute: getGenerateRoute,
           ),
         ),
@@ -114,14 +99,13 @@ class _PlasmaState extends State<PlasmaBank> {
   Route getGenerateRoute(RouteSettings settings) {
     Widget _widget;
 
-<<<<<<< HEAD
-    if(settings.name == AppRoutes.pageHealthData){
-=======
-    if(settings.name == AppRoutes.pageDonorList){
+    if(settings.name == AppRoutes.pagePrivateChat){
+      _widget = ChatWidget(settings.arguments);
+    }
+    else if(settings.name == AppRoutes.pageDonorList){
       _widget = DonorListWidget();
     }
     else if(settings.name == AppRoutes.pageHealthData){
->>>>>>> 91d5bde7e182f349837b51c29c061962546dca35
       _widget = HealthWidget(settings.arguments);
     }
     if(settings.name == AppRoutes.pagePersonData){

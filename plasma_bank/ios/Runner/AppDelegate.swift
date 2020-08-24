@@ -14,14 +14,9 @@ import Flutter
         controller.navigationController?
             .interactivePopGestureRecognizer?.isEnabled = false;
         
-<<<<<<< HEAD
-        let nativeChannel = FlutterMethodChannel.init(name: "flutter.plasma.com.imgpath",
-        binaryMessenger: controller.binaryMessenger);
-=======
         let nativeChannel = FlutterMethodChannel.init(
             name: "flutter.plasma.com.device_info",
             binaryMessenger: controller.binaryMessenger)
->>>>>>> 91d5bde7e182f349837b51c29c061962546dca35
         nativeChannel.setMethodCallHandler( {
             (call: FlutterMethodCall, result: @escaping FlutterResult) -> Void in
             if call.method == "getPackageInfo" {

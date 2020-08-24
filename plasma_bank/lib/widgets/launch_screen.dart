@@ -1,23 +1,15 @@
-<<<<<<< HEAD
-import 'package:flutter/cupertino.dart';
-import 'package:flutter/material.dart';
-=======
 import 'dart:io';
 
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
->>>>>>> 91d5bde7e182f349837b51c29c061962546dca35
 //import 'package:flutter_statusbarcolor/flutter_statusbarcolor.dart';
 import 'package:plasma_bank/app_utils/app_constants.dart';
 import 'package:plasma_bank/app_utils/image_helper.dart';
 import 'package:plasma_bank/app_utils/localization_helper.dart';
 import 'package:plasma_bank/app_utils/widget_templates.dart';
-<<<<<<< HEAD
-=======
 import 'package:plasma_bank/network/donor_handler.dart';
 import 'package:plasma_bank/network/firebase_repositories.dart';
->>>>>>> 91d5bde7e182f349837b51c29c061962546dca35
 
 class LaunchScreenWidget extends StatefulWidget {
   @override
@@ -31,22 +23,12 @@ class _LaunchScreenState extends State<LaunchScreenWidget> {
   @override
   void initState() {
     super.initState();
-<<<<<<< HEAD
-    Future.delayed(const Duration(seconds: 3), () async {
-
-//      await FlutterStatusbarcolor.setStatusBarWhiteForeground(false);
-=======
     Future.delayed(const Duration(seconds: 2), () async {
       await this._setDeviceInfo();
->>>>>>> 91d5bde7e182f349837b51c29c061962546dca35
       Navigator.popAndPushNamed(context, AppRoutes.pageRouteHome);
     });
   }
 
-<<<<<<< HEAD
-  @override
-  Widget build(BuildContext context) {
-=======
 
   _setDeviceInfo() async {
 
@@ -83,7 +65,6 @@ class _LaunchScreenState extends State<LaunchScreenWidget> {
   Widget build(BuildContext context) {
 
     displayData.setData(context);
->>>>>>> 91d5bde7e182f349837b51c29c061962546dca35
     final keyWidth = 250.0;
     return Container(
       color: Colors.white,
@@ -91,11 +72,7 @@ class _LaunchScreenState extends State<LaunchScreenWidget> {
         child: Scaffold(
           body: Container(
 
-<<<<<<< HEAD
-            width: MediaQuery.of(context).size.width,
-=======
             width: displayData.width,
->>>>>>> 91d5bde7e182f349837b51c29c061962546dca35
             color: Colors.white,
             child: Column(
               mainAxisAlignment: MainAxisAlignment.spaceEvenly,

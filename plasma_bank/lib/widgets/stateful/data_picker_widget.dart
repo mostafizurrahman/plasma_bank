@@ -92,11 +92,7 @@ class _DataPickerState extends State<DataPickerWidget> {
                     ),
                   ),
                   CustomPaint(
-<<<<<<< HEAD
-                    size: Size(MediaQuery.of(context).size.width, 1.0),
-=======
                     size: Size(displayData.width, 1.0),
->>>>>>> 91d5bde7e182f349837b51c29c061962546dca35
                     painter: DashLinePainter(),
                   ),
                   Expanded(
@@ -121,11 +117,7 @@ class _DataPickerState extends State<DataPickerWidget> {
                         );
                       },
                     ),
-<<<<<<< HEAD
-                  )
-=======
                   ),
->>>>>>> 91d5bde7e182f349837b51c29c061962546dca35
                 ],
               ),
               floatingActionButtonLocation:

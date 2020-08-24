@@ -1,17 +1,10 @@
-<<<<<<< HEAD
-import 'dart:typed_data';
-=======
 import 'dart:convert';
->>>>>>> 91d5bde7e182f349837b51c29c061962546dca35
 
 import 'package:flutter/cupertino.dart';
 import 'package:geolocator/geolocator.dart';
 import 'package:plasma_bank/network/api_client.dart';
 import 'package:plasma_bank/network/auth.dart';
-<<<<<<< HEAD
-=======
 import 'package:plasma_bank/network/models/zip_data.dart';
->>>>>>> 91d5bde7e182f349837b51c29c061962546dca35
 //import 'package:restcountries/restcountries.dart';
 
 class LocationProvider {
@@ -92,17 +85,10 @@ class LocationProvider {
     final _client = ApiClient();
     final String _url = this.getUrl();
     final List _data = await _client.getGlobList(_url);
-<<<<<<< HEAD
-    if( _data == null){
-      return  List<Country>();
-    }
-    for(final _item in _data){
-=======
     if( _data == null) {
       return  List<Country>();
     }
     for(final _item in _data) {
->>>>>>> 91d5bde7e182f349837b51c29c061962546dca35
       Country _c = tryCast(_item);
       _response.add(_c);
     }
@@ -161,8 +147,6 @@ class LocationProvider {
     }
     return "http://battuta.medunes.net/api/country/all/?key=$_key";
   }
-<<<<<<< HEAD
-=======
 
   Future<ZipData> getZipData(final String zipCode, String countryCode) async {
 
@@ -198,7 +182,6 @@ class LocationProvider {
     }
     return null;
   }
->>>>>>> 91d5bde7e182f349837b51c29c061962546dca35
 }
 
 final LocationProvider locationProvider = LocationProvider();

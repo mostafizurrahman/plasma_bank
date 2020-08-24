@@ -1,45 +1,20 @@
 
 import 'package:cloud_firestore/cloud_firestore.dart';
-<<<<<<< HEAD
-=======
 import 'package:flutter/cupertino.dart';
 import 'package:intl/intl.dart';
 import 'package:plasma_bank/network/imgur_handler.dart';
->>>>>>> 91d5bde7e182f349837b51c29c061962546dca35
 
 import '../models/abstract_person.dart';
 
 class BloodDonor extends Person {
 
-<<<<<<< HEAD
-  double weight;
-=======
   String weight;
   String height;
->>>>>>> 91d5bde7e182f349837b51c29c061962546dca35
   bool hasSickness;
   bool hasSmokeHabit;
   bool hasDrinkHabit;
   String diseaseName;
   String moneyAmount;
-<<<<<<< HEAD
-  DateTime lastDonationDate;
-  List<String> medicineList;
-  List<String> prescriptionList;
-
-
-  BloodDonor.fromMap(Map<String, dynamic> map, {DocumentReference reference}) : super.fromMap(map){
-    this.weight = map['weight'];
-    this.hasSickness = map['sick'];
-    this.diseaseName = map['disease'];
-    this.hasSmokeHabit = map['smoke'];
-    this.hasDrinkHabit = map['drink'];
-    this.medicineList = map['medicines'];
-    this.prescriptionList = map['prescriptions'];
-    this.lastDonationDate = map['donation_date'] == null ? null : (map['donation_date'] as Timestamp).toDate();
-  }
-
-=======
   String lastDonationDate;
   List<String> deviceList;
   List<ImgurResponse> prescriptionList;
@@ -86,7 +61,6 @@ class BloodDonor extends Person {
         this.lastDonationDate = map['donation_date'],
         super.fromMap(map);
 
->>>>>>> 91d5bde7e182f349837b51c29c061962546dca35
   @override
   Map<String, dynamic> toJson(){
     final _data = super.toJson();
@@ -95,15 +69,10 @@ class BloodDonor extends Person {
     _data['disease'] = this.diseaseName;
     _data['smoke'] = this.hasSmokeHabit;
     _data['drink'] = this.hasDrinkHabit;
-<<<<<<< HEAD
-    _data['medicines'] = this.medicineList;
-    _data['prescriptions'] = this.prescriptionList;
-=======
     _data['devices'] = this.deviceList;
     _data['prescriptions'] = [
       this.prescriptionList.first.toJson() ?? {},
       this.prescriptionList.last.toJson() ?? {},];
->>>>>>> 91d5bde7e182f349837b51c29c061962546dca35
     _data['donation_date'] = this.lastDonationDate;
 
     return _data;
