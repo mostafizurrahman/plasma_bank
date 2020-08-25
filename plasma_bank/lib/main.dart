@@ -69,7 +69,7 @@ class _PlasmaState extends State<PlasmaBank> {
             theme: ThemeData(
               fontFamily: 'SF_UIFont',
             ),
-            home: DynamicKeyboardWidget(), //LaunchScreenWidget(),
+            home: LaunchScreenWidget(),
             onGenerateRoute: getGenerateRoute,
           ),
         ),

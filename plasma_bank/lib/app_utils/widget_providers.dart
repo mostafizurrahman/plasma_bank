@@ -329,4 +329,39 @@ class WidgetProvider {
       ),
     );
   }
+
+  static addTextInController(final TextEditingController _selectedController, String _key){
+    var cursorPos = _selectedController.selection;
+    final String _text = _selectedController.text;
+    int _start = cursorPos.start;
+    int _end = cursorPos.end;
+    String _firstString = _start >= 0 ? _text.substring(0, _start) : _text;
+    String _endString = _end >= 0 && _end >= _start
+        ? _text.substring(_end, _text.length)
+        : '';
+    int _offset = (_start >= 0 ? _start : _end) + 1;
+    String _output;
+    if (_key != 'x') {
+      _firstString += _key;
+      _output = _firstString + _endString;
+    } else {
+      if (_start == _end && _start > 0) {
+        _output =
+            _firstString.substring(0, _firstString.length - 1) + _endString;
+        _offset = _start - 1;
+      } else if (_start == 0 && _end == 0) {
+        _offset = 0;
+        _output = _firstString + _endString;
+      } else if (_end > _start) {
+        _output = _firstString + _endString;
+        _offset = _start;
+      } else {
+        _output = _firstString + _endString;
+        _offset = _output.length;
+      }
+    }
+    _selectedController.text = _output;
+    cursorPos = TextSelection.fromPosition(TextPosition(offset: _offset));
+    _selectedController.selection = cursorPos;
+  }
 }

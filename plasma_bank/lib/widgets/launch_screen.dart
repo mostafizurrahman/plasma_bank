@@ -41,7 +41,7 @@ class _LaunchScreenState extends State<LaunchScreenWidget> {
     deviceInfo.deviceNamed = _deviceIno['device_name'];
     final _repository = FirebaseRepositories();
     _repository.getEmails().listen((event) {
-      if(event.data.isNotEmpty){
+      if(event.data != null && event.data.isNotEmpty){
         event.data.forEach((k,v) {
           debugPrint('key :' + k.toString() + ' value ' + v.toString());
           if(v is List<dynamic>){
