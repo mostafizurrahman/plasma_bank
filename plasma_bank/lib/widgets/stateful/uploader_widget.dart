@@ -223,7 +223,6 @@ class _UploaderState extends State<UploaderWidget> {
         if (this.widget.bloodDonor.prescriptionList.first.imageUrl != 'p1') {
           this._subject.sink.add(this.widget.bloodDonor.prescriptionList.first);
           _status.sink.add('first prescription');
-          sleep(Duration(microseconds: 200));
 
           final _prescription = ImgurHandler.getBase64(
               this.widget.bloodDonor.prescriptionList.first.imageUrl);
@@ -239,7 +238,6 @@ class _UploaderState extends State<UploaderWidget> {
         }
       }
     }
-    sleep(Duration(microseconds: 200));
     if (this.widget.bloodDonor.prescriptionList != null &&
         this.widget.bloodDonor.prescriptionList.last != null) {
       if (this.widget.bloodDonor.prescriptionList.last.imageUrl != null) {
@@ -248,7 +246,6 @@ class _UploaderState extends State<UploaderWidget> {
           final _prescription = ImgurHandler.getBase64(
               this.widget.bloodDonor.prescriptionList.last.imageUrl);
           _status.sink.add('next prescription');
-          sleep(Duration(microseconds: 200));
           final _imgResponse = await _uploader
               .uploadImage(_prescription)
               .catchError(_onUploadError);
@@ -261,21 +258,18 @@ class _UploaderState extends State<UploaderWidget> {
         }
       }
     }
-    if(mounted && this.context != null){
+
       _status.sink.add(null);
-      sleep(Duration(microseconds: 200));
       final _fireRepository = FirebaseRepositories();
       final BloodDonor _donor = this.widget.bloodDonor;
       await _fireRepository
           .uploadBloodDonor(_donor, this.widget.emails)
           .catchError(_onUploadError);
-      sleep(Duration(microseconds: 200));
-      if(mounted && this.context != null){
+
         donorHandler.donorDataList.add(this.widget.bloodDonor);
         Navigator.pop(context);
         WidgetTemplate.message(context, 'your account associated with email ${this.widget.bloodDonor.emailAddress} is created successfully, you can login to your account by email code verification, in OPTION menu!\nThank You!',
         onActionTap: ()=>this.widget.onCompleted(true), onTapped:()=>this.widget.onCompleted(true), headerColor: Colors.green, titleIcon: Icon(Icons.done, color: Colors.green,) );
-      }
-    }
+
   }
 }

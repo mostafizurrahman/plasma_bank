@@ -382,12 +382,16 @@ class _HomePageState extends State<HomePageWidget> {
         AppSettings.openAppSettings();
       });
     } else {
-      final _countryList = await locationProvider.getCountryList();
-      Navigator.pop(context);
-      Future.delayed(Duration(milliseconds: 100), () {
-        Navigator.pushNamed(context, AppRoutes.pageAddressData,
-            arguments: {'country_list': _countryList});
+      final _countryList = await locationProvider.getCountryList().catchError((_error){
+        return null;
       });
+      Navigator.pop(context);
+      if(_countryList != null) {
+        Future.delayed(Duration(milliseconds: 100), () {
+          Navigator.pushNamed(context, AppRoutes.pageAddressData,
+              arguments: {'country_list': _countryList});
+        });
+      }
     }
   }
 

@@ -11,6 +11,8 @@ class DonorWidget extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
+
+//    Navigator.pop(context);
     return Container(
       child: AnimatedOpacity(
         opacity: visible ? 1.0 : 0.0,

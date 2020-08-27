@@ -1,7 +1,6 @@
 import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:flutter/cupertino.dart';
 import 'package:plasma_bank/app_utils/app_constants.dart';
-import 'package:plasma_bank/network/models/abstract_person.dart';
 import 'package:plasma_bank/network/models/blood_collector.dart';
 import 'package:plasma_bank/network/models/blood_donor.dart';
 import 'package:plasma_bank/network/models/plasma_donor.dart';

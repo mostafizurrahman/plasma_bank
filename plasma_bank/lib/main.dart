@@ -11,7 +11,7 @@ import 'package:plasma_bank/widgets/health_widget.dart';
 import 'package:plasma_bank/widgets/home_page.dart';
 import 'package:plasma_bank/widgets/launch_screen.dart';
 import 'package:plasma_bank/widgets/location_terms.dart';
-import 'package:plasma_bank/widgets/messaging/chat_widget.dart';
+import 'package:plasma_bank/widgets/messaging/private_chat_widget.dart';
 import 'package:plasma_bank/widgets/patient_info.dart';
 import 'package:flutter_statusbarcolor/flutter_statusbarcolor.dart';
 import 'package:plasma_bank/widgets/profile_widget.dart';
@@ -100,7 +100,7 @@ class _PlasmaState extends State<PlasmaBank> {
     Widget _widget;
 
     if(settings.name == AppRoutes.pagePrivateChat){
-      _widget = ChatWidget(settings.arguments);
+      _widget = PrivateChatWidget(settings.arguments);
     }
     else if(settings.name == AppRoutes.pageDonorList){
       _widget = DonorListWidget();

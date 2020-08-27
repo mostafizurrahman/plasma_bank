@@ -38,7 +38,9 @@ class _AccountState extends State<AccountsWidget> {
 
 
   _onLoaded(){
-    this._cautionBehavior.sink.add(true);
+    if(this._cautionBehavior != null && !this._cautionBehavior.isClosed){
+      this._cautionBehavior.sink.add(true);
+    }
   }
 
   @override

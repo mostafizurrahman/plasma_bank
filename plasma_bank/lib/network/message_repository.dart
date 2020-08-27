@@ -1,39 +1,113 @@
 import 'package:cloud_firestore/cloud_firestore.dart';
+import 'package:plasma_bank/network/donor_handler.dart';
 import 'package:rxdart/rxdart.dart';
+import 'package:cloud_firestore/cloud_firestore.dart';
+import 'package:flutter/cupertino.dart';
+import 'package:plasma_bank/app_utils/app_constants.dart';
 
-class MessageSender {
-  final String senderName;
-  final String lastMessageDate;
-  final bool hasUnreadMessage;
-  final String lastMessage;
-  final String referenceID;
-  final String senderProfileImage;
-  MessageSender(
-      {this.referenceID,
-      this.senderName,
-      this.lastMessage,
-      this.lastMessageDate,
-      this.senderProfileImage,
-      this.hasUnreadMessage});
+class MessageData {
+  String dateTime;
+  bool seen;
+  String message;
+  bool isOutGoing;
+  bool shouldInsert;
+  bool isUpdated;
+
+  MessageData.fromMap(Map<dynamic, dynamic> map, bool isOutGoingMessage) {
+    this.isOutGoing = isOutGoingMessage;
+    this.dateTime = map['time'];
+    this.message = map['message'];
+    this.shouldInsert = map['insert'] ?? true;
+    this.seen = isOutGoingMessage ? true : map['insert'];
+    this.isUpdated = map['updated'];
+  }
+  MessageData(this.message, this.dateTime, this.isOutGoing,
+      {this.seen = true, this.shouldInsert = false});
 }
 
 class MessageRepository {
-
-  final BehaviorSubject<MessageSender> _senderBehavior = BehaviorSubject();
+  DocumentReference _inComingMessageDoc;
+  DocumentReference _outGoingMessageDoc;
+  final BehaviorSubject<MessageData> _senderBehavior = BehaviorSubject();
 
   dispose() {
-
     _senderBehavior.close();
   }
 
-  Stream<MessageSender> getStream(){
+  Stream<MessageData> getStream() {
     return this._senderBehavior.stream;
   }
 
+  readSenderList() {}
+  MessageRepository.fromMail(final String _receiver) {
+    final String _loginEmail = donorHandler.loginEmail;
+    _outGoingMessageDoc = Firestore.instance
+        .collection('donor')
+        .document(_loginEmail)
+        .collection('messages')
+        .document(_receiver);
 
-  readSenderList(){
+    _inComingMessageDoc = Firestore.instance
+        .collection('donor')
+        .document(_receiver)
+        .collection('messages')
+        .document(_loginEmail);
+  }
+
+  Stream<DocumentSnapshot> getInComingStream() {
+    return _inComingMessageDoc.snapshots();
+  }
+
+  Stream<DocumentSnapshot> getOutGoingStream() {
+    return _outGoingMessageDoc.snapshots();
+  }
+
+  sendMessage(final _email, final _message, Function(bool) _onSent) async {
+
+    final String _date = DateTime.now().toLocal().toString();
+    _outGoingMessageDoc.get().then((value){
+      if(value.exists) {
+        final bool isSeen = value.data['seen'];
+        if(isSeen){
+          _sendMessage(_email, _message, false, _onSent,_date);
+        } else {
+          final String _msg = _message + ' ' + value.data['message'];
+          final String _time = value.data['date_time'];
+          _sendMessage(_email, _msg, true, _onSent, _time);
+        }
+      } else {
+        _sendMessage(_email, _message, false, _onSent,_date);
+      }
+    });
+
+
 
   }
 
+  _sendMessage(final _email, final _message, final _update, final _onSent, final _date){
+    _outGoingMessageDoc.setData({
+      'seen': false,
+      'message': _message,
+      'date_time': _date,
+      'insert': !_update,
+      'updated' : _update,
+    }).then((value) {
+      _onSent(true);
+    }).catchError((_error){
+      _onSent(false);
+    });
+  }
+
+  updateOutGoingStatus() {
+    _outGoingMessageDoc.updateData({'insert': false});
+  }
+
+  updateIncomingStatus() {
+    _inComingMessageDoc.updateData({'insert': false, 'seen': true});
+  }
+
+//  getMessage(final String _loginEmail, final String _receiverEmail){
+//    this._documentCollection =
+//  }
 
 }

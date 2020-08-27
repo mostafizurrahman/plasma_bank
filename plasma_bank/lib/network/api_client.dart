@@ -243,8 +243,10 @@ class ApiClient {
 
   Future<List<dynamic>> getGlobList(final _url, {region = false, city = false}) async {
 
-    final response = await get(_url);
-    if (response.statusCode == 200) {
+    final response = await get(_url).catchError((_error){
+      return null;
+    });
+    if (response != null && response.statusCode == 200) {
       List _locations = List();
       final List<dynamic> _list = await json.decode(response.body);
       if(region){
