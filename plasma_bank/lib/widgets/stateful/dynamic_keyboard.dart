@@ -1,6 +1,7 @@
 import 'dart:io';
 
 import 'package:flutter/cupertino.dart';
+import 'package:flutter/gestures.dart';
 import 'package:flutter/material.dart';
 import 'package:plasma_bank/app_utils/app_constants.dart';
 import 'package:rxdart/rxdart.dart';
@@ -8,9 +9,10 @@ import 'package:rxdart/rxdart.dart';
 class DynamicKeyboardWidget extends StatefulWidget {
   final IconData doneButtonIcon;
   final Function(String) onKeyPressed;
-
+  final Function(String) onKeyDownStart;
+  final Function onDeleteLongPressed;
   DynamicKeyboardWidget(this.onKeyPressed,
-      {this.doneButtonIcon = Icons.check_circle});
+      {this.onKeyDownStart, this.onDeleteLongPressed, this.doneButtonIcon = Icons.check_circle});
 
   @override
   State<StatefulWidget> createState() {
@@ -277,6 +279,12 @@ class _DynamicKeyboardState extends State<DynamicKeyboardWidget> {
             color: isSpecial ? Colors.grey : Colors.white,
             child: Ink(
               child: InkWell(
+                onTapDown: (value) => _onKeyStarted(_key),
+                onTapCancel: () {
+                  if (this.widget.onKeyDownStart != null) {
+                    this.widget.onKeyDownStart(null);
+                  }
+                },
                 onTap: () => _onKeyPressed(_key),
                 child: Center(
                   child: _key == 'TOG'
@@ -314,9 +322,17 @@ class _DynamicKeyboardState extends State<DynamicKeyboardWidget> {
   }
 
   Widget _getDeleteIcon() {
-    return Icon(
-      Icons.backspace,
-      color: Colors.black,
+    return GestureDetector(
+      onLongPress: (){
+        if(this.widget.onDeleteLongPressed != null) {
+          this.widget.onDeleteLongPressed();
+        }
+      },
+
+      child: Icon(
+        Icons.backspace,
+        color: Colors.black,
+      ),
     );
   }
 
@@ -353,6 +369,27 @@ class _DynamicKeyboardState extends State<DynamicKeyboardWidget> {
     } else {
       this.widget.onKeyPressed(
           _isUpperCased ? _key.toUpperCase() : _key.toLowerCase());
+    }
+  }
+
+  _onKeyStarted(final String _key) {
+    if (this.widget.onKeyDownStart != null) {
+      final bool _isUpperCased = _upperCasedBehavior.value ?? false;
+      if (_key == 'TOG' ||
+          _key == '123' ||
+          _key == 'ABC' ||
+          _key == '#+=' ||
+          _key == 'DONE') {
+      } else {
+        if (_key == 'DEL') {
+          this.widget.onKeyDownStart('del');
+        } else if (_key == 'space') {
+          this.widget.onKeyDownStart('spc');
+        } else {
+          this.widget.onKeyDownStart(
+              _isUpperCased ? _key.toUpperCase() : _key.toLowerCase());
+        }
+      }
     }
   }
 }

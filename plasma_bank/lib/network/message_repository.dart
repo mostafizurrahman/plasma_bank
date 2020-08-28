@@ -15,14 +15,14 @@ class MessageData {
 
   MessageData.fromMap(Map<dynamic, dynamic> map, bool isOutGoingMessage) {
     this.isOutGoing = isOutGoingMessage;
-    this.dateTime = map['time'];
+    this.dateTime = map['date_time'];
     this.message = map['message'];
     this.shouldInsert = map['insert'] ?? true;
     this.seen = isOutGoingMessage ? true : map['insert'];
-    this.isUpdated = map['updated'];
+    this.isUpdated = map['updated'] ?? false;
   }
   MessageData(this.message, this.dateTime, this.isOutGoing,
-      {this.seen = true, this.shouldInsert = false});
+      {this.seen = true, this.shouldInsert = false, this.isUpdated = false});
 }
 
 class MessageRepository {
@@ -32,6 +32,8 @@ class MessageRepository {
 
   dispose() {
     _senderBehavior.close();
+    _inComingMessageDoc = null;
+    _outGoingMessageDoc = null;
   }
 
   Stream<MessageData> getStream() {
@@ -71,7 +73,7 @@ class MessageRepository {
         if(isSeen){
           _sendMessage(_email, _message, false, _onSent,_date);
         } else {
-          final String _msg = _message + ' ' + value.data['message'];
+          final String _msg =  value.data['message'] + ' ' + _message;
           final String _time = value.data['date_time'];
           _sendMessage(_email, _msg, true, _onSent, _time);
         }
@@ -89,7 +91,7 @@ class MessageRepository {
       'seen': false,
       'message': _message,
       'date_time': _date,
-      'insert': !_update,
+      'insert': true,
       'updated' : _update,
     }).then((value) {
       _onSent(true);
@@ -103,7 +105,7 @@ class MessageRepository {
   }
 
   updateIncomingStatus() {
-    _inComingMessageDoc.updateData({'insert': false, 'seen': true});
+    _inComingMessageDoc.updateData({'insert': false, 'seen': true, 'updated' : false});
   }
 
 //  getMessage(final String _loginEmail, final String _receiverEmail){

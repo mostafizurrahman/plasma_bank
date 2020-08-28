@@ -1,6 +1,8 @@
+import 'dart:async';
 import 'dart:io';
 
 import 'package:cloud_firestore/cloud_firestore.dart';
+import 'package:firebase_database/firebase_database.dart';
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
 import 'package:plasma_bank/app_utils/app_constants.dart';
@@ -29,9 +31,13 @@ class _PrivateChatState extends BaseChatState<PrivateChatWidget> {
   BehaviorSubject<bool> _keyboardBehavior = BehaviorSubject();
   BehaviorSubject<bool> _indicatorBehavior = BehaviorSubject();
   BehaviorSubject<bool> _sendingBehavior = BehaviorSubject();
-
+  BehaviorSubject<String> _keyTapBehavior = BehaviorSubject();
+  StreamSubscription<DocumentSnapshot> _counterSubscription;
   BehaviorSubject<List<MessageData>> _messageBehavior = BehaviorSubject();
   TextEditingController _chatTextController = TextEditingController();
+
+  FocusNode _focusNode = FocusNode();
+
   @override
   void dispose() {
     // TODO: implement dispose
@@ -40,6 +46,9 @@ class _PrivateChatState extends BaseChatState<PrivateChatWidget> {
     _indicatorBehavior.close();
     _sendingBehavior.close();
     _messageBehavior.close();
+    _counterSubscription.cancel();
+    this._messageRepository.dispose();
+    _keyTapBehavior.close();
   }
 
   MessageRepository _messageRepository;
@@ -64,10 +73,15 @@ class _PrivateChatState extends BaseChatState<PrivateChatWidget> {
 
   _onInitialized() {
     Future.delayed(Duration(seconds: 1), () {
-      this._sqliteDatabase.getMessages().then((value) => message = value);
-      this._messageRepository.getInComingStream().listen(_onInComingMessage);
-      this._messageRepository.getOutGoingStream().listen(_onOutGoingMessage);
+      FocusScope.of(context).requestFocus(_focusNode);
+      this._chatTextController.text = "";
       this._indicatorBehavior.sink.add(false);
+      this._sqliteDatabase.getMessages().then((value) => message = value);
+      _counterSubscription = this
+          ._messageRepository
+          .getInComingStream()
+          .listen(_onInComingMessage);
+      this._messageRepository.getOutGoingStream().listen(_onOutGoingMessage);
     });
   }
 
@@ -91,21 +105,67 @@ class _PrivateChatState extends BaseChatState<PrivateChatWidget> {
 
   _updateRepository(DocumentSnapshot _messageSnap, bool isOut) {
     final messageData = MessageData.fromMap(_messageSnap.data, isOut);
-    if (messageData.shouldInsert) {
-      _sqliteDatabase.updateMessage(messageData);
+    if (isOut && messageData.isUpdated) {
+      _sqliteDatabase.updateMessage(messageData).then((value) {
+        if (value > 0) {
+          final _list = this._messageBehavior.value ?? [];
+          _list.forEach((element) {
+            if (element.dateTime == messageData.dateTime) {
+              element.message = messageData.message;
+            }
+          });
+          if (!this._messageBehavior.isClosed) {
+            this._messageBehavior.sink.add(_list);
+          }
+        }
+      });
+    } else if (messageData.shouldInsert) {
       if (isOut) {
         _messageRepository.updateOutGoingStatus();
+        _sqliteDatabase.insertMessage(messageData);
+        _addToList(messageData);
       } else {
-        _messageRepository.updateIncomingStatus();
+        if (messageData.isUpdated) {
+          //updated incoming message
+          _sqliteDatabase.updateMessage(messageData).then((value) {
+            if (value > 0) {
+              final _list = this._messageBehavior.value ?? [];
+              _list.forEach((element) {
+                if (element.dateTime == messageData.dateTime) {
+                  element.message = messageData.message;
+                }
+              });
+              if (!this._messageBehavior.isClosed) {
+                this._messageBehavior.sink.add(_list);
+              }
+            } else {
+              _sqliteDatabase.insertMessage(messageData).catchError((_error) {
+                debugPrint('insertion fail  _______ ' + _error.toString());
+              });
+              _addToList(messageData);
+              _messageRepository.updateIncomingStatus();
+            }
+          }).catchError((_error) {
+            debugPrint('update fail');
+          });
+          debugPrint(messageData.message);
+        } else {
+          _sqliteDatabase.insertMessage(messageData).catchError((_error) {
+            debugPrint('insertion fail  _______ ' + _error.toString());
+          });
+          _messageRepository.updateIncomingStatus();
+          _addToList(messageData);
+        }
       }
-      _addToList(messageData);
     }
   }
 
-  _addToList(MessageData messageData){
+  _addToList(MessageData messageData) {
     final _list = this._messageBehavior.value ?? [];
     _list.add(messageData);
-    this._messageBehavior.sink.add(_list);
+    if (!this._messageBehavior.isClosed) {
+      this._messageBehavior.sink.add(_list);
+    }
   }
 
   @override
@@ -138,28 +198,24 @@ class _PrivateChatState extends BaseChatState<PrivateChatWidget> {
         stream: _messageBehavior.stream,
         initialData: null,
         builder: (_messageContext, _messageSnapshot) {
-          if (_messageSnapshot.hasData) {
-            List<MessageData> _dataList = _messageSnapshot.data;
-            if (_dataList != null && _dataList.length > 0) {
-              return ListView.builder(
-                reverse: true,
-                scrollDirection: Axis.vertical,
-                itemCount: _dataList.length + 1,
-                itemBuilder: (_context, _index) {
-                  if (_index == 0) {
-                    return WidgetTemplate.getPageAppBar(context);
-                  }
-                  final _data = _dataList[_index - 1];
-                  return _getWidget(_data);
-                },
-              );
-            }
-          }
-          return Container(
-            child: Center(
-              child: WidgetTemplate.indicator(),
-            ),
+          final _dataList = _messageSnapshot.data ?? [];
+          return ListView.builder(
+            reverse: true,
+            scrollDirection: Axis.vertical,
+            itemCount: _dataList.length + 1,
+            itemBuilder: (_context, _index) {
+              if (_index == 0) {
+                return WidgetTemplate.getPageAppBar(context);
+              }
+              final _data = _dataList[_index - 1];
+              return _getWidget(_data);
+            },
           );
+//          return Container(
+//            child: Center(
+//              child: WidgetTemplate.indicator(),
+//            ),
+//          );
         },
       ),
       bottomNavigationBar: StreamBuilder<bool>(
@@ -193,52 +249,131 @@ class _PrivateChatState extends BaseChatState<PrivateChatWidget> {
             ],
           ),
 //            color: Colors.white,
-          child: TextFormField(
-            controller: _chatTextController,
-            style: TextStyle(
-              fontSize: 14,
-            ),
-            onTap: () => this._keyboardBehavior.sink.add(true),
-            decoration: InputDecoration(
-              isDense: true,
-              contentPadding: const EdgeInsets.only(
-                  left: 8.0, bottom: 4.0, top: 4.0, right: 8.0),
-              focusedBorder: OutlineInputBorder(
-                borderSide: BorderSide(color: Colors.transparent, width: 0.750),
+          child: Row(
+            children: <Widget>[
+              Container(
+                width: displayData.width - 55,
+                child: TextFormField(
+                  focusNode: _focusNode,
+                  controller: _chatTextController,
+                  style: TextStyle(
+                    fontSize: 15,
+                    fontWeight: FontWeight.w600,
+                  ),
+                  onTap: () => this._keyboardBehavior.sink.add(true),
+                  decoration: InputDecoration(
+                    isDense: true,
+                    contentPadding: const EdgeInsets.only(
+                        left: 8.0, bottom: 4.0, top: 4.0, right: 8.0),
+                    focusedBorder: OutlineInputBorder(
+                      borderSide:
+                          BorderSide(color: Colors.transparent, width: 0.750),
+                    ),
+                    enabledBorder: OutlineInputBorder(
+                      borderSide:
+                          BorderSide(color: Colors.transparent, width: 0.750),
+                    ),
+                    hintText: "TYPE SOMETHING TO SEND...",
+                    hintStyle: TextStyle(
+                        color: Color.fromARGB(255, 220, 220, 220),
+                        fontSize: 12),
+                  ),
+                  readOnly: true,
+                  showCursor: true,
+                  maxLines: 3,
+                ),
               ),
-              enabledBorder: OutlineInputBorder(
-                borderSide: BorderSide(color: Colors.transparent, width: 0.750),
+              SizedBox(
+                width: 5,
               ),
-              hintText: "TYPE SOMETHING TO SEND...",
-              hintStyle: TextStyle(
-                  color: Color.fromARGB(255, 220, 220, 220), fontSize: 12),
-            ),
-            readOnly: true,
-            showCursor: true,
-            maxLines: 6,
+              Container(
+                width: 50,
+                height: 75,
+                color: Colors.red,
+                child: Column(
+                  children: <Widget>[
+                    Container(
+                      height: 75.0 / 2,
+                      color: Colors.grey,
+                      child: StreamBuilder<String>(
+                        stream: _keyTapBehavior.stream,
+                        initialData: null,
+                        builder: (_context, _snap) {
+                          return Center(
+                            child: Text(
+                              _snap.data != null ? _snap.data : '',
+                              style: TextStyle(
+                                  fontSize: 25, fontFamily: AppStyle.fontBold),
+                            ),
+                          );
+                        },
+                      ),
+                    ),
+                    Container(
+                      height: 75.0 / 2,
+                      child: Material(
+                        color: Color.fromARGB(255, 200, 200, 200),
+                        child: Ink(
+                          child: InkWell(
+                            onTap: () {
+                              final _visible =
+                                  this._keyboardBehavior.value ?? true;
+                              this._keyboardBehavior.sink.add(!_visible);
+                            },
+                            child: Center(
+                              child: StreamBuilder<bool>(
+                                stream: this._keyboardBehavior.stream,
+                                initialData: true,
+                                builder: (_context, _snap) {
+                                  return Center(
+                                    child: Icon(
+                                      _snap.data
+                                          ? Icons.close
+                                          : Icons.keyboard_arrow_up,
+                                      color: _snap.data
+                                          ? Colors.red
+                                          : Colors.green,
+                                    ),
+                                  );
+                                },
+                              ),
+                            ),
+                          ),
+                        ),
+                      ),
+                    ),
+                  ],
+                ),
+              )
+            ],
           ),
         ),
         _data
-            ? GestureDetector(
-                onHorizontalDragUpdate: (value) {
-                  debugPrint('dragging');
-                  this._keyboardBehavior.sink.add(false);
-                },
-                child: DynamicKeyboardWidget(
-                  _onKeyPressed,
-                  doneButtonIcon: Icons.message,
-                ),
+            ? DynamicKeyboardWidget(
+                _onKeyPressed,
+                doneButtonIcon: Icons.message,
+                onKeyDownStart: _onKeyStarted,
+                onDeleteLongPressed: _onDeleteEverything,
               )
             : SizedBox(),
       ],
     );
   }
 
-  _onKeyPressed( String _key) {
+  _onDeleteEverything() {
+    this._chatTextController.text = '';
+    this._chatTextController.clear();
+  }
+
+  _onKeyStarted(String _key) {
+    this._keyTapBehavior.sink.add(_key);
+  }
+
+  _onKeyPressed(String _key) {
     if (_key.toLowerCase() == 'space') {
       _key = ' ';
     } else if (_key.toLowerCase() == 'done') {
-      if(!(_sendingBehavior.value ?? true)) {
+      if (!(_sendingBehavior.value ?? false)) {
         _sendingBehavior.sink.add(true);
         final BloodDonor _donor = super.widget.getData('donor');
         _messageRepository.sendMessage(
@@ -253,9 +388,7 @@ class _PrivateChatState extends BaseChatState<PrivateChatWidget> {
   }
 
   _onDataSent(final bool success) {
-    if (!success) {
-
-    }
+    if (!success) {}
     _sendingBehavior.sink.add(false);
   }
 

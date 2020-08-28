@@ -339,9 +339,9 @@ class WidgetProvider {
     String _endString = _end >= 0 && _end >= _start
         ? _text.substring(_end, _text.length)
         : '';
-    int _offset = (_start >= 0 ? _start : _end) + 1;
+    int _offset = (_start == -1 && _end == -1 ? 0 : _start >= 0 ? _start : _end) + 1;
     String _output;
-    if (_key != 'x') {
+    if (_key != 'del') {
       _firstString += _key;
       _output = _firstString + _endString;
     } else {
