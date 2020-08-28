@@ -5,6 +5,7 @@ import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:firebase_database/firebase_database.dart';
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
+import 'package:intl/intl.dart';
 import 'package:plasma_bank/app_utils/app_constants.dart';
 import 'package:plasma_bank/app_utils/widget_providers.dart';
 import 'package:plasma_bank/app_utils/widget_templates.dart';
@@ -194,6 +195,26 @@ class _PrivateChatState extends BaseChatState<PrivateChatWidget> {
 
   Widget _getChatWidget(BuildContext context) {
     return Scaffold(
+      floatingActionButtonLocation: FloatingActionButtonLocation.startTop,
+      floatingActionButton: Padding(
+        padding: const EdgeInsets.only(top:32),
+        child: Row(
+          children: <Widget>[
+            Container(
+              height: 50, width: 50,
+              color: Colors.red,
+            ),
+
+            Expanded(
+              child: SizedBox(width: displayData.width * 0.2,),
+            ),
+            Container(
+              height: 50, width: 50,
+              color: Colors.green,
+            )
+          ],
+        ),
+      ),
       body: StreamBuilder<List<MessageData>>(
         stream: _messageBehavior.stream,
         initialData: null,
@@ -204,10 +225,10 @@ class _PrivateChatState extends BaseChatState<PrivateChatWidget> {
             scrollDirection: Axis.vertical,
             itemCount: _dataList.length + 1,
             itemBuilder: (_context, _index) {
-              if (_index == 0) {
+              if (_index == _dataList.length) {
                 return WidgetTemplate.getPageAppBar(context);
               }
-              final _data = _dataList[_index - 1];
+              final _data = _dataList[_dataList.length - _index - 1];
               return _getWidget(_data);
             },
           );
@@ -393,25 +414,56 @@ class _PrivateChatState extends BaseChatState<PrivateChatWidget> {
   }
 
   Widget _getWidget(final MessageData _data) {
+    final _date =
+        DateFormat.yMMMEd().add_jms().format(DateTime.parse(_data.dateTime));
+    double left = 0;
+    double right = 0;
+    String _title = _date.toString();
+    var _alignment = CrossAxisAlignment.start;
+    if (_data.isOutGoing) {
+      right = 32;
+//      _title = (_data.seen ? 'seen  ' : '') + _title;
+    } else {
+      left = 32;
+      _alignment = CrossAxisAlignment.end;
+//      _title = _title + (_data.seen ? '  seen' : '');
+    }
     return Padding(
-      padding: EdgeInsets.all(24),
-      child: Container(
-        child: Column(
-          crossAxisAlignment: _data.isOutGoing
-              ? CrossAxisAlignment.start
-              : CrossAxisAlignment.end,
-          children: <Widget>[
-            Text(_data.dateTime),
-            Padding(
-              padding: EdgeInsets.only(
-                top: 12,
-                left: 12,
+      padding: EdgeInsets.only(bottom: 20, left: 12, right: 12),
+      child: Row(
+        children: <Widget>[
+          SizedBox(
+            width: left,
+          ),
+          Expanded(
+            child: Container(
+              child: Column(
+                crossAxisAlignment: _alignment,
+                children: <Widget>[
+                  Padding(
+                    padding: const EdgeInsets.only(left: 8, right: 8, top: 4),
+                    child: Text(
+                      _title,
+                      style: TextStyle(fontSize: 11, color: Colors.black54),
+                    ),
+                  ),
+                  Padding(
+                    padding: EdgeInsets.all(8),
+                    child: Text(_data.message,
+                        style: TextStyle(
+                            fontSize: 14,
+                            height: 1.4,
+                            fontWeight: FontWeight.w600)),
+                  )
+                ],
               ),
-              child: Text(_data.message),
-            )
-          ],
-        ),
-        decoration: AppStyle.listItemDecoration,
+              decoration: AppStyle.lightDecoration,
+            ),
+          ),
+          SizedBox(
+            width: right,
+          ),
+        ],
       ),
     );
   }
