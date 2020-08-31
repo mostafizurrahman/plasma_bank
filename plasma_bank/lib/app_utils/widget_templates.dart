@@ -2,6 +2,10 @@ import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
+import 'package:intl/intl.dart';
+import 'package:plasma_bank/network/imgur_handler.dart';
+import 'package:plasma_bank/network/message_repository.dart';
+import 'package:plasma_bank/network/models/blood_donor.dart';
 
 import 'package:plasma_bank/widgets/stateless/message_widget.dart';
 import 'package:rxdart/rxdart.dart';
@@ -34,9 +38,9 @@ class WidgetTemplate {
   static Widget indicator() {
     return CircularProgressIndicator(
       strokeWidth: 1.75,
-      backgroundColor: Colors.red,
+      backgroundColor: AppStyle.theme(),
       valueColor: AlwaysStoppedAnimation<Color>(
-        Color.fromARGB(255, 220, 220, 200),
+        Colors.cyan,
       ),
       semanticsLabel: "LOADING...",
     );
@@ -231,52 +235,117 @@ class WidgetTemplate {
     );
   }
 
-
-  static Widget getPageAppBar(BuildContext _context){
+  static Widget getMessageWidget(final MessageData _data) {
+    final _date =
+    DateFormat.yMMMEd().add_jms().format(DateTime.parse(_data.dateTime));
+    double left = 0;
+    double right = 0;
+    String _title = _date.toString();
+    var _alignment = CrossAxisAlignment.start;
+    Color _color = Colors.black;
+    if (_data.isOutGoing) {
+      right = 32;
+    } else {
+      _color = Colors.blueGrey;
+      left = 32;
+      _alignment = CrossAxisAlignment.end;
+    }
     return Padding(
-      padding: const EdgeInsets.only(bottom: 32),
-      child: Container(
-        child: Column(
-          children: <Widget>[
-            Row(
-              crossAxisAlignment: CrossAxisAlignment.center,
-              children: <Widget>[
-
-                SizedBox(width: 24,),
-                FloatingActionButton(
-                  backgroundColor: Colors.white,
-                  child: Icon(Icons.arrow_back_ios, color: AppStyle.theme(),),
-                  onPressed: ()=>Navigator.pop(_context),
-                ),
-
-                SizedBox(width: 12,),
-                Center(
-                  child: Text(
-                    'BLOOD DONORS',
-                    style: TextStyle(
-                      fontSize: 20,
-                      fontFamily: AppStyle.fontBold,
+      padding: EdgeInsets.only(bottom: 20, left: 12, right: 12),
+      child: Row(
+        children: <Widget>[
+          SizedBox(
+            width: left,
+          ),
+          Expanded(
+            child: Container(
+              child: Column(
+                crossAxisAlignment: _alignment,
+                children: <Widget>[
+                  Padding(
+                    padding: const EdgeInsets.only(left: 8, right: 8, top: 4),
+                    child: Text(
+                      _title,
+                      style: TextStyle(fontSize: 11, color: Colors.black54),
                     ),
                   ),
-                )
-              ],
+                  Padding(
+                    padding: EdgeInsets.all(8),
+                    child: Text(_data.message,
+                        style: TextStyle(
+                            fontSize: 14,
+                            height: 1.4,
+                            color: _color,
+                            fontWeight: FontWeight.w600)),
+                  )
+                ],
+              ),
+              decoration: AppStyle.lightDecoration,
             ),
-
-//                              Padding(
-//                                padding: const EdgeInsets.only(top: 12),
-//                                child: Container(
-//                                  width: displayData.width,
-//                                  child: CustomPaint(
-//                                    painter: DashLinePainter(),
-//                                  ),
-//                                ),
-//                              ),
-          ],
-        ),
-//                        height: 110,
-
-//                        color: Colors.red,
+          ),
+          SizedBox(
+            width: right,
+          ),
+        ],
       ),
     );
   }
+
+  static Widget getProfilePicture(final BloodDonor _donor, {double proHeight =  50}){
+    return Container(
+      decoration: AppStyle.circularShadow(),
+      height: proHeight,
+      width: proHeight,
+      child: ClipRRect(
+        borderRadius: BorderRadius.all(Radius.circular(100)),
+        child: _donor.profilePicture != null
+            ? Container(
+          color: Colors.grey,
+          height: 50,
+          width: 50,
+          child: WidgetTemplate.getImageWidget(_donor.profilePicture),
+        )
+            : Center(
+              child: Text(
+          _donor.fullName.substring(0, 1).toUpperCase(),
+          style: TextStyle(
+                fontSize: 28,
+                fontWeight: FontWeight.w600,
+                color: AppStyle.theme()),
+        ),
+            ),
+      ),
+    );
+  }
+
+
+  static Widget getImageWidget(final ImgurResponse _response){
+    return Image.network(
+      _response.thumbUrl,
+      fit: BoxFit.cover,
+      loadingBuilder: (BuildContext context,
+          Widget child,
+          ImageChunkEvent loadingProgress) {
+        if (loadingProgress == null) return child;
+        return Center(
+          child: CircularProgressIndicator(
+            strokeWidth: 1.75,
+            backgroundColor: Colors.red,
+            valueColor: AlwaysStoppedAnimation<Color>(
+              Colors.cyan,
+            ),
+            value: loadingProgress.expectedTotalBytes !=
+                null
+                ? loadingProgress
+                .cumulativeBytesLoaded /
+                loadingProgress.expectedTotalBytes
+                : null,
+          ),
+        );
+      },
+    );
+  }
 }
+
+
+

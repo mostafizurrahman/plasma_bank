@@ -18,11 +18,12 @@ class MessageData {
     this.dateTime = map['date_time'];
     this.message = map['message'];
     this.shouldInsert = map['insert'] ?? true;
-    this.seen = isOutGoingMessage ? true : map['insert'];
+    this.seen = map['insert'] ?? true ;
+    debugPrint(map['insert'].toString());
     this.isUpdated = map['updated'] ?? false;
   }
   MessageData(this.message, this.dateTime, this.isOutGoing,
-      {this.seen = true, this.shouldInsert = false, this.isUpdated = false});
+      {this.seen = false, this.shouldInsert = false, this.isUpdated = false});
 }
 
 class MessageRepository {
@@ -40,7 +41,8 @@ class MessageRepository {
     return this._senderBehavior.stream;
   }
 
-  readSenderList() {}
+  MessageRepository();
+
   MessageRepository.fromMail(final String _receiver) {
     final String _loginEmail = donorHandler.loginEmail;
     _outGoingMessageDoc = Firestore.instance
@@ -63,6 +65,21 @@ class MessageRepository {
   Stream<DocumentSnapshot> getOutGoingStream() {
     return _outGoingMessageDoc.snapshots();
   }
+
+  Stream<DocumentSnapshot> getDonorInfo(final String _email) {
+    return Firestore.instance
+        .collection('donor')
+        .document(_email).snapshots();
+  }
+
+  Stream<QuerySnapshot> getMessengers(){
+
+    return Firestore.instance
+        .collection('donor')
+        .document(donorHandler.loginEmail)
+        .collection('messages').snapshots();
+  }
+
 
   sendMessage(final _email, final _message, Function(bool) _onSent) async {
 

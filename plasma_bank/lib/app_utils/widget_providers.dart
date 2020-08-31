@@ -100,7 +100,7 @@ class WidgetProvider {
                   borderRadius:
                       new BorderRadius.all(const Radius.circular(12.0)),
                 ),
-                child: WidgetProvider.loadingBox() ,
+                child: WidgetProvider.loadingBox(),
               ),
             ),
           ),
@@ -109,7 +109,7 @@ class WidgetProvider {
     );
   }
 
-  static Widget loadingBox(){
+  static Widget loadingBox() {
     return Center(
       child: Column(
         mainAxisAlignment: MainAxisAlignment.center,
@@ -248,9 +248,8 @@ class WidgetProvider {
           borderRadius: BorderRadius.all(Radius.circular(100)),
         ),
         height: 50,
-        width:  - padding,
+        width: -padding,
         child: RaisedButton(
-
           shape: RoundedRectangleBorder(
             side: BorderSide(color: AppStyle.theme(), width: 1.5),
             borderRadius: BorderRadius.circular(120.0),
@@ -274,33 +273,33 @@ class WidgetProvider {
   static PreferredSize appBar(String _title, {List<Widget> actions}) {
     assert(_title != null, 'TITLE IS NULL');
     return PreferredSize(
-        preferredSize: Size.fromHeight(54.0),
-        child: AppBar(
-          automaticallyImplyLeading: false, // hides leading widget
-          flexibleSpace: AppBar(
-            actions: actions != null ? actions : [],
-            centerTitle: false,
-            backgroundColor: AppStyle.greyBackground(),
-            title: Text(
-              _title,
-              style: TextStyle(color: AppStyle.titleTxtColor()),
-            ),
-            iconTheme: IconThemeData(color: AppStyle.theme()),
-            titleSpacing: 0,
+      preferredSize: Size.fromHeight(54.0),
+      child: AppBar(
+        automaticallyImplyLeading: false, // hides leading widget
+        flexibleSpace: AppBar(
+          actions: actions != null ? actions : [],
+          centerTitle: false,
+          backgroundColor: AppStyle.greyBackground(),
+          title: Text(
+            _title,
+            style: TextStyle(color: AppStyle.titleTxtColor()),
           ),
+          iconTheme: IconThemeData(color: AppStyle.theme()),
+          titleSpacing: 0,
         ),
+      ),
     );
   }
 
   static Widget getInkButton(
-      final double _width,
-      final double _height,
-      final Function _onTap,
-      final IconData _iconName,
-  {final String title, final double iconSize = 25,
-    final Color iconColor = Colors.black,}
-
-      ){
+    final double _width,
+    final double _height,
+    final Function _onTap,
+    final IconData _iconName, {
+    final String title,
+    final double iconSize = 25,
+    final Color iconColor = Colors.black,
+  }) {
     return Container(
       width: _width,
       height: _width,
@@ -319,7 +318,7 @@ class WidgetProvider {
                     size: iconSize,
                     color: iconColor,
                   ),
-                  title != null ? Text(title??'') : SizedBox(),
+                  title != null ? Text(title ?? '') : SizedBox(),
                 ],
               ),
             ),
@@ -330,18 +329,19 @@ class WidgetProvider {
     );
   }
 
-  static addTextInController(final TextEditingController _selectedController, String _key){
+  static addTextInController(
+      final TextEditingController _selectedController, String _key) {
     var cursorPos = _selectedController.selection;
     final String _text = _selectedController.text;
     int _start = cursorPos.start;
     int _end = cursorPos.end;
     String _firstString = _start >= 0 ? _text.substring(0, _start) : _text;
-    String _endString = _end >= 0 && _end >= _start
-        ? _text.substring(_end, _text.length)
-        : '';
-    int _offset = (_start == -1 && _end == -1 ? 0 : _start >= 0 ? _start : _end) + 1;
+    String _endString =
+        _end >= 0 && _end >= _start ? _text.substring(_end, _text.length) : '';
+    int _offset =
+        (_start == -1 && _end == -1 ? 0 : _start >= 0 ? _start : _end) + 1;
     String _output;
-    if (_key != 'del') {
+    if (_key.toLowerCase() != 'del') {
       _firstString += _key;
       _output = _firstString + _endString;
     } else {
@@ -363,5 +363,39 @@ class WidgetProvider {
     _selectedController.text = _output;
     cursorPos = TextSelection.fromPosition(TextPosition(offset: _offset));
     _selectedController.selection = cursorPos;
+  }
+
+  static Widget getBackAppBar(BuildContext _context, {final title}) {
+    return AppBar(
+      elevation: 0,
+      iconTheme: IconThemeData(
+        color: Colors.black,
+      ),
+      backgroundColor: Colors.transparent,
+      leading: Row(
+        children: <Widget>[
+          new IconButton(
+            icon: new Icon(
+              Icons.arrow_back_ios,
+              color: AppStyle.theme(),
+            ),
+            onPressed: () => Navigator.of(_context).pop(),
+          ),
+
+//
+//          _getProfilePicture(donorHandler.loginDonor),
+//          SizedBox(width: 12,),
+        ],
+      ),
+      title: title == null
+          ? SizedBox()
+          : title is String
+              ? Text(
+                  title,
+                  style: TextStyle(fontSize: 22, fontFamily: AppStyle.fontBold, color: Colors.black),
+                )
+              : title,
+      centerTitle: true,
+    );
   }
 }

@@ -319,7 +319,12 @@ class _HomePageState extends State<HomePageWidget> {
         this._bottomNavigationBehavior.sink.add(3);
       });
     }
-    return MessageListWidget();
+    return MessageListWidget(_onLoginSelectedLogin);
+  }
+
+  _onLoginSelectedLogin(){
+    this._bottomNavigationBehavior.sink.add(4);
+    this._segmentBehavior.sink.add(2);
   }
 
   _registerDonorTap(final bool isRegistration) async {

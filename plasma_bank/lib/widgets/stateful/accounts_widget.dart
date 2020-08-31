@@ -47,48 +47,50 @@ class _AccountState extends State<AccountsWidget> {
   Widget build(BuildContext context) {
     // TODO: implement build
 
-    return Scaffold(
-      backgroundColor: Colors.white,
-      body:
+    return SafeArea(
+      child: Scaffold(
+        backgroundColor: Colors.white,
+        body:
 
 
-      StreamBuilder<bool>(
-        stream: _cautionBehavior.stream,
-        initialData: false,
-        builder: (context, snapshot) {
-          if(!snapshot.data){
-            return Center(
-              child: Container(
-                width: displayData.width - 48,
-                height: 140,
-                child: Column(
-                  children: <Widget>[
-                    Padding(
-                      padding: EdgeInsets.all(12),
-                      child: CircularProgressIndicator(strokeWidth: 1.75,),
-                    ),
-                    Text(
-                      'Loading all accounts, created by this device. Tap an item to login.',
-                      textAlign: TextAlign.center,
-                    )
-                  ],
+        StreamBuilder<bool>(
+          stream: _cautionBehavior.stream,
+          initialData: false,
+          builder: (context, snapshot) {
+            if(!snapshot.data){
+              return Center(
+                child: Container(
+                  width: displayData.width - 48,
+                  height: 140,
+                  child: Column(
+                    children: <Widget>[
+                      Padding(
+                        padding: EdgeInsets.all(12),
+                        child: CircularProgressIndicator(strokeWidth: 1.75,),
+                      ),
+                      Text(
+                        'Loading all accounts, created by this device. Tap an item to login.',
+                        textAlign: TextAlign.center,
+                      )
+                    ],
+                  ),
+
                 ),
-
-              ),
-            );
-          }
-          return ListView.builder(
-            scrollDirection: Axis.vertical,
-            itemCount: donorHandler.donorDataList.length,
+              );
+            }
+            return ListView.builder(
+              scrollDirection: Axis.vertical,
+              itemCount: donorHandler.donorDataList.length,
 //            itemExtent: 120,
-            itemBuilder: (_context, _index) {
-              final _data = donorHandler.donorDataList[_index];
-              return _getDonorWidget(_data);
+              itemBuilder: (_context, _index) {
+                final _data = donorHandler.donorDataList[_index];
+                return _getDonorWidget(_data);
 
 //                            this.getCountryItem(_data);
-            },
-          );
-        }
+              },
+            );
+          }
+        ),
       ),
     );
   }
@@ -133,7 +135,7 @@ class _AccountState extends State<AccountsWidget> {
                               strokeWidth: 1.75,
                               backgroundColor: Colors.red,
                               valueColor: AlwaysStoppedAnimation<Color>(
-                                Color.fromARGB(255, 220, 220, 200),
+                                Colors.cyan,
                               ),
                               value: loadingProgress.expectedTotalBytes !=
                                   null

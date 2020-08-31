@@ -44,6 +44,9 @@ class _DonorListState extends State<DonorListWidget> {
     return Container(
       color: Colors.red,
       child: Scaffold(
+        extendBodyBehindAppBar: true,
+        extendBody: true,
+        appBar: WidgetProvider.getBackAppBar(context, title: 'BLOOD DONORS'),
         body: Padding(
           padding: EdgeInsets.only(
             bottom: displayData.bottom,
@@ -62,7 +65,7 @@ class _DonorListState extends State<DonorListWidget> {
                 itemCount: _documentData.documents.length + 1,
                 itemBuilder: (_context, _index) {
                   if (_index == 0) {
-                    return WidgetTemplate.getPageAppBar(context);
+                    return Container(height: 16,);//WidgetTemplate.getPageAppBar(context);
                   }
                   final _data = _documentData.documents[_index - 1].data;
                   final _donor = BloodDonor.fromMap(_data);
@@ -98,41 +101,7 @@ class _DonorListState extends State<DonorListWidget> {
                 decoration: AppStyle.circularShadow(),
                 child: ClipRRect(
                   borderRadius: BorderRadius.all(Radius.circular(110)),
-                  child: bloodDonor.profilePicture?.thumbUrl != null
-                      ? Image.network(
-                          bloodDonor.profilePicture.thumbUrl,
-                          fit: BoxFit.cover,
-                          loadingBuilder: (BuildContext context,
-                              Widget child,
-                              ImageChunkEvent loadingProgress) {
-                            if (loadingProgress == null) return child;
-                            return Center(
-                              child: CircularProgressIndicator(
-                                strokeWidth: 1.75,
-                                backgroundColor: Colors.red,
-                                valueColor: AlwaysStoppedAnimation<Color>(
-                                  Color.fromARGB(255, 220, 220, 200),
-                                ),
-                                value: loadingProgress.expectedTotalBytes !=
-                                        null
-                                    ? loadingProgress
-                                            .cumulativeBytesLoaded /
-                                        loadingProgress.expectedTotalBytes
-                                    : null,
-                              ),
-                            );
-                          },
-                        )
-                      : Center(
-                          child: CircularProgressIndicator(
-                            strokeWidth: 1.75,
-                          ),
-                        ),
-
-//                Image(
-//                  image: NetworkImage('https://i.imgur.com/oCb2p45.jpeg'),
-//                  fit: BoxFit.fitWidth,
-//                ),
+                  child: WidgetTemplate.getProfilePicture(bloodDonor)
                 ),
               ),
               SizedBox(

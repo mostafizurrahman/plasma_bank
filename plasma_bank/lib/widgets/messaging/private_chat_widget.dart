@@ -118,6 +118,10 @@ class _PrivateChatState extends BaseChatState<PrivateChatWidget> {
           if (!this._messageBehavior.isClosed) {
             this._messageBehavior.sink.add(_list);
           }
+        } else {
+          _messageRepository.updateOutGoingStatus();
+          _sqliteDatabase.insertMessage(messageData);
+          _addToList(messageData);
         }
       });
     } else if (messageData.shouldInsert) {
@@ -176,8 +180,7 @@ class _PrivateChatState extends BaseChatState<PrivateChatWidget> {
     return Container(
       color: Colors.white,
       child: Padding(
-        padding:
-            EdgeInsets.only(bottom: displayData.bottom, top: displayData.top),
+        padding: EdgeInsets.only(bottom: displayData.bottom, top: 0),
         child: StreamBuilder<bool>(
           stream: _indicatorBehavior.stream,
           initialData: true,
@@ -194,60 +197,40 @@ class _PrivateChatState extends BaseChatState<PrivateChatWidget> {
   }
 
   Widget _getChatWidget(BuildContext context) {
-    return Scaffold(
-      floatingActionButtonLocation: FloatingActionButtonLocation.startTop,
-      floatingActionButton: Padding(
-        padding: const EdgeInsets.only(top:32),
-        child: Row(
-          children: <Widget>[
-            Container(
-              height: 50, width: 50,
-              color: Colors.red,
-            ),
-
-            Expanded(
-              child: SizedBox(width: displayData.width * 0.2,),
-            ),
-            Container(
-              height: 50, width: 50,
-              color: Colors.green,
-            )
-          ],
+    return SafeArea(
+      child: Scaffold(
+        extendBodyBehindAppBar: true,
+        appBar: _getTopBar(),
+        body: StreamBuilder<List<MessageData>>(
+          stream: _messageBehavior.stream,
+          initialData: null,
+          builder: (_messageContext, _messageSnapshot) {
+            final _dataList = _messageSnapshot.data ?? [];
+            return ListView.builder(
+              reverse: true,
+              scrollDirection: Axis.vertical,
+              itemCount: _dataList.length + 1,
+              itemBuilder: (_context, _index) {
+                if (_index == _dataList.length) {
+                  return Container(
+                    height: 55,
+                  );
+                }
+                final _data = _dataList[_dataList.length - _index - 1];
+                return WidgetTemplate.getMessageWidget(_data);
+              },
+            );
+          },
         ),
-      ),
-      body: StreamBuilder<List<MessageData>>(
-        stream: _messageBehavior.stream,
-        initialData: null,
-        builder: (_messageContext, _messageSnapshot) {
-          final _dataList = _messageSnapshot.data ?? [];
-          return ListView.builder(
-            reverse: true,
-            scrollDirection: Axis.vertical,
-            itemCount: _dataList.length + 1,
-            itemBuilder: (_context, _index) {
-              if (_index == _dataList.length) {
-                return WidgetTemplate.getPageAppBar(context);
-              }
-              final _data = _dataList[_dataList.length - _index - 1];
-              return _getWidget(_data);
-            },
-          );
-//          return Container(
-//            child: Center(
-//              child: WidgetTemplate.indicator(),
-//            ),
-//          );
-        },
-      ),
-      bottomNavigationBar: StreamBuilder<bool>(
-        initialData: true,
-        stream: _keyboardBehavior.stream,
-        builder: (_context, snapshot) {
-//          double _keyboardHeight = 200;
-          return Container(
-              height: snapshot.data ? 285 : 75,
-              child: _getBottomNavigator(snapshot.data));
-        },
+        bottomNavigationBar: StreamBuilder<bool>(
+          initialData: true,
+          stream: _keyboardBehavior.stream,
+          builder: (_context, snapshot) {
+            return Container(
+                height: snapshot.data ? 285 : 75,
+                child: _getBottomNavigator(snapshot.data));
+          },
+        ),
       ),
     );
   }
@@ -269,7 +252,6 @@ class _PrivateChatState extends BaseChatState<PrivateChatWidget> {
               ),
             ],
           ),
-//            color: Colors.white,
           child: Row(
             children: <Widget>[
               Container(
@@ -310,7 +292,6 @@ class _PrivateChatState extends BaseChatState<PrivateChatWidget> {
               Container(
                 width: 50,
                 height: 75,
-                color: Colors.red,
                 child: Column(
                   children: <Widget>[
                     Container(
@@ -394,6 +375,9 @@ class _PrivateChatState extends BaseChatState<PrivateChatWidget> {
     if (_key.toLowerCase() == 'space') {
       _key = ' ';
     } else if (_key.toLowerCase() == 'done') {
+      if (_chatTextController.text.isEmpty) {
+        return;
+      }
       if (!(_sendingBehavior.value ?? false)) {
         _sendingBehavior.sink.add(true);
         final BloodDonor _donor = super.widget.getData('donor');
@@ -413,58 +397,29 @@ class _PrivateChatState extends BaseChatState<PrivateChatWidget> {
     _sendingBehavior.sink.add(false);
   }
 
-  Widget _getWidget(final MessageData _data) {
-    final _date =
-        DateFormat.yMMMEd().add_jms().format(DateTime.parse(_data.dateTime));
-    double left = 0;
-    double right = 0;
-    String _title = _date.toString();
-    var _alignment = CrossAxisAlignment.start;
-    if (_data.isOutGoing) {
-      right = 32;
-//      _title = (_data.seen ? 'seen  ' : '') + _title;
-    } else {
-      left = 32;
-      _alignment = CrossAxisAlignment.end;
-//      _title = _title + (_data.seen ? '  seen' : '');
-    }
-    return Padding(
-      padding: EdgeInsets.only(bottom: 20, left: 12, right: 12),
+  Widget _getTopBar() {
+    final BloodDonor _donor = super.widget.getData('donor');
+    final Widget _title = Container(
+      height: 50,
       child: Row(
+        mainAxisAlignment: MainAxisAlignment.end,
         children: <Widget>[
-          SizedBox(
-            width: left,
-          ),
-          Expanded(
-            child: Container(
-              child: Column(
-                crossAxisAlignment: _alignment,
-                children: <Widget>[
-                  Padding(
-                    padding: const EdgeInsets.only(left: 8, right: 8, top: 4),
-                    child: Text(
-                      _title,
-                      style: TextStyle(fontSize: 11, color: Colors.black54),
-                    ),
-                  ),
-                  Padding(
-                    padding: EdgeInsets.all(8),
-                    child: Text(_data.message,
-                        style: TextStyle(
-                            fontSize: 14,
-                            height: 1.4,
-                            fontWeight: FontWeight.w600)),
-                  )
-                ],
+          Center(
+            child: Padding(
+              padding: const EdgeInsets.only(left: 8, right: 8),
+              child: Text(
+                (_donor.fullName ?? 'no name').toLowerCase(),
+                style: TextStyle(
+                    fontSize: 12,
+                    color: AppStyle.theme(),
+                    fontWeight: FontWeight.w600),
               ),
-              decoration: AppStyle.lightDecoration,
             ),
           ),
-          SizedBox(
-            width: right,
-          ),
+          WidgetTemplate.getProfilePicture(_donor),
         ],
       ),
     );
+    return WidgetProvider.getBackAppBar(context, title: _title);
   }
 }
