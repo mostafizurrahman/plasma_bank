@@ -19,6 +19,7 @@ import 'app_utils/image_helper.dart';
 import 'media/camera_widget.dart';
 import 'package:flutter_localizations/flutter_localizations.dart';
 
+import 'widgets/messaging/filter_widget.dart';
 import 'widgets/stateful/dynamic_keyboard.dart';
 
 //https://www.fda.gov/vaccines-blood-biologics/investigational-new-drug-ind-or-device-exemption-ide-process-cber/recommendations-investigational-covid-19-convalescent-plasma#Recordkeeping
@@ -69,7 +70,7 @@ class _PlasmaState extends State<PlasmaBank> {
             theme: ThemeData(
               fontFamily: 'SF_UIFont',
             ),
-            home: LaunchScreenWidget(),
+            home: FilterWidget({}),
             onGenerateRoute: getGenerateRoute,
           ),
         ),

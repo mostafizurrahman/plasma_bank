@@ -3,6 +3,7 @@ import 'package:flutter/material.dart';
 import 'dart:ui' as ui;
 
 import 'package:plasma_bank/app_utils/widget_templates.dart';
+import 'package:plasma_bank/widgets/stateful/data_picker_widget.dart';
 
 import 'app_constants.dart';
 import 'image_helper.dart';
@@ -396,6 +397,35 @@ class WidgetProvider {
                 )
               : title,
       centerTitle: true,
+    );
+  }
+
+  static  openLocationPopUp(BuildContext context, final _data, final _selected, final _closed, final _title) {
+    Future.delayed(
+      Duration(
+        milliseconds: 100,
+      ),
+          () {
+        showDialog(
+          context: context,
+          barrierDismissible: false,
+          builder: (_) => Material(
+            color: Colors.transparent,
+            type: MaterialType.card,
+            child: WillPopScope(
+              onWillPop: () async {
+                return Future<bool>.value(false);
+              },
+              child: DataPickerWidget(
+                _data,
+                _selected,
+                _closed,
+                picketTitle: _title,
+              ),
+            ),
+          ),
+        );
+      },
     );
   }
 }

@@ -191,7 +191,7 @@ class _AddressState extends BaseKeyboardState<AddressWidget> {
     if (this.skipPopup) return;
     this.skipPopup = true;
     final _countryList = this.widget.getData('country_list');
-    this._openPopUp(
+    WidgetProvider.openLocationPopUp( context,
         _countryList, _onCountrySelected, _onPopupClosed, 'PICK YOUR COUNTRY');
   }
 
@@ -206,7 +206,7 @@ class _AddressState extends BaseKeyboardState<AddressWidget> {
       Future.delayed(
         Duration(milliseconds: 100),
         () {
-          this._openPopUp(_originList, _onRegionSelected, _onPopupClosed,
+          WidgetProvider.openLocationPopUp( context,_originList, _onRegionSelected, _onPopupClosed,
               "PLACE OF $_name");
         },
       );
@@ -222,7 +222,7 @@ class _AddressState extends BaseKeyboardState<AddressWidget> {
     }
 
     WidgetProvider.loading(context);
-    _state = this._clearPlace(_state);
+    _state = LocationProvider.clearPlace(_state);
 
     final _region = Region(countryName: _code, regionName: _state);
     final _dataList = await locationProvider.getCityList(_region);
@@ -231,8 +231,7 @@ class _AddressState extends BaseKeyboardState<AddressWidget> {
       Future.delayed(
         Duration(milliseconds: 100),
         () {
-          this._openPopUp(
-              _dataList, _onCitySelected, _onPopupClosed, "PLACE OF $_state");
+          WidgetProvider.openLocationPopUp( context, _dataList, _onCitySelected, _onPopupClosed, "PLACE OF $_state");
         },
       );
     }
@@ -272,58 +271,9 @@ class _AddressState extends BaseKeyboardState<AddressWidget> {
 //    FocusScope.of(context).requestFocus(FocusNode());
   }
 
-  _openPopUp(final _data, final _selected, final _closed, final _title) {
-    Future.delayed(
-      Duration(
-        milliseconds: 100,
-      ),
-      () {
-        showDialog(
-          context: context,
-          barrierDismissible: false,
-          builder: (_) => Material(
-            color: Colors.transparent,
-            type: MaterialType.card,
-            child: WillPopScope(
-              onWillPop: () async {
-                return Future<bool>.value(false);
-              },
-              child: DataPickerWidget(
-                _data,
-                _selected,
-                _closed,
-                picketTitle: _title,
-              ),
-            ),
-          ),
-        );
-      },
-    );
-  }
 
-  String _clearPlace(String _place) {
-    String _state = _place;
-    if (_state.contains('union state of')) {
-      _state = _state.toLowerCase().replaceAll('union state of', '');
-    }
-    if (_state.contains('state of')) {
-      _state = _state.toLowerCase().replaceAll('state of', '');
-    }
 
-    if (_state.contains('state')) {
-      _state = _state.toLowerCase().replaceAll('state', '');
-    }
-    if (_state.contains('province')) {
-      _state = _state.toLowerCase().replaceAll('province', '');
-    }
-    if (_state.contains('division')) {
-      _state = _state.replaceAll('division', '');
-    }
-    if (_state.contains('district')) {
-      _state = _state.replaceAll('district', '');
-    }
-    return _state;
-  }
+
 
   ///OVERRIDEN METHODS
 

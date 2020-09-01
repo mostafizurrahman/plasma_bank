@@ -182,6 +182,30 @@ class LocationProvider {
     }
     return null;
   }
+
+  static String  clearPlace(String _place) {
+    String _state = _place;
+    if (_state.contains('union state of')) {
+      _state = _state.toLowerCase().replaceAll('union state of', '');
+    }
+    if (_state.contains('state of')) {
+      _state = _state.toLowerCase().replaceAll('state of', '');
+    }
+
+    if (_state.contains('state')) {
+      _state = _state.toLowerCase().replaceAll('state', '');
+    }
+    if (_state.contains('province')) {
+      _state = _state.toLowerCase().replaceAll('province', '');
+    }
+    if (_state.contains('division')) {
+      _state = _state.replaceAll('division', '');
+    }
+    if (_state.contains('district')) {
+      _state = _state.replaceAll('district', '');
+    }
+    return _state;
+  }
 }
 
 final LocationProvider locationProvider = LocationProvider();
