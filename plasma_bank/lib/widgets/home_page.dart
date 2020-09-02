@@ -333,7 +333,8 @@ class _HomePageState extends State<HomePageWidget> {
 //      Navigator.pushNamed(context, AppRoutes.pageLocateTerms);
       //star registration
     } else {
-      Navigator.pushNamed(context, AppRoutes.pageDonorList);
+      Navigator.pushNamed(context, AppRoutes.pageFilterDonor);
+
       //display donor list
     }
   }

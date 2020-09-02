@@ -249,7 +249,7 @@ class WidgetProvider {
           borderRadius: BorderRadius.all(Radius.circular(100)),
         ),
         height: 50,
-        width: -padding,
+        width: displayData.width-padding,
         child: RaisedButton(
           shape: RoundedRectangleBorder(
             side: BorderSide(color: AppStyle.theme(), width: 1.5),
@@ -372,7 +372,7 @@ class WidgetProvider {
       iconTheme: IconThemeData(
         color: Colors.black,
       ),
-      backgroundColor: Colors.transparent,
+      backgroundColor: Colors.white,
       leading: Row(
         children: <Widget>[
           new IconButton(

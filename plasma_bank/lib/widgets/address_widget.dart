@@ -104,7 +104,7 @@ class _AddressState extends BaseKeyboardState<AddressWidget> {
       final _addressMap = {
         'country': _country,
         'code': _countryCode,
-        'state': _state,
+        'state': LocationProvider.clearCasedPlace(_state),
         'city': _city,
         'street': _road,
         'zip': _zip,

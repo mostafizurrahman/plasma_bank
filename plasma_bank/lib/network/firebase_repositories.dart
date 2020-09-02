@@ -4,6 +4,7 @@ import 'package:plasma_bank/app_utils/app_constants.dart';
 import 'package:plasma_bank/network/models/blood_collector.dart';
 import 'package:plasma_bank/network/models/blood_donor.dart';
 import 'package:plasma_bank/network/models/plasma_donor.dart';
+import 'package:plasma_bank/widgets/messaging/filter_widget.dart';
 
 class FirebaseRepositories {
   //  Future<List<Country>> getCountries() async {
@@ -134,10 +135,17 @@ class FirebaseRepositories {
   }
 
 
-  Stream<QuerySnapshot> getDonorList(final Map _queryParameters) {
+  Stream<QuerySnapshot> getDonorList(final FilterData filterData) {
 
-    final _reference = Firestore.instance.collection('donor');
-    _reference.getDocuments();
-    return _reference.where('disease', isNull: true).snapshots();
+   final _reference = Firestore.instance.collection('donor')
+        .where('disease', isNull: true ,)
+       .where('address.code', isEqualTo: filterData.code)
+       .where('address.state', isEqualTo: filterData.region)
+       .where('address.city', isEqualTo: filterData.city);
+//        .where('address.city', isEqualTo: filterData.city);
+    if(filterData.bloodGroup != null && filterData.bloodGroup.isNotEmpty){
+      return _reference.where('blood_group',  isEqualTo: filterData.bloodGroup).snapshots();
+    }
+    return _reference.snapshots();
   }
 }

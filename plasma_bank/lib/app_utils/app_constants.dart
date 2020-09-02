@@ -21,6 +21,7 @@ class AppRoutes {
 
   static const String pageDonorList = '/home/donor/list';
   static const String pagePrivateChat =  '/home/private/chat';
+  static const String pageFilterDonor = '/home/filter/donor';
 }
 
 class AppConfig {
@@ -56,8 +57,8 @@ class AppStyle {
         BoxShadow(
           color: Color.fromRGBO(0, 0, 0, 0.15),
           offset: Offset(0, 0),
-          blurRadius: 8,
-          spreadRadius: 5,
+          blurRadius: 6,
+          spreadRadius: 4,
         ),
       ],
       borderRadius: BorderRadius.all(
@@ -143,8 +144,8 @@ class AppStyle {
       BoxShadow(
         color: Color.fromRGBO(0, 0, 0, 0.15),
         offset: Offset(0, 0),
-        blurRadius: 12,
-        spreadRadius: 8,
+        blurRadius: 8,
+        spreadRadius: 2.5,
       ),
     ],
     borderRadius: const BorderRadius.all(

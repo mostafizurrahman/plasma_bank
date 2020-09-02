@@ -1,4 +1,6 @@
+import 'package:app_settings/app_settings.dart';
 import 'package:flutter/material.dart';
+import 'package:geolocator/geolocator.dart';
 import 'package:plasma_bank/app_utils/app_constants.dart';
 import 'package:plasma_bank/app_utils/location_provider.dart';
 import 'package:plasma_bank/app_utils/widget_providers.dart';
@@ -8,9 +10,9 @@ import 'package:plasma_bank/widgets/base_widget.dart';
 class FilterData {
   String bloodGroup;
   //String donationDate;
-  String country;
-  String state;
+  String code;
   String region;
+  String city;
   String zipCode;
   String fullName;
   String areaName;
@@ -38,19 +40,22 @@ class _FilterState extends State<FilterWidget> {
 
   @override
   Widget build(BuildContext context) {
-    displayData.setData(context);
+
+//    Navigator.pop(context);
     return Container(
-      color: Colors.red,
+      color: Colors.white,
       child: SafeArea(
         child: Scaffold(
-          backgroundColor: Colors.blueGrey,
+          appBar: WidgetProvider.getBackAppBar(context,
+              title: 'FILTER BLOOD DONOR'),
+//          backgroundColor: Colors.blueGrey,
           body: Container(
 //            height: 700,
             width: displayData.width,
-            color: Colors.green,
+//            color: Colors.green,
             child: SingleChildScrollView(
               child: Container(
-                height: 1200,
+                height: 720,
                 width: displayData.width,
                 color: Colors.white,
                 child: //
@@ -58,14 +63,48 @@ class _FilterState extends State<FilterWidget> {
                   padding: const EdgeInsets.all(24),
                   child: Column(
                     children: <Widget>[
-                      Container(
-                        height: 50,
-                        child: Text('FILTER BLOOD DONOR', style: TextStyle(fontSize: 18, fontWeight: FontWeight.bold),),
+                      Text(
+                        'You need to enter country, state and locality information to see the specific donor list. It will help you to filter out the unnecessary donors.',
+                        textAlign: TextAlign.justify,
+                      ),
+                      SizedBox(
+                        height: 12,
                       ),
                       _getCountry(),
                       _getRegion(),
                       _getCity(),
                       _geStreet(),
+
+
+                      SizedBox(height: 24,),
+                      SizedBox(
+                        width: displayData.width - 48,
+                        height: 45,
+                        child: RaisedButton(
+                          color: AppStyle.theme(),
+                          onPressed: _readCurrentLocation,
+                          child: Text(
+                            'READ MY CURRENT LOCATION',
+                            textAlign: TextAlign.center,
+                            style: TextStyle(
+                              color: Colors.white,
+                              fontSize: 12,
+                            ),
+                          ),
+                        ),
+                      ),
+                      Padding(
+                        padding: EdgeInsets.only(top: 12, ),
+                        child: Divider(),
+                      ),
+
+
+                      SizedBox(height: 24,),
+                      Text(
+                        'You can also search or filter donor depending on specific blood group.',
+                        textAlign: TextAlign.justify,
+                      ),
+
                       WidgetTemplate.getTextField(
                         _bloodConfig,
                         maxLen: 15,
@@ -90,6 +129,7 @@ class _FilterState extends State<FilterWidget> {
                               'SELECT BLOOD GROUP');
                         },
                       ),
+                      SizedBox(height: 12,),
                       SizedBox(
                         width: displayData.width - 48,
                         height: 45,
@@ -97,7 +137,7 @@ class _FilterState extends State<FilterWidget> {
                           color: AppStyle.theme(),
                           onPressed: _startFiltering,
                           child: Text(
-                            'SEND CODE & VERIFY',
+                            'SEARCH DONOR',
                             textAlign: TextAlign.center,
                             style: TextStyle(
                               color: Colors.white,
@@ -136,6 +176,7 @@ class _FilterState extends State<FilterWidget> {
     _state = LocationProvider.clearPlace(_state);
 
     final _region = Region(countryName: _code, regionName: _state);
+    _state = _state.toUpperCase();
     final _dataList = await locationProvider.getCityList(_region);
     Navigator.pop(context);
     if (_dataList != null) {
@@ -175,12 +216,14 @@ class _FilterState extends State<FilterWidget> {
   }
 
   _openCountryList() async {
+    WidgetProvider.loading(context);
     final _countryList =
         await locationProvider.getCountryList().catchError((_error) {
       return null;
     });
     WidgetProvider.openLocationPopUp(context, _countryList, _onCountrySelected,
         _onPopupClosed, 'PICK YOUR COUNTRY');
+    Navigator.pop(context);
   }
 
   String _code = '';
@@ -242,7 +285,68 @@ class _FilterState extends State<FilterWidget> {
     );
   }
 
-  _startFiltering(){
-    
+  _startFiltering() {
+//    Navigator.pop(context);
+    if (_code == '') {
+      WidgetTemplate.message(
+          context, 'enter the country, where you are looking for the blood!');
+      return;
+    }
+    if (_regionConfig.controller.text.isEmpty) {
+      WidgetTemplate.message(
+          context, 'enter the region, where you are looking for the blood!');
+      return;
+    }
+    if (_cityConfig.controller.text.isEmpty) {
+      WidgetTemplate.message(context,
+          'enter the city/county, where you are looking for the blood!');
+      return;
+    }
+
+    final FilterData _data = FilterData();
+
+    _data.code = _code;
+    _data.region =
+        LocationProvider.clearCasedPlace(_regionConfig.controller.text);
+    _data.city = _cityConfig.controller.text;
+    _data.zipCode = _zipConfig.controller.text;
+    _data.bloodGroup = _bloodConfig.controller.text;
+    _data.areaName = _streetConfig.controller.text;
+    Navigator.pushNamed(context, AppRoutes.pageDonorList,
+        arguments: {'filter_data': _data});
+//    _onFilterSelected(_data);
+  }
+
+  _readCurrentLocation() async {
+    WidgetProvider.loading(context);
+    final _status = await locationProvider.updateLocation();
+    if (_status == GeolocationStatus.denied) {
+      Navigator.pop(context);
+
+      WidgetTemplate.message(context,
+          'location permission is denied! please, go to app settings and provide location permission to create your account.',
+          actionTitle: 'open app settings',
+          actionIcon: Icon(
+            Icons.settings,
+            color: Colors.white,
+          ), onActionTap: () {
+            Navigator.pop(context);
+            AppSettings.openAppSettings();
+          });
+    } else {
+      final _city = locationProvider.gpsCity;
+      if (_city != null) {
+        this._countryConfig.controller.text = _city.fullName ?? '';
+        this._regionConfig.controller.text = _city.regionName ?? '';
+        this._cityConfig.controller.text = _city.cityName ?? '';
+        this._streetConfig.controller.text =
+            _city.street + ", " + _city.subStreet;
+        this._code = _city.countryName;
+        this._zipConfig.controller.text = _city.postalCode ?? '';
+
+      }
+      Navigator.pop(context);
+    }
+
   }
 }

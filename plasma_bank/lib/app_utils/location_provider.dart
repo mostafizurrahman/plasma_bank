@@ -25,22 +25,24 @@ class LocationProvider {
       final _position = await _geoLocator.getCurrentPosition(
           desiredAccuracy: LocationAccuracy.medium);
       if (_position != null) {
-        List<Placemark> _placeMark = await _geoLocator.placemarkFromCoordinates(
-            _position.latitude, _position.longitude).catchError((final _error){
-              debugPrint('why');
-              return null;
+        List<Placemark> _placeMark = await _geoLocator
+            .placemarkFromCoordinates(_position.latitude, _position.longitude)
+            .catchError((final _error) {
+          debugPrint('why');
+          return null;
         });
-        if (_placeMark == null){
+        if (_placeMark == null) {
           return GeolocationStatus.unknown;
         }
         final _mark = _placeMark.first;
         String _state = _mark.administrativeArea ?? "";
-        if(_state != null){
-          if(_state.length == 2){
-            _state = Region._getUSState(_state, (_mark.isoCountryCode ?? "bd").toUpperCase());
+        if (_state != null) {
+          if (_state.length == 2) {
+            _state = Region._getUSState(
+                _state, (_mark.isoCountryCode ?? "bd").toUpperCase());
           }
         }
-        if(_mark != null){
+        if (_mark != null) {
           this._place = _mark;
           final _map = {
             'country': _mark.isoCountryCode ?? 'bd',
@@ -79,16 +81,16 @@ class LocationProvider {
 
   final List<Country> _response = List();
   Future<List<Country>> getCountryList() async {
-    if(_response.length > 0){
+    if (_response.length > 0) {
       return _response;
     }
     final _client = ApiClient();
     final String _url = this.getUrl();
     final List _data = await _client.getGlobList(_url);
-    if( _data == null) {
-      return  List<Country>();
+    if (_data == null) {
+      return List<Country>();
     }
-    for(final _item in _data) {
+    for (final _item in _data) {
       Country _c = tryCast(_item);
       _response.add(_c);
     }
@@ -100,21 +102,20 @@ class LocationProvider {
     final String _url = this.getUrl(country: country);
     final _response = await _client.getGlobList(_url, region: true);
     final List<Region> _data = List();
-    if(_response == null){
+    if (_response == null) {
       return _data;
     }
-    for(final _item in _response){
+    for (final _item in _response) {
       Region _c = tryCast(_item);
       _data.add(_c);
     }
     return _data;
   }
 
-  T tryCast<T>(dynamic x, {T fallback}){
-    try{
+  T tryCast<T>(dynamic x, {T fallback}) {
+    try {
       return (x as T);
-    }
-    on CastError catch(e){
+    } on CastError catch (e) {
       print('CastError when trying to cast $x to $T!');
       return fallback;
     }
@@ -126,10 +127,10 @@ class LocationProvider {
     final _response = await _client.getGlobList(_url, city: true);
     //check the list empty or not
     final _cityList = List<City>();
-    if(_response == null || _response.isEmpty){
+    if (_response == null || _response.isEmpty) {
       return _cityList;
     } else {
-      for(final _item in _response){
+      for (final _item in _response) {
         City _c = tryCast(_item);
         _cityList.add(_c);
       }
@@ -149,12 +150,11 @@ class LocationProvider {
   }
 
   Future<ZipData> getZipData(final String zipCode, String countryCode) async {
-
-
     // verify required params are set
 
     // create path and map variables
-    String path = "https://community-zippopotamus.p.rapidapi.com/$countryCode/$zipCode";
+    String path =
+        "https://community-zippopotamus.p.rapidapi.com/$countryCode/$zipCode";
 
     // query params
     List<QueryParam> queryParams = [];
@@ -163,8 +163,6 @@ class LocationProvider {
       "x-rapidapi-key": Auth.ZIP_KEY,
     };
     Map<String, String> formParams = {};
-
-
 
     String contentType = "application/json";
     List<String> authNames = [];
@@ -176,15 +174,16 @@ class LocationProvider {
       throw new ApiException(response.statusCode, response.body);
     } else if (response.body != null) {
       final map = json.decode(response.body);
-      if(map is Map) {
+      if (map is Map) {
         return _client.deserialize(response.body, 'ZipData') as ZipData;
       }
     }
     return null;
   }
 
-  static String  clearPlace(String _place) {
+  static String clearPlace(String _place) {
     String _state = _place;
+
     if (_state.contains('union state of')) {
       _state = _state.toLowerCase().replaceAll('union state of', '');
     }
@@ -206,6 +205,69 @@ class LocationProvider {
     }
     return _state;
   }
+
+  static String clearCasedPlace(String _place) {
+    if (_place.contains('Union State Of ')) {
+      return _place.replaceAll('Union State Of', '');
+    }
+    if (_place.contains('Union State of ')) {
+      return _place.replaceAll('Union State of', '');
+    }
+
+    if (_place.contains('District Of ')) {
+      return _place.replaceAll('District Of', '');
+    }
+    if (_place.contains('District of ')) {
+      return _place.replaceAll('District of', '');
+    }
+    if (_place.contains('District ')) {
+      return _place.replaceAll('District ', '');
+    }
+    if (_place.contains(' District')) {
+      return _place.replaceAll(' District', '');
+    }
+    if (_place.contains('State Of ')) {
+      return _place.replaceAll('State Of ', '');
+    }
+    if (_place.contains('State of ')) {
+      return _place.replaceAll('State of ', '');
+    }
+    if (_place.contains('State ')) {
+      return _place.replaceAll('State ', '');
+    }
+    if (_place.contains(' State')) {
+      return _place.replaceAll(' State', '');
+    }
+    if (_place.contains('Division Of ')) {
+      return _place.replaceAll('Division Of ', '');
+    }
+    if (_place.contains('Division of')) {
+      return _place.replaceAll('Division of ', '');
+    }
+    if (_place.contains('Division ')) {
+      return _place.replaceAll('Division ', '');
+    }
+    if (_place.contains(' Division')) {
+      return _place.replaceAll(' Division', '');
+    }
+
+//    if(_place.contains('state')){
+//      return _place.replaceAll('Union State Of', '');
+//    }if(_place.contains('Union State Of')){
+//      return _place.replaceAll('Union State Of', '');
+//    }
+//    if(_place.contains('Union State Of')){
+//      return _place.replaceAll('Union State Of', '');
+//    }
+//    if(_place.contains('Union State Of')){
+//      return _place.replaceAll('Union State Of', '');
+//    }
+//    if(_place.contains('Union State Of')){
+//      return _place.replaceAll('Union State Of', '');
+//    }
+
+    return _place;
+  }
 }
 
 final LocationProvider locationProvider = LocationProvider();
@@ -224,11 +286,11 @@ class Country {
     return _country;
   }
 
-  _setFlag(){
+  _setFlag() {
     int base = 127397;
     List<int> units = List();
-    
-    for(final _data in this.countryCode.toUpperCase().codeUnits){
+
+    for (final _data in this.countryCode.toUpperCase().codeUnits) {
       units.add(_data + base);
     }
     this.flag = String.fromCharCodes(units);
@@ -236,20 +298,16 @@ class Country {
   }
 }
 
-
-
 class Region {
   final String countryName;
   final String regionName;
   Region({this.countryName, this.regionName});
 
   factory Region.fromJson(Map<String, dynamic> _json) {
-
     String _region = _json['region'];
     String _country = _json['country'];
 
-
-    if(_region.length == 2){
+    if (_region.length == 2) {
       _region = Region._getUSState(_region, _country);
     }
     return Region(
@@ -258,10 +316,10 @@ class Region {
     );
   }
 
-  static String _getUSState(final regionName, final String country){
-    if(country.toUpperCase() == 'US') {
-      final _map =
-      {'Alabama': 'AL',
+  static String _getUSState(final regionName, final String country) {
+    if (country.toUpperCase() == 'US') {
+      final _map = {
+        'Alabama': 'AL',
         'Alaska': 'AK',
         'Arizona': 'AZ',
         'Arkansas': 'AR',
@@ -310,7 +368,8 @@ class Region {
         'Washington': 'WA',
         'West Virginia': 'WV',
         'Wisconsin': 'WI',
-        'Wyoming': 'WY',};
+        'Wyoming': 'WY',
+      };
       String _data = regionName;
       _map.forEach((key, value) {
         if (value == regionName) {
@@ -352,10 +411,3 @@ class City {
     return _city;
   }
 }
-
-
-
-
-
-
-

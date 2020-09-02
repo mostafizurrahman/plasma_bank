@@ -49,7 +49,6 @@ class _PlasmaState extends State<PlasmaBank> {
         statusBarColor: Colors.transparent,
     ));
     FlutterStatusbarcolor.setStatusBarWhiteForeground(false);
-
     FlutterStatusbarcolor.setStatusBarColor(Colors.transparent);
     return Column(
       children: [
@@ -70,7 +69,7 @@ class _PlasmaState extends State<PlasmaBank> {
             theme: ThemeData(
               fontFamily: 'SF_UIFont',
             ),
-            home: FilterWidget({}),
+            home: LaunchScreenWidget(),
             onGenerateRoute: getGenerateRoute,
           ),
         ),
@@ -100,11 +99,14 @@ class _PlasmaState extends State<PlasmaBank> {
   Route getGenerateRoute(RouteSettings settings) {
     Widget _widget;
 
-    if(settings.name == AppRoutes.pagePrivateChat){
+    if(settings.name == AppRoutes.pageFilterDonor){
+      _widget = FilterWidget({});
+    }
+    else if(settings.name == AppRoutes.pagePrivateChat){
       _widget = PrivateChatWidget(settings.arguments);
     }
     else if(settings.name == AppRoutes.pageDonorList){
-      _widget = DonorListWidget();
+      _widget = DonorListWidget(settings.arguments);
     }
     else if(settings.name == AppRoutes.pageHealthData){
       _widget = HealthWidget(settings.arguments);

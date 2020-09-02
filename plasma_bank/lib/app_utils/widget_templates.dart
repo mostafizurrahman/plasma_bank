@@ -292,28 +292,24 @@ class WidgetTemplate {
   }
 
   static Widget getProfilePicture(final BloodDonor _donor, {double proHeight =  50}){
-    return Container(
-      decoration: AppStyle.circularShadow(),
-      height: proHeight,
-      width: proHeight,
-      child: ClipRRect(
-        borderRadius: BorderRadius.all(Radius.circular(100)),
-        child: _donor.profilePicture != null
-            ? Container(
-          color: Colors.grey,
-          height: 50,
-          width: 50,
-          child: WidgetTemplate.getImageWidget(_donor.profilePicture),
-        )
-            : Center(
-              child: Text(
+//    return WidgetTemplate.getImageWidget(_donor.profilePicture);
+    return ClipRRect(
+      borderRadius: BorderRadius.all(Radius.circular(100)),
+      child: _donor.profilePicture != null
+          ? Container(
+        color: Colors.grey,
+        height: proHeight,
+        width: proHeight,
+        child: WidgetTemplate.getImageWidget(_donor.profilePicture),
+      )
+          : Center(
+        child: Text(
           _donor.fullName.substring(0, 1).toUpperCase(),
           style: TextStyle(
-                fontSize: 28,
-                fontWeight: FontWeight.w600,
-                color: AppStyle.theme()),
+              fontSize: 28,
+              fontWeight: FontWeight.w600,
+              color: AppStyle.theme()),
         ),
-            ),
       ),
     );
   }
