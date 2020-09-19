@@ -248,12 +248,14 @@ final DeviceInfo deviceInfo = DeviceInfo();
 
 class TextConfig {
   final int maxLen;
+  final int maxLine;
   Timestamped timestamped;
   final bool isDigit;
   final TextEditingController controller = TextEditingController();
   final FocusNode focusNode = FocusNode();
   final String labelText;
-  TextConfig(this.labelText, {this.isDigit = false, this.maxLen = 25});
+  String errorText;
+  TextConfig(this.labelText, {this.isDigit = false, this.maxLen = 25, this.maxLine = 1});
 }
 
 class DisplayData {

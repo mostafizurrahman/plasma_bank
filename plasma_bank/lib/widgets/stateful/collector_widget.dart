@@ -20,8 +20,8 @@ class CollectorWidget extends BaseWidget {
 class _CollectorState extends BaseKeyboardState<CollectorWidget> {
   final TextConfig _nameConfig = TextConfig('name');
   final TextConfig _emailConfig = TextConfig('email');
-  final TextConfig _phoneConfig = TextConfig('mobile #');
-  final TextConfig _addressConfig = TextConfig('address');
+  final TextConfig _phoneConfig = TextConfig('mobile #', isDigit: true);
+  final TextConfig _addressConfig = TextConfig('address', maxLine: 2);
   final TextConfig _diseaseConfig = TextConfig('disease');
   final TextConfig _bloodConfig = TextConfig('blood group');
 
@@ -44,40 +44,39 @@ class _CollectorState extends BaseKeyboardState<CollectorWidget> {
       child: Column(
         children: <Widget>[
           WidgetTemplate.getSectionTitle('PERSONAL INFO', Icons.info_outline),
-          WidgetTemplate.getTextField(
+          WidgetTemplate.getCustomTextField(
             this._nameConfig,
-            maxLen: 30,
-            isReadOnly: false,
-            showCursor: true,
+            () => super.onTextFieldTapped(this._nameConfig),
           ),
-          WidgetTemplate.getTextField(
+          WidgetTemplate.getCustomTextField(
             this._phoneConfig,
-            maxLen: 15,
-            isReadOnly: false,
-            isDigit: true,
-            showCursor: true,
+                () => super.onTextFieldTapped(this._phoneConfig),
           ),
-          WidgetTemplate.getTextField(
+
+          WidgetTemplate.getCustomTextField(
             this._emailConfig,
-            maxLen: 32,
-            isReadOnly: false,
-            showCursor: true,
-            validator: (String _value) {
-              if (_value == null || _value.isEmpty) {
-                return null;
-              }
-              bool emailValid = RegExp(
-                      r"^[a-zA-Z0-9.a-zA-Z0-9.!#$%&'*+-/=?^_`{|}~]+@[a-zA-Z0-9]+\.[a-zA-Z]+")
-                  .hasMatch(_value);
-              return emailValid ? null : 'enter valid email';
-            },
+                () => super.onTextFieldTapped(this._emailConfig),
           ),
-          WidgetTemplate.getTextField(
+//          WidgetTemplate.getTextField(
+//            this._emailConfig,
+//            maxLen: 32,
+//            isReadOnly: false,
+//            showCursor: true,
+//            validator: (String _value) {
+//              if (_value == null || _value.isEmpty) {
+//                return null;
+//              }
+//              bool emailValid = RegExp(
+//                      r"^[a-zA-Z0-9.a-zA-Z0-9.!#$%&'*+-/=?^_`{|}~]+@[a-zA-Z0-9]+\.[a-zA-Z]+")
+//                  .hasMatch(_value);
+//              return emailValid ? null : 'enter valid email';
+//            },
+//          ),
+          WidgetTemplate.getCustomTextField(
             this._addressConfig,
-            maxLen: 150,
-            isReadOnly: false,
-            showCursor: true,
+                () => super.onTextFieldTapped(this._addressConfig),
           ),
+
           WidgetTemplate.getSectionTitle('REASONS', Icons.info_outline),
           SizedBox(
             height: 24,

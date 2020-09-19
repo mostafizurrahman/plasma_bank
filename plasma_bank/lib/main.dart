@@ -70,7 +70,7 @@ class _PlasmaState extends State<PlasmaBank> {
             theme: ThemeData(
               fontFamily: 'SF_UIFont',
             ),
-            home: LaunchScreenWidget(),
+            home: CollectorWidget({}),//LaunchScreenWidget(),
             onGenerateRoute: getGenerateRoute,
           ),
         ),

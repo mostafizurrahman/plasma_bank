@@ -50,7 +50,7 @@ class WidgetTemplate {
   static message(BuildContext context, String message,
       {String dialogTitle,
       Function onTapped,
-        Function onActionTap,
+      Function onActionTap,
       String actionTitle,
       Icon titleIcon = const Icon(
         Icons.info,
@@ -77,6 +77,38 @@ class WidgetTemplate {
     Navigator.of(context).push(PageRouteBuilder(
         opaque: false,
         pageBuilder: (BuildContext context, _, __) => _overlayWidget));
+  }
+
+  static Widget getCustomTextField(
+    TextConfig _config, Function onTap, {Function validator}) {
+
+
+    return Padding(
+      padding: EdgeInsets.only(top: 8, bottom: 8),
+      child: new TextField(
+        controller: _config.controller,
+        focusNode: _config.focusNode,
+        expands: false,
+        onTap: onTap,
+        readOnly: true,
+        showCursor: true,
+        maxLength: _config.maxLen,
+        maxLines: _config.maxLine,
+        decoration: InputDecoration(
+
+          errorText: _config.errorText,
+          focusedBorder: UnderlineInputBorder(
+            borderSide: BorderSide(color: AppStyle.theme(), width: 0.75),
+          ),
+          enabledBorder: UnderlineInputBorder(
+            borderSide: BorderSide(color: AppStyle.txtLine(), width: 0.75),
+          ),
+          labelText: _config.labelText.toLowerCase(),
+          counterText: "",
+
+        ),
+      ),
+    );
   }
 
   static Widget getTextField(
@@ -110,9 +142,7 @@ class WidgetTemplate {
     return Padding(
       padding: EdgeInsets.only(top: 8, bottom: 8),
       child: new TextField(
-
         enableSuggestions: false,
-
         controller: _config.controller,
         focusNode: _config.focusNode,
         expands: false,
@@ -143,8 +173,8 @@ class WidgetTemplate {
     );
   }
 
-  static Widget gateRadio(final BehaviorSubject<int> _radioStream, final String _title,
-
+  static Widget gateRadio(
+      final BehaviorSubject<int> _radioStream, final String _title,
       {IconButton button}) {
     return Row(
       children: [
@@ -152,13 +182,15 @@ class WidgetTemplate {
           child: button == null
               ? Text(
                   _title,
-                  style: TextStyle(fontFamily: AppStyle.fontBold, color: Colors.grey),
+                  style: TextStyle(
+                      fontFamily: AppStyle.fontBold, color: Colors.grey),
                 )
               : Row(
                   children: [
                     Text(
                       _title,
-                      style: TextStyle(fontFamily: AppStyle.fontBold, color: Colors.grey),
+                      style: TextStyle(
+                          fontFamily: AppStyle.fontBold, color: Colors.grey),
                     ),
                     button,
                   ],
@@ -187,7 +219,6 @@ class WidgetTemplate {
                     value: 1,
                     groupValue: _snap.data,
                     onChanged: (value) {
-
                       FocusScope.of(_context).requestFocus(FocusNode());
                       _radioStream.sink.add(value);
                     },
@@ -238,7 +269,7 @@ class WidgetTemplate {
 
   static Widget getMessageWidget(final MessageData _data) {
     final _date =
-    DateFormat.yMMMEd().add_jms().format(DateTime.parse(_data.dateTime));
+        DateFormat.yMMMEd().add_jms().format(DateTime.parse(_data.dateTime));
     double left = 0;
     double right = 0;
     String _title = _date.toString();
@@ -292,36 +323,35 @@ class WidgetTemplate {
     );
   }
 
-  static Widget getProfilePicture(final BloodDonor _donor, {double proHeight =  50}){
+  static Widget getProfilePicture(final BloodDonor _donor,
+      {double proHeight = 50}) {
 //    return WidgetTemplate.getImageWidget(_donor.profilePicture);
     return ClipRRect(
       borderRadius: BorderRadius.all(Radius.circular(100)),
       child: _donor.profilePicture != null
           ? Container(
-        color: Colors.grey,
-        height: proHeight,
-        width: proHeight,
-        child: WidgetTemplate.getImageWidget(_donor.profilePicture),
-      )
+              color: Colors.grey,
+              height: proHeight,
+              width: proHeight,
+              child: WidgetTemplate.getImageWidget(_donor.profilePicture),
+            )
           : Center(
-        child: Text(
-          _donor.fullName.substring(0, 1).toUpperCase(),
-          style: TextStyle(
-              fontSize: 28,
-              fontWeight: FontWeight.w600,
-              color: AppStyle.theme()),
-        ),
-      ),
+              child: Text(
+                _donor.fullName.substring(0, 1).toUpperCase(),
+                style: TextStyle(
+                    fontSize: 28,
+                    fontWeight: FontWeight.w600,
+                    color: AppStyle.theme()),
+              ),
+            ),
     );
   }
 
-
-  static Widget getImageWidget(final ImgurResponse _response){
+  static Widget getImageWidget(final ImgurResponse _response) {
     return Image.network(
       _response.thumbUrl,
       fit: BoxFit.cover,
-      loadingBuilder: (BuildContext context,
-          Widget child,
+      loadingBuilder: (BuildContext context, Widget child,
           ImageChunkEvent loadingProgress) {
         if (loadingProgress == null) return child;
         return Center(
@@ -331,11 +361,9 @@ class WidgetTemplate {
             valueColor: AlwaysStoppedAnimation<Color>(
               Colors.cyan,
             ),
-            value: loadingProgress.expectedTotalBytes !=
-                null
-                ? loadingProgress
-                .cumulativeBytesLoaded /
-                loadingProgress.expectedTotalBytes
+            value: loadingProgress.expectedTotalBytes != null
+                ? loadingProgress.cumulativeBytesLoaded /
+                    loadingProgress.expectedTotalBytes
                 : null,
           ),
         );
@@ -369,6 +397,3 @@ class WidgetTemplate {
     );
   }
 }
-
-
-
