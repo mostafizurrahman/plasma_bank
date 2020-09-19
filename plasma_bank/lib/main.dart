@@ -15,6 +15,7 @@ import 'package:plasma_bank/widgets/messaging/private_chat_widget.dart';
 import 'package:plasma_bank/widgets/patient_info.dart';
 import 'package:flutter_statusbarcolor/flutter_statusbarcolor.dart';
 import 'package:plasma_bank/widgets/profile_widget.dart';
+import 'package:plasma_bank/widgets/stateful/collector_widget.dart';
 import 'app_utils/image_helper.dart';
 import 'media/camera_widget.dart';
 import 'package:flutter_localizations/flutter_localizations.dart';
@@ -99,6 +100,10 @@ class _PlasmaState extends State<PlasmaBank> {
   Route getGenerateRoute(RouteSettings settings) {
     Widget _widget;
 
+    if(settings.name == AppRoutes.pageBloodTaker)
+      {
+        _widget = CollectorWidget({});
+      }
     if(settings.name == AppRoutes.pageFilterDonor){
       _widget = FilterWidget({});
     }

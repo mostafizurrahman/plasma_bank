@@ -352,8 +352,10 @@ class _HomePageState extends State<HomePageWidget> {
 
   _onCollectTap(bool isCollection) {
     if (isCollection) {
+      Navigator.pushNamed(context, AppRoutes.pageBloodTaker);
       //register collection
     } else {
+      Navigator.pushNamed(context, AppRoutes.pageBloodTaker);
       //show previous list
     }
   }

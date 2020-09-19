@@ -11,6 +11,7 @@ import 'package:plasma_bank/widgets/stateless/message_widget.dart';
 import 'package:rxdart/rxdart.dart';
 
 import 'app_constants.dart';
+import 'widget_providers.dart';
 
 class WidgetTemplate {
   static Widget progressIndicator() {
@@ -339,6 +340,32 @@ class WidgetTemplate {
           ),
         );
       },
+    );
+  }
+
+  static Widget getSectionTitle(final String _title, final IconData _icon) {
+    return Padding(
+      padding: EdgeInsets.only(top: 48, bottom: 12),
+      child: Row(
+        children: [
+          WidgetProvider.circledIcon(
+            Icon(
+              _icon,
+              color: AppStyle.theme(),
+            ),
+          ),
+          SizedBox(
+            width: 12,
+          ),
+          Text(
+            _title,
+            style: TextStyle(
+              fontSize: 24,
+              fontFamily: AppStyle.fontBold,
+            ),
+          ),
+        ],
+      ),
     );
   }
 }

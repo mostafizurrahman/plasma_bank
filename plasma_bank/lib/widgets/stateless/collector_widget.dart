@@ -85,7 +85,7 @@ class CollectorWidget extends StatelessWidget {
                                 FloatingActionButton(
                                   heroTag: '__hero',
                                   onPressed: () {
-                                    this._onCollectTap(true);
+                                    this._onCollectTap(false);
                                   },
                                   backgroundColor: Colors.white,
                                   child: Icon(
@@ -106,7 +106,7 @@ class CollectorWidget extends StatelessWidget {
                               children: [
                                 FloatingActionButton(
                                   onPressed: () {
-                                    this._onCollectTap(false);
+                                    this._onCollectTap(true);
                                   },
                                   backgroundColor: Colors.white,
                                   child: Icon(
