@@ -132,24 +132,50 @@ abstract class BaseKeyboardState<T extends BaseWidget> extends State<T> {
 //              },
 //            ),
             floatingActionButtonLocation:
-                FloatingActionButtonLocation.centerFloat,
+                FloatingActionButtonLocation.endFloat,
             floatingActionButton: StreamBuilder<TextConfig>(
-              stream: this._errorBehavior.stream,
-              builder: (_context, _snap) {
-                if (_snap.data != null) {
-                  return WidgetProvider.errorButton(
-                    onError,
-                    'enter \'' + _snap.data.labelText + '\'',
-                    context,
+              stream: this._keyboardBehavior.stream,
+              builder: (_context, _snaps){
+                if(_snaps == null || _snaps.data == null){
+                  return StreamBuilder<TextConfig>(
+                    stream: this._errorBehavior.stream,
+                    builder: (_context, _snap) {
+                      if (_snap.data != null) {
+                        return WidgetProvider.errorButton(
+                          onError,
+                          'enter \'' + _snap.data.labelText + '\'',
+                          context,
+                        );
+                      }
+                      return WidgetProvider.button(
+                        onSubmitData,
+                        getActionTitle(),
+                        context,
+                      );
+                    },
                   );
                 }
-                return WidgetProvider.button(
-                  onSubmitData,
-                  getActionTitle(),
-                  context,
+
+                return StreamBuilder<TextConfig>(
+                  stream: this._errorBehavior.stream,
+                  builder: (_context, _snap) {
+                    if (_snap.data != null) {
+                      return  _getCompactWidget(errorConfig: _snap.data);
+                    }
+                    return _getCompactWidget();
+                  },
                 );
               },
             ),
+
+
+
+
+
+
+
+
+
           bottomNavigationBar: StreamBuilder<TextConfig>(
             stream: this._keyboardBehavior.stream,
             builder: (_context, _snaps){
@@ -169,6 +195,23 @@ abstract class BaseKeyboardState<T extends BaseWidget> extends State<T> {
         ),
       ),
     );
+  }
+
+  Widget _getCompactWidget({final TextConfig errorConfig }){
+    if(errorConfig == null){
+      return FloatingActionButton(
+
+        backgroundColor: AppStyle.theme(),
+        heroTag: '_done',
+        child: Icon(Icons.send),
+      );
+    }
+    return FloatingActionButton(
+      backgroundColor: AppStyle.theme(),
+      heroTag: '_done',
+      child: Icon(Icons.send),
+    );
+
   }
 
   _onDeleteEverything(){

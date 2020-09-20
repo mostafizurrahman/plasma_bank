@@ -57,21 +57,6 @@ class _CollectorState extends BaseKeyboardState<CollectorWidget> {
             this._emailConfig,
                 () => super.onTextFieldTapped(this._emailConfig),
           ),
-//          WidgetTemplate.getTextField(
-//            this._emailConfig,
-//            maxLen: 32,
-//            isReadOnly: false,
-//            showCursor: true,
-//            validator: (String _value) {
-//              if (_value == null || _value.isEmpty) {
-//                return null;
-//              }
-//              bool emailValid = RegExp(
-//                      r"^[a-zA-Z0-9.a-zA-Z0-9.!#$%&'*+-/=?^_`{|}~]+@[a-zA-Z0-9]+\.[a-zA-Z]+")
-//                  .hasMatch(_value);
-//              return emailValid ? null : 'enter valid email';
-//            },
-//          ),
           WidgetTemplate.getCustomTextField(
             this._addressConfig,
                 () => super.onTextFieldTapped(this._addressConfig),
@@ -85,11 +70,9 @@ class _CollectorState extends BaseKeyboardState<CollectorWidget> {
             'enter brief details about the disease for whom you are collecting the blood, so that donner may realise the relevancy of blood donation. ignore, if you are unwilling to disclose.',
             textAlign: TextAlign.justify,
           ),
-          WidgetTemplate.getTextField(
+          WidgetTemplate.getCustomTextField(
             this._diseaseConfig,
-            maxLen: 75,
-            isReadOnly: false,
-            showCursor: true,
+                () => super.onTextFieldTapped(this._diseaseConfig),
           ),
           SizedBox(
             height: 24,
