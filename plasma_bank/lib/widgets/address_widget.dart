@@ -2,13 +2,10 @@ import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter/painting.dart';
 import 'package:plasma_bank/app_utils/widget_templates.dart';
-import 'package:plasma_bank/network/firebase_repositories.dart';
-import 'package:plasma_bank/network/models/abstract_person.dart';
 import '../widgets/base_widget.dart';
 import 'package:plasma_bank/app_utils/app_constants.dart';
 import 'package:plasma_bank/app_utils/location_provider.dart';
 import 'package:plasma_bank/app_utils/widget_providers.dart';
-import 'package:plasma_bank/widgets/stateful/data_picker_widget.dart';
 import 'package:plasma_bank/widgets/base/base_state.dart';
 
 class AddressWidget extends BaseWidget {
@@ -26,9 +23,9 @@ class _AddressState extends BaseKeyboardState<AddressWidget> {
   final TextConfig _countryCodeConfig = TextConfig('code');
   final TextConfig _regionConfig = TextConfig('region/state');
   final TextConfig _cityConfig = TextConfig('city/county/division');
-  final TextConfig _streetConfig = TextConfig('street/locality');
-  final TextConfig _zipConfig = TextConfig('zip/po', isDigit: true);
-  final TextConfig _houseConfig = TextConfig('house/other');
+  final TextConfig _streetConfig = TextConfig('street/locality', maxLen: 100);
+  final TextConfig _zipConfig = TextConfig('zip/po', isDigit: true, maxLen: 6);
+  final TextConfig _houseConfig = TextConfig('house/other', maxLen: 75);
 
   @override
   void initState() {
@@ -91,8 +88,6 @@ class _AddressState extends BaseKeyboardState<AddressWidget> {
       _errorMessage(this._cityConfig);
     } else if (_road.isEmpty) {
       _errorMessage(_streetConfig);
-    } else if (_road.isEmpty) {
-      _errorMessage(_streetConfig);
     } else if (_zip.isEmpty) {
       _errorMessage(_zipConfig);
     } else if (_house.isEmpty) {
@@ -121,7 +116,7 @@ class _AddressState extends BaseKeyboardState<AddressWidget> {
         arguments: {'address': _addressMap},
       );
     }
-    if(popLoading) {
+    if (popLoading) {
       Navigator.pop(context);
     }
   }
@@ -134,11 +129,9 @@ class _AddressState extends BaseKeyboardState<AddressWidget> {
     return Row(
       children: [
         Expanded(
-          child: WidgetTemplate.getTextField(
+          child: WidgetTemplate.getCustomTextField(
             this._streetConfig,
-            isReadOnly: false,
-            showCursor: true,
-            maxLen: 50,
+            () => super.onTextFieldTapped(this._streetConfig),
           ),
         ),
         SizedBox(
@@ -147,11 +140,10 @@ class _AddressState extends BaseKeyboardState<AddressWidget> {
 
         //locationProvider.gpsCity
         Container(
-          width: 60,
-          child: WidgetTemplate.getTextField(
+          width: 65,
+          child: WidgetTemplate.getCustomTextField(
             this._zipConfig,
-            isReadOnly: false,
-            showCursor: true,
+            () => super.onTextFieldTapped(this._zipConfig),
           ),
         ),
       ],
@@ -191,8 +183,8 @@ class _AddressState extends BaseKeyboardState<AddressWidget> {
     if (this.skipPopup) return;
     this.skipPopup = true;
     final _countryList = this.widget.getData('country_list');
-    WidgetProvider.openLocationPopUp( context,
-        _countryList, _onCountrySelected, _onPopupClosed, 'PICK YOUR COUNTRY');
+    WidgetProvider.openLocationPopUp(context, _countryList, _onCountrySelected,
+        _onPopupClosed, 'PICK YOUR COUNTRY');
   }
 
   _openRegionList() async {
@@ -206,8 +198,8 @@ class _AddressState extends BaseKeyboardState<AddressWidget> {
       Future.delayed(
         Duration(milliseconds: 100),
         () {
-          WidgetProvider.openLocationPopUp( context,_originList, _onRegionSelected, _onPopupClosed,
-              "PLACE OF $_name");
+          WidgetProvider.openLocationPopUp(context, _originList,
+              _onRegionSelected, _onPopupClosed, "PLACE OF $_name");
         },
       );
     }
@@ -231,7 +223,8 @@ class _AddressState extends BaseKeyboardState<AddressWidget> {
       Future.delayed(
         Duration(milliseconds: 100),
         () {
-          WidgetProvider.openLocationPopUp( context, _dataList, _onCitySelected, _onPopupClosed, "PLACE OF $_state");
+          WidgetProvider.openLocationPopUp(context, _dataList, _onCitySelected,
+              _onPopupClosed, "PLACE OF $_state");
         },
       );
     }
@@ -270,10 +263,6 @@ class _AddressState extends BaseKeyboardState<AddressWidget> {
     this.skipPopup = false;
 //    FocusScope.of(context).requestFocus(FocusNode());
   }
-
-
-
-
 
   ///OVERRIDEN METHODS
 
@@ -336,11 +325,9 @@ class _AddressState extends BaseKeyboardState<AddressWidget> {
           _getRegion(),
           _getCity(),
           _geStreet(),
-          WidgetTemplate.getTextField(
+          WidgetTemplate.getCustomTextField(
             this._houseConfig,
-            maxLen: 30,
-            isReadOnly: false,
-            showCursor: true,
+                () => super.onTextFieldTapped(this._houseConfig),
           ),
         ],
       ),
