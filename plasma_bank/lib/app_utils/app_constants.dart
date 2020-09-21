@@ -41,6 +41,8 @@ class AppStyle {
   static const double PADDING_S = 8;
 
   static const double ICON_SIZE_S = 26;
+  static const double KEYBOARD_HEIGHT_NUMBER = 230.0;
+  static const double KEYBOARD_HEIGHT_TEXT = 200.0;
 
   static Color greyBackground({alpha = 255}) {
     final _background = (0.9 * 255).toInt();
@@ -247,6 +249,7 @@ class DeviceInfo {
 final DeviceInfo deviceInfo = DeviceInfo();
 
 class TextConfig {
+  final double animateLen;
   final int maxLen;
   final int maxLine;
   Timestamped timestamped;
@@ -255,7 +258,7 @@ class TextConfig {
   final FocusNode focusNode = FocusNode();
   final String labelText;
   String errorText;
-  TextConfig(this.labelText, {this.isDigit = false, this.maxLen = 25, this.maxLine = 1});
+  TextConfig(this.labelText, {this.isDigit = false, this.maxLen = 25, this.maxLine = 1, this.animateLen = 0.0});
 }
 
 class DisplayData {

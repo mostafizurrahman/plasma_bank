@@ -27,7 +27,7 @@ class _DynamicKeyboardState extends State<DynamicKeyboardWidget> {
   BehaviorSubject<bool> _upperCasedBehavior = BehaviorSubject();
   BehaviorSubject<int> _numberBehavior = BehaviorSubject();
 
-  double _keyboardHeight = 200;
+  double _keyboardHeight = AppStyle.KEYBOARD_HEIGHT_TEXT;
 
   @override
   void initState() {

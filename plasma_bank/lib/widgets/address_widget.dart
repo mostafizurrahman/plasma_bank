@@ -23,9 +23,12 @@ class _AddressState extends BaseKeyboardState<AddressWidget> {
   final TextConfig _countryCodeConfig = TextConfig('code');
   final TextConfig _regionConfig = TextConfig('region/state');
   final TextConfig _cityConfig = TextConfig('city/county/division');
-  final TextConfig _streetConfig = TextConfig('street/locality', maxLen: 100);
-  final TextConfig _zipConfig = TextConfig('zip/po', isDigit: true, maxLen: 6);
-  final TextConfig _houseConfig = TextConfig('house/other', maxLen: 75);
+  final TextConfig _streetConfig = TextConfig('street/locality',
+      maxLen: 100, animateLen: AppStyle.KEYBOARD_HEIGHT_TEXT);
+  final TextConfig _zipConfig = TextConfig('zip/po',
+      isDigit: true, maxLen: 6, animateLen: AppStyle.KEYBOARD_HEIGHT_TEXT);
+  final TextConfig _houseConfig = TextConfig('house/other',
+      maxLen: 75, animateLen: AppStyle.KEYBOARD_HEIGHT_TEXT);
 
   @override
   void initState() {
@@ -327,7 +330,7 @@ class _AddressState extends BaseKeyboardState<AddressWidget> {
           _geStreet(),
           WidgetTemplate.getCustomTextField(
             this._houseConfig,
-                () => super.onTextFieldTapped(this._houseConfig),
+            () => super.onTextFieldTapped(this._houseConfig),
           ),
         ],
       ),

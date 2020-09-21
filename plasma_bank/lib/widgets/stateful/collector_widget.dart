@@ -21,8 +21,8 @@ class _CollectorState extends BaseKeyboardState<CollectorWidget> {
   final TextConfig _nameConfig = TextConfig('name');
   final TextConfig _emailConfig = TextConfig('email');
   final TextConfig _phoneConfig = TextConfig('mobile #', isDigit: true);
-  final TextConfig _addressConfig = TextConfig('address', maxLine: 2);
-  final TextConfig _diseaseConfig = TextConfig('disease');
+  final TextConfig _addressConfig = TextConfig('address', maxLine: 2, animateLen: 200);
+  final TextConfig _diseaseConfig = TextConfig('disease', animateLen: 350);
   final TextConfig _bloodConfig = TextConfig('blood group');
 
   @override
@@ -101,4 +101,28 @@ class _CollectorState extends BaseKeyboardState<CollectorWidget> {
   }
 
   _onPopupClosed() {}
+
+  @override
+  onSubmitData() {
+    // TODO: implement onSubmitData
+    super.onSubmitData();
+    final String _address = this._addressConfig.controller.text;
+    final String _name = this._nameConfig.controller.text;
+    final String _email = this._emailConfig.controller.text;
+    final String _mobile = this._phoneConfig.controller.text;
+    if(_address.isEmpty){
+      super.onTextFieldTapped(_addressConfig);
+    } else if (_name.isEmpty){
+      super.onTextFieldTapped(_addressConfig);
+    } else if (_email.isEmpty){
+      super.onTextFieldTapped(_emailConfig);
+    } else if (_mobile.isEmpty){
+      super.onTextFieldTapped(_phoneConfig);
+    } else {
+      final String _disease = this._diseaseConfig.controller.text;
+      final String _email = this._emailConfig.controller.text;
+    }
+
+
+  }
 }

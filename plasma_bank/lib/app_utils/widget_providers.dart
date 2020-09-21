@@ -213,7 +213,7 @@ class WidgetProvider {
   static button(Function _onTap, final String txt, BuildContext context,
       {padding = 50.0}) {
     return Padding(
-      padding: const EdgeInsets.only(right: 10),
+      padding: const EdgeInsets.only(right: 10, bottom: 8),
       child: Container(
         decoration: BoxDecoration(
           borderRadius: BorderRadius.all(Radius.circular(5)),

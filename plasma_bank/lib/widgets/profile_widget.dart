@@ -23,8 +23,8 @@ class ProfileWidget extends BaseWidget {
 
 class _ProfileState extends BaseKeyboardState<ProfileWidget> {
   final TextConfig _nameConfig = TextConfig('name');
-  final TextConfig _emailConfig = TextConfig('email');
-  final TextConfig _phoneConfig = TextConfig('mobile #');
+  final TextConfig _emailConfig = TextConfig('email', );
+  final TextConfig _phoneConfig = TextConfig('mobile #', isDigit: true, maxLen: 16);
   final String _message =
       'This email has registered as Blood Donor! Please, Login and verify the account';
   String profileImage;
@@ -33,9 +33,9 @@ class _ProfileState extends BaseKeyboardState<ProfileWidget> {
   @override
   void initState() {
     super.initState();
-    this._nameConfig.controller.text = 'mostafizur rahman';
-    this._emailConfig.controller.text = 'mostafizur.cse@gmail.com';
-    this._phoneConfig.controller.text = '01675876752';
+//    this._nameConfig.controller.text = 'mostafizur rahman';
+//    this._emailConfig.controller.text = 'mostafizur.cse@gmail.com';
+//    this._phoneConfig.controller.text = '01675876752';
   }
 
   @override
@@ -224,34 +224,48 @@ class _ProfileState extends BaseKeyboardState<ProfileWidget> {
           CustomPaint(
             painter: DashLinePainter(),
           ),
-          WidgetTemplate.getTextField(
+//          WidgetTemplate.getTextField(
+//            this._nameConfig,
+//            maxLen: 32,
+//            isReadOnly: false,
+//            showCursor: true,
+//          ),
+          WidgetTemplate.getCustomTextField(
             this._nameConfig,
-            maxLen: 32,
-            isReadOnly: false,
-            showCursor: true,
+                () => super.onTextFieldTapped(this._nameConfig),
           ),
-          WidgetTemplate.getTextField(
+
+          WidgetTemplate.getCustomTextField(
             this._emailConfig,
-            maxLen: 32,
-            isReadOnly: false,
-            showCursor: true,
-            validator: (String _value) {
-              if (_value == null || _value.isEmpty) {
-                return null;
-              }
-              bool emailValid = RegExp(
-                      r"^[a-zA-Z0-9.a-zA-Z0-9.!#$%&'*+-/=?^_`{|}~]+@[a-zA-Z0-9]+\.[a-zA-Z]+")
-                  .hasMatch(_value);
-              return emailValid ? null : 'enter valid email';
-            },
+                () => super.onTextFieldTapped(this._emailConfig),
           ),
-          WidgetTemplate.getTextField(
+          WidgetTemplate.getCustomTextField(
             this._phoneConfig,
-            maxLen: 15,
-            isReadOnly: false,
-            isDigit: true,
-            showCursor: true,
+                () => super.onTextFieldTapped(this._phoneConfig),
           ),
+
+//          WidgetTemplate.getTextField(
+//            this._emailConfig,
+//            maxLen: 32,
+//            isReadOnly: false,
+//            showCursor: true,
+//            validator: (String _value) {
+//              if (_value == null || _value.isEmpty) {
+//                return null;
+//              }
+//              bool emailValid = RegExp(
+//                      r"^[a-zA-Z0-9.a-zA-Z0-9.!#$%&'*+-/=?^_`{|}~]+@[a-zA-Z0-9]+\.[a-zA-Z]+")
+//                  .hasMatch(_value);
+//              return emailValid ? null : 'enter valid email';
+//            },
+//          ),
+//          WidgetTemplate.getTextField(
+//            this._phoneConfig,
+//            maxLen: 15,
+//            isReadOnly: false,
+//            isDigit: true,
+//            showCursor: true,
+//          ),
         ],
       ),
     );

@@ -3,6 +3,7 @@
 
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
+import 'package:plasma_bank/app_utils/app_constants.dart';
 
 
 class KeyboardWidget extends StatefulWidget{
@@ -20,7 +21,7 @@ class _KeyboardState extends State<KeyboardWidget>{
   @override
   Widget build(BuildContext context) {
     return Container(
-      height: 230,
+      height: AppStyle.KEYBOARD_HEIGHT_NUMBER,
       decoration: BoxDecoration(
         color: Color.fromARGB(255, 220, 220, 220),
         boxShadow: [
