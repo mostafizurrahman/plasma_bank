@@ -1,77 +1,77 @@
 import 'dart:convert';
 
 import 'package:flutter/cupertino.dart';
-import 'package:geolocator/geolocator.dart';
+//import 'package:geolocator/geolocator.dart';
 import 'package:plasma_bank/network/api_client.dart';
 import 'package:plasma_bank/network/auth.dart';
 import 'package:plasma_bank/network/models/zip_data.dart';
 //import 'package:restcountries/restcountries.dart';
 
 class LocationProvider {
-  final _geoLocator = Geolocator();
+//  final _geoLocator = Geolocator();
 
-  GeolocationStatus _geolocationStatus;
-  GeolocationStatus get status => _geolocationStatus;
-  Placemark _place;
-  Placemark get place => _place;
+//  GeolocationStatus _geolocationStatus;
+//  GeolocationStatus get status => _geolocationStatus;
+//  Placemark _place;
+//  Placemark get place => _place;
 
   City gpsCity;
-
-  Future<GeolocationStatus> updateLocation() async {
-    var _status = await _geoLocator.checkGeolocationPermissionStatus();
-    this._geolocationStatus = _status;
-    if (_status == GeolocationStatus.granted ||
-        _status == GeolocationStatus.unknown) {
-      final _position = await _geoLocator.getCurrentPosition(
-          desiredAccuracy: LocationAccuracy.medium);
-      if (_position != null) {
-        List<Placemark> _placeMark = await _geoLocator
-            .placemarkFromCoordinates(_position.latitude, _position.longitude)
-            .catchError((final _error) {
-          debugPrint('why');
-          return null;
-        });
-        if (_placeMark == null) {
-          return GeolocationStatus.unknown;
-        }
-        final _mark = _placeMark.first;
-        String _state = _mark.administrativeArea ?? "";
-        if (_state != null) {
-          if (_state.length == 2) {
-            _state = Region._getUSState(
-                _state, (_mark.isoCountryCode ?? "bd").toUpperCase());
-          }
-        }
-        if (_mark != null) {
-          this._place = _mark;
-          final _map = {
-            'country': _mark.isoCountryCode ?? 'bd',
-            'region': _state,
-            'city': _mark.subAdministrativeArea ?? '',
-            'latitude': _mark.position.latitude ?? '0',
-            'longitude': _mark.position.longitude ?? '0',
-          };
-
-          final _city = City.fromJson(_map);
-          _city.postalCode = _mark.postalCode;
-          _city.fullName = _mark.country;
-          _city.street = _mark.thoroughfare;
-          _city.subStreet = _mark.subThoroughfare;
-          _city.house = _mark.subLocality;
-          this.gpsCity = _city;
-          debugPrint(_mark.country);
-          debugPrint(_mark.postalCode);
-          debugPrint(_mark.name);
-          debugPrint(_mark.thoroughfare);
-          debugPrint(_mark.isoCountryCode);
-          debugPrint(_mark.administrativeArea);
-          debugPrint(_mark.subLocality);
-        }
-      }
-    }
-
-    return _status;
-  }
+//
+//  Future<GeolocationStatus> updateLocation() async {
+//    var _status = await _geoLocator.checkGeolocationPermissionStatus();
+//    this._geolocationStatus = _status;
+//    if (_status == GeolocationStatus.granted ||
+//        _status == GeolocationStatus.unknown) {
+//      final _position = await _geoLocator.getCurrentPosition(
+//          desiredAccuracy: LocationAccuracy.medium);
+//      if (_position != null) {
+//        List<Placemark> _placeMark = await _geoLocator
+//            .placemarkFromCoordinates(_position.latitude, _position.longitude)
+//            .catchError((final _error) {
+//          debugPrint('why');
+//          return null;
+//        });
+//        if (_placeMark == null) {
+//          return GeolocationStatus.unknown;
+//        }
+//        final _mark = _placeMark.first;
+//        String _state = _mark.administrativeArea ?? "";
+//        if (_state != null) {
+//          if (_state.length == 2) {
+//            _state = Region._getUSState(
+//                _state, (_mark.isoCountryCode ?? "bd").toUpperCase());
+//          }
+//        }
+//        if (_mark != null) {
+//          this._place = _mark;
+//          final _map = {
+//            'country': _mark.isoCountryCode ?? 'bd',
+//            'region': _state,
+//            'city': _mark.subAdministrativeArea ?? '',
+//            'latitude': _mark.position.latitude ?? '0',
+//            'longitude': _mark.position.longitude ?? '0',
+//          };
+//
+//          final _city = City.fromJson(_map);
+//          _city.postalCode = _mark.postalCode;
+//          _city.fullName = _mark.country;
+//          _city.street = _mark.thoroughfare;
+//          _city.subStreet = _mark.subThoroughfare;
+//          _city.house = _mark.subLocality;
+//          this.gpsCity = _city;
+//          debugPrint(_mark.country);
+//          debugPrint(_mark.postalCode);
+//          debugPrint(_mark.name);
+//          debugPrint(_mark.thoroughfare);
+//          debugPrint(_mark.isoCountryCode);
+//          debugPrint(_mark.administrativeArea);
+//          debugPrint(_mark.subLocality);
+//        }
+//      }
+//    }
+//
+//    return _status;
+//  }
 
   static final _location = LocationProvider._internal();
   LocationProvider._internal();

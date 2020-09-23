@@ -84,7 +84,7 @@ class WidgetTemplate {
 
 
     return Padding(
-      padding: EdgeInsets.only(top: 8, bottom: 8),
+      padding: EdgeInsets.only( bottom: 8),
       child: new TextField(
         controller: _config.controller,
         focusNode: _config.focusNode,

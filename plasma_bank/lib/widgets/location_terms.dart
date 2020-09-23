@@ -5,7 +5,7 @@ import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
 import 'package:flutter_statusbarcolor/flutter_statusbarcolor.dart';
 //import 'package:flutter_statusbarcolor/flutter_statusbarcolor.dart';
-import 'package:geolocator/geolocator.dart';
+//import 'package:geolocator/geolocator.dart';
 import 'package:plasma_bank/app_utils/app_constants.dart';
 import 'package:plasma_bank/app_utils/location_provider.dart';
 import 'package:plasma_bank/app_utils/widget_providers.dart';
@@ -44,27 +44,27 @@ class LocationTermsState extends State<LocationTerms> {
   }
 
   _onAgree() async {
-    WidgetProvider.loading(context);
-    final _status = await locationProvider.updateLocation();
-    if (_status == GeolocationStatus.denied) {
-      Navigator.pop(context);
-
-      WidgetTemplate.message(context, 'location permission is denied! please, go to app settings and provide location permission to create your account.',
-        actionTitle: 'open app settings',
-          actionIcon: Icon(Icons.settings, color: Colors.white,),
-        onActionTap: (){
-          Navigator.pop(context);
-          AppSettings.openAppSettings();
-        }
-      );
-    } else {
-      final _countryList = await locationProvider.getCountryList();
-      Navigator.pop(context);
-      Future.delayed(Duration(milliseconds: 100), () {
-        Navigator.pushNamed(context, AppRoutes.pageAddressData,
-            arguments: {'country_list': _countryList});
-      });
-    }
+//    WidgetProvider.loading(context);
+//    final _status = await locationProvider.updateLocation();
+//    if (_status == GeolocationStatus.denied) {
+//      Navigator.pop(context);
+//
+//      WidgetTemplate.message(context, 'location permission is denied! please, go to app settings and provide location permission to create your account.',
+//        actionTitle: 'open app settings',
+//          actionIcon: Icon(Icons.settings, color: Colors.white,),
+//        onActionTap: (){
+//          Navigator.pop(context);
+//          AppSettings.openAppSettings();
+//        }
+//      );
+//    } else {
+//      final _countryList = await locationProvider.getCountryList();
+//      Navigator.pop(context);
+//      Future.delayed(Duration(milliseconds: 100), () {
+//        Navigator.pushNamed(context, AppRoutes.pageAddressData,
+//            arguments: {'country_list': _countryList});
+//      });
+//    }
   }
 
   @override

@@ -1,4 +1,5 @@
 import 'package:cloud_firestore/cloud_firestore.dart';
+import 'package:firebase_database/firebase_database.dart';
 import 'package:flutter/cupertino.dart';
 import 'package:plasma_bank/app_utils/app_constants.dart';
 import 'package:plasma_bank/network/models/blood_collector.dart';
@@ -42,19 +43,19 @@ class FirebaseRepositories {
   }
 
   Future<DocumentReference> addBloodHunter(dynamic bloodHunter) async {
-    if (bloodHunter is BloodCollector) {
-      final _json = bloodHunter.toJson();
-      final _data = {bloodHunter.mobileNumber: _json};
-      return await _patientCollection.add(_data);
-    } else {
-      return await _patientCollection.add(bloodHunter);
-    }
+//    if (bloodHunter is BloodCollector) {
+//      final _json = bloodHunter.toJson();
+//      final _data = {bloodHunter.mobileNumber: _json};
+//      return await _patientCollection.add(_data);
+//    } else {
+//      return await _patientCollection.add(bloodHunter);
+//    }
   }
 
   updatePatient(BloodCollector bloodHunter) async {
-    await _patientCollection
-        .document(bloodHunter.reference.documentID)
-        .updateData(bloodHunter.toJson());
+//    await _patientCollection
+//        .document(bloodHunter.reference.documentID)
+//        .updateData(bloodHunter.toJson());
   }
 
   Stream<DocumentSnapshot> getEmails() {
@@ -94,6 +95,11 @@ class FirebaseRepositories {
       debugPrint('error+occurred  ___________ ' + _error.toString());
     });
     return _updated;
+  }
+
+  uploadBloodCollector(final BloodCollector bloodCollector) async {
+    await Firestore.instance
+        .collection('collector').document(bloodCollector.email).setData(bloodCollector.toJson());
   }
 
   uploadBloodDonor(final BloodDonor bloodDonor, List<String> _emails) async {

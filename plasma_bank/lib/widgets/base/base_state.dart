@@ -57,7 +57,7 @@ abstract class BaseKeyboardState<T extends BaseWidget> extends State<T> {
     } else if (_key == 'x') {
       _key = 'del';
     }
-    if (_key.toLowerCase() == 'done' || _key == 'd') {
+    if (_key.toLowerCase() == 'done' ) {
       this._keyboardBehavior.sink.add(null);
     } else {
       final TextConfig _textConfig = this._keyboardBehavior.value;
@@ -252,13 +252,15 @@ abstract class BaseKeyboardState<T extends BaseWidget> extends State<T> {
   }
 
   _animateTextField(final TextConfig _textConfig) {
-    FlutterStatusbarcolor.setStatusBarWhiteForeground(false);
-    Future.delayed(
-      Duration(microseconds: 100),
-      () {
-        _scrollController.animateTo(_textConfig.animateLen,
-            duration: Duration(milliseconds: 300), curve: Curves.ease);
-      },
-    );
+    if(_textConfig.animateLen > 0) {
+      FlutterStatusbarcolor.setStatusBarWhiteForeground(false);
+      Future.delayed(
+        Duration(microseconds: 100),
+            () {
+          _scrollController.animateTo(_textConfig.animateLen,
+              duration: Duration(milliseconds: 300), curve: Curves.ease);
+        },
+      );
+    }
   }
 }

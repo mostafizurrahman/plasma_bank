@@ -428,4 +428,30 @@ class WidgetProvider {
       },
     );
   }
+
+  static Widget bloodGroupWidget(final BuildContext context, final TextConfig _textConfig, {final Function onPopupClosed}){
+    return WidgetTemplate.getTextField(
+      _textConfig,
+      isReadOnly: true,
+      onTap: () {
+        List _data = [
+          'A+',
+          'B+',
+          'AB+',
+          'O+',
+          'A-',
+          'B-',
+          'AB-',
+          'O-'
+        ];
+        WidgetProvider.openLocationPopUp(
+            context,
+            _data,
+                (_data) => _textConfig.controller.text =
+                _data.toString(),
+            onPopupClosed,
+            'SELECT BLOOD GROUP');
+      },
+    );
+  }
 }

@@ -102,7 +102,7 @@ class _PlasmaState extends State<PlasmaBank> {
 
     if(settings.name == AppRoutes.pageBloodTaker)
       {
-        _widget = CollectorWidget({});
+        _widget = CollectorWidget(settings.arguments);
       }
     if(settings.name == AppRoutes.pageFilterDonor){
       _widget = FilterWidget({});

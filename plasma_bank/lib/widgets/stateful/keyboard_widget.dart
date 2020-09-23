@@ -1,9 +1,12 @@
 
 
 
+import 'package:audioplayers/audio_cache.dart';
+import 'package:audioplayers/audioplayers.dart';
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
 import 'package:plasma_bank/app_utils/app_constants.dart';
+
 
 
 class KeyboardWidget extends StatefulWidget{
@@ -17,7 +20,7 @@ class KeyboardWidget extends StatefulWidget{
 }
 
 class _KeyboardState extends State<KeyboardWidget>{
-
+  AudioPlayer audioPlayer = AudioPlayer();
   @override
   Widget build(BuildContext context) {
     return Container(
@@ -48,7 +51,7 @@ class _KeyboardState extends State<KeyboardWidget>{
       ['1', '2', '3'],
       ['4', '5', '6'],
       ['7', '8', '9'],
-      ['d', '0', "x"],
+      ['done', '0', "x"],
     ];
     final _edges = [
       EdgeInsets.fromLTRB(0, 0, 8, 0),
@@ -75,6 +78,7 @@ class _KeyboardState extends State<KeyboardWidget>{
     return _rows;
   }
 
+  AudioCache audioCache = AudioCache();
   Widget _getKeyboardWidget(final String _value, final EdgeInsets _padding) {
     final keyWidth = 50.0;
     return Padding(
@@ -89,7 +93,10 @@ class _KeyboardState extends State<KeyboardWidget>{
           height: keyWidth,
           child: new Material(
             child: new InkWell(
-              onTap: () => this.widget.onKeyPressed(_value),
+              onTap: () {
+                audioCache.play('https://luan.xyz/files/audio/ambient_c_motion.mp3');
+//                play('lib/assets/tap.mp3',mode: PlayerMode.LOW_LATENCY );
+                this.widget.onKeyPressed(_value);},
               child: new Center(
                 child: Container(
                   height: keyWidth,
@@ -110,7 +117,7 @@ class _KeyboardState extends State<KeyboardWidget>{
     if (_keyValue == "x") {
       return Icon(Icons.backspace);
     }
-    if (_keyValue == "d") {
+    if (_keyValue == "done") {
       return Icon(
         Icons.check_circle,
         color: Colors.green,
