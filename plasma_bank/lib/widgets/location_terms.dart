@@ -11,7 +11,7 @@ import 'package:plasma_bank/app_utils/location_provider.dart';
 import 'package:plasma_bank/app_utils/widget_providers.dart';
 import 'package:plasma_bank/app_utils/widget_templates.dart';
 import 'package:rxdart/rxdart.dart';
-import 'package:webview_flutter/webview_flutter.dart';
+//import 'package:webview_flutter/webview_flutter.dart';
 
 class LocationTerms extends StatefulWidget {
   @override
@@ -21,7 +21,7 @@ class LocationTerms extends StatefulWidget {
 }
 
 class LocationTermsState extends State<LocationTerms> {
-  WebViewController _controller;
+//  WebViewController _controller;
 
   PublishSubject<bool> _webPublisher = PublishSubject<bool>();
 
@@ -83,15 +83,15 @@ class LocationTermsState extends State<LocationTerms> {
               ? Container(
                   color: AppStyle.greyBackground(),
                   child: Container(
-                    child: WebView(
-                      initialUrl: '',
-                      javascriptMode: JavascriptMode.unrestricted,
-                      onWebViewCreated:
-                          (WebViewController webViewController) async {
-                        _controller = webViewController;
-                        await _loadHtmlFromAssets();
-                      },
-                    ),
+//                    child: WebView(
+//                      initialUrl: '',
+//                      javascriptMode: JavascriptMode.unrestricted,
+//                      onWebViewCreated:
+//                          (WebViewController webViewController) async {
+//                        _controller = webViewController;
+//                        await _loadHtmlFromAssets();
+//                      },
+//                    ),
                   ),
                 )
               : Center(
@@ -107,7 +107,7 @@ class LocationTermsState extends State<LocationTerms> {
     String htmlText = Uri.dataFromString(fileText,
         mimeType: 'text/html', encoding: Encoding.getByName('utf-8'))
         .toString();
-    _controller.loadUrl(htmlText);
+//    _controller.loadUrl(htmlText);
     this._webPublisher.sink.add(true);
   }
 }

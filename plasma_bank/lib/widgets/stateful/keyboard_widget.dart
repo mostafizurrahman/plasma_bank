@@ -1,16 +1,10 @@
 
-
-
-import 'package:audioplayers/audio_cache.dart';
-import 'package:audioplayers/audioplayers.dart';
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
+import 'package:flutter/services.dart';
 import 'package:plasma_bank/app_utils/app_constants.dart';
 
-
-
-class KeyboardWidget extends StatefulWidget{
-
+class KeyboardWidget extends StatefulWidget {
   final Function(String) onKeyPressed;
   KeyboardWidget(this.onKeyPressed);
   @override
@@ -19,8 +13,8 @@ class KeyboardWidget extends StatefulWidget{
   }
 }
 
-class _KeyboardState extends State<KeyboardWidget>{
-  AudioPlayer audioPlayer = AudioPlayer();
+class _KeyboardState extends State<KeyboardWidget> {
+  final platform = const MethodChannel('flutter.plasma.com.device_info');
   @override
   Widget build(BuildContext context) {
     return Container(
@@ -43,8 +37,6 @@ class _KeyboardState extends State<KeyboardWidget>{
       ),
     );
   }
-
-
 
   List<Widget> _getKeyboard() {
     final _data = [
@@ -78,7 +70,6 @@ class _KeyboardState extends State<KeyboardWidget>{
     return _rows;
   }
 
-  AudioCache audioCache = AudioCache();
   Widget _getKeyboardWidget(final String _value, final EdgeInsets _padding) {
     final keyWidth = 50.0;
     return Padding(
@@ -94,9 +85,12 @@ class _KeyboardState extends State<KeyboardWidget>{
           child: new Material(
             child: new InkWell(
               onTap: () {
-                audioCache.play('https://luan.xyz/files/audio/ambient_c_motion.mp3');
-//                play('lib/assets/tap.mp3',mode: PlayerMode.LOW_LATENCY );
-                this.widget.onKeyPressed(_value);},
+                platform
+                    .invokeMethod('playSound')
+                    .then((value) => debugPrint(value.toString()))
+                    .catchError((_error) => debugPrint(_error.toString()));
+                this.widget.onKeyPressed(_value);
+              },
               child: new Center(
                 child: Container(
                   height: keyWidth,
@@ -131,5 +125,4 @@ class _KeyboardState extends State<KeyboardWidget>{
       ),
     );
   }
-
 }

@@ -15,7 +15,7 @@ import 'package:plasma_bank/widgets/messaging/private_chat_widget.dart';
 import 'package:plasma_bank/widgets/patient_info.dart';
 import 'package:flutter_statusbarcolor/flutter_statusbarcolor.dart';
 import 'package:plasma_bank/widgets/profile_widget.dart';
-import 'package:plasma_bank/widgets/stateful/collector_widget.dart';
+import 'package:plasma_bank/widgets/stateful/blood_collector_widget.dart';
 import 'app_utils/image_helper.dart';
 import 'media/camera_widget.dart';
 import 'package:flutter_localizations/flutter_localizations.dart';
@@ -102,7 +102,7 @@ class _PlasmaState extends State<PlasmaBank> {
 
     if(settings.name == AppRoutes.pageBloodTaker)
       {
-        _widget = CollectorWidget(settings.arguments);
+        _widget = BloodCollectorWidget(settings.arguments);
       }
     if(settings.name == AppRoutes.pageFilterDonor){
       _widget = FilterWidget({});
@@ -163,7 +163,6 @@ class _PlasmaState extends State<PlasmaBank> {
       return Future<bool>.value(false);
     }
     return Future<bool>.value(true);
-    ;
   }
 
   Route _createRoute(final RouteSettings _settings, final _widget) {

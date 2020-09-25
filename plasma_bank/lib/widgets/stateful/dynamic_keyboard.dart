@@ -3,6 +3,7 @@ import 'dart:io';
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/gestures.dart';
 import 'package:flutter/material.dart';
+import 'package:flutter/services.dart';
 import 'package:plasma_bank/app_utils/app_constants.dart';
 import 'package:rxdart/rxdart.dart';
 
@@ -12,7 +13,9 @@ class DynamicKeyboardWidget extends StatefulWidget {
   final Function(String) onKeyDownStart;
   final Function onDeleteLongPressed;
   DynamicKeyboardWidget(this.onKeyPressed,
-      {this.onKeyDownStart, this.onDeleteLongPressed, this.doneButtonIcon = Icons.check_circle});
+      {this.onKeyDownStart,
+      this.onDeleteLongPressed,
+      this.doneButtonIcon = Icons.check_circle});
 
   @override
   State<StatefulWidget> createState() {
@@ -28,6 +31,7 @@ class _DynamicKeyboardState extends State<DynamicKeyboardWidget> {
   BehaviorSubject<int> _numberBehavior = BehaviorSubject();
 
   double _keyboardHeight = AppStyle.KEYBOARD_HEIGHT_TEXT;
+  final platform = const MethodChannel('flutter.plasma.com.device_info');
 
   @override
   void initState() {
@@ -285,7 +289,13 @@ class _DynamicKeyboardState extends State<DynamicKeyboardWidget> {
                     this.widget.onKeyDownStart(null);
                   }
                 },
-                onTap: () => _onKeyPressed(_key),
+                onTap: () {
+                  _onKeyPressed(_key);
+                  platform
+                      .invokeMethod('playSound')
+                      .then((value) => debugPrint(value.toString()))
+                      .catchError((_error) => debugPrint(_error.toString()));
+                },
                 child: Center(
                   child: _key == 'TOG'
                       ? _getToggleIcon()
@@ -323,12 +333,11 @@ class _DynamicKeyboardState extends State<DynamicKeyboardWidget> {
 
   Widget _getDeleteIcon() {
     return GestureDetector(
-      onLongPress: (){
-        if(this.widget.onDeleteLongPressed != null) {
+      onLongPress: () {
+        if (this.widget.onDeleteLongPressed != null) {
           this.widget.onDeleteLongPressed();
         }
       },
-
       child: Icon(
         Icons.backspace,
         color: Colors.black,

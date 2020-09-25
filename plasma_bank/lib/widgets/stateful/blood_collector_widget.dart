@@ -5,13 +5,14 @@ import 'package:intl/intl.dart';
 import 'package:plasma_bank/app_utils/app_constants.dart';
 import 'package:plasma_bank/app_utils/widget_providers.dart';
 import 'package:plasma_bank/app_utils/widget_templates.dart';
+import 'package:plasma_bank/network/api_client.dart';
 import 'package:plasma_bank/network/firebase_repositories.dart';
 import 'package:plasma_bank/network/models/blood_collector.dart';
 import 'package:plasma_bank/widgets/base/base_state.dart';
 import 'package:plasma_bank/widgets/base_widget.dart';
 
-class CollectorWidget extends BaseWidget {
-  CollectorWidget(Map arguments) : super(arguments);
+class BloodCollectorWidget extends BaseWidget {
+  BloodCollectorWidget(Map arguments) : super(arguments);
 
   @override
   State<StatefulWidget> createState() {
@@ -20,7 +21,7 @@ class CollectorWidget extends BaseWidget {
   }
 }
 
-class _CollectorState extends BaseKeyboardState<CollectorWidget> {
+class _CollectorState extends BaseKeyboardState<BloodCollectorWidget> {
   final TextConfig _nameConfig = TextConfig('name');
   final TextConfig _emailConfig = TextConfig('email');
   final TextConfig _phoneConfig = TextConfig('mobile #', isDigit: true);
@@ -162,32 +163,46 @@ class _CollectorState extends BaseKeyboardState<CollectorWidget> {
     } else if (_email.isEmpty) {
       super.setError(_emailConfig);
     } else {
-      final String _disease = this._diseaseConfig.controller.text;
-      final String _hospital = this._hospitalConfig.controller.text;
-      final String _group = this._bloodConfig.controller.text;
-      final String _bags = this._countConfig.controller.text;
-      final String _date = this._dateConfig.controller.text;
       WidgetProvider.loading(context);
-      final BloodCollector _collector = BloodCollector(
-          _email, _mobile, _name, _address,
-          bloodGroup: _group,
-          bloodCount: _bags,
-          hospitalAddress: _hospital,
-          injectionDate: _date,
-          diseaseName: _disease);
-      final FirebaseRepositories _repository = FirebaseRepositories();
-      _repository.uploadBloodCollector(_collector).then((data) {
+      final _emailClient = EmailClient(_email);
+      _emailClient.validateEmail().then((value) {
         Navigator.pop(context);
-        WidgetTemplate.message(context,
-            'your registration was successful! please! login to continue...',
-            actionTitle: 'LOGIN', onActionTap: () {
+        if(value){
+          final String _disease = this._diseaseConfig.controller.text;
+          final String _hospital = this._hospitalConfig.controller.text;
+          final String _group = this._bloodConfig.controller.text;
+          final String _bags = this._countConfig.controller.text;
+          final String _date = this._dateConfig.controller.text;
+
+          final BloodCollector _collector = BloodCollector(
+              _email, _mobile, _name, _address,
+              bloodGroup: _group,
+              bloodCount: _bags,
+              hospitalAddress: _hospital,
+              injectionDate: _date,
+              diseaseName: _disease);
+          final FirebaseRepositories _repository = FirebaseRepositories();
+          _repository.uploadBloodCollector(_collector).then((data) {
+            Navigator.pop(context);
+            WidgetTemplate.message(context,
+                'your registration was successful! please! login to continue...',
+                actionTitle: 'LOGIN', onActionTap: () {
+                  Navigator.pop(context);
+                  final Function _onTap = this.widget.getData('login_tap');
+                  _onTap();
+                });
+          }).catchError((_error) {
+            Navigator.pop(context);
+          });
+        } else {
           Navigator.pop(context);
-          final Function _onTap = this.widget.getData('login_tap');
-          _onTap();
-        });
-      }).catchError((_error) {
+          WidgetTemplate.message(context, 'this email is invalid. please! enter a valid email address and try again, later. thank you!');
+        }
+      }).catchError((_error){
         Navigator.pop(context);
       });
+
+
     }
   }
 

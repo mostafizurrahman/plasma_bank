@@ -1,11 +1,14 @@
 package imageapp.plasma_bank
 
 import android.annotation.SuppressLint
+import android.app.AppOpsManager
+import android.media.AudioManager
 import android.os.Build
 import android.os.Bundle
 import android.provider.Settings
 import android.text.TextUtils
 import androidx.annotation.NonNull
+import androidx.annotation.RequiresApi
 import io.flutter.embedding.android.FlutterActivity
 import io.flutter.embedding.engine.FlutterEngine
 import io.flutter.plugin.common.MethodChannel
@@ -43,6 +46,15 @@ class MainActivity: FlutterActivity() {
                 deviceMap["device_id"] = if (androidID.isEmpty() ) hardwareID  else  androidID
                 deviceMap["device_name"] = deviceName
                 result.success(deviceMap)
+            } else if (call.method == "playSound") {
+                if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.M) {
+                    val am: AudioManager = context.getSystemService(AudioManager::class.java)
+                    val vol = 0.5f //This will be half of the default system sound
+                    am.playSoundEffect(AudioManager.FX_KEY_CLICK, vol)
+                    result.success(true)
+                } else {
+                    result.success(false)
+                }
             } else {
                 result.notImplemented()
             }

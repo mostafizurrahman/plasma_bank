@@ -6,6 +6,7 @@ import 'package:plasma_bank/app_utils/app_constants.dart';
 import 'package:plasma_bank/app_utils/widget_providers.dart';
 import 'package:plasma_bank/app_utils/widget_templates.dart';
 import 'package:plasma_bank/media/dash_painter.dart';
+import 'package:plasma_bank/network/api_client.dart';
 import 'package:plasma_bank/network/donor_handler.dart';
 import 'package:plasma_bank/network/firebase_repositories.dart';
 import 'package:plasma_bank/widgets/base/base_state.dart';
@@ -124,6 +125,17 @@ class _ProfileState extends BaseKeyboardState<ProfileWidget> {
             if (donorHandler.hasExistingAccount(_email)) {
               this._onEmailExist(_email);
               hasData = true;
+            }
+            WidgetProvider.loading(context);
+            final _emailClient = EmailClient(_email);
+            if(!await _emailClient.validateEmail().catchError((_error){
+              return false;
+            })){
+              Navigator.pop(context);
+              WidgetTemplate.message(context, 'this email is invalid. please! enter a valid email address and try again, later. thank you!');
+              hasData = true;
+            } else {
+              Navigator.pop(context);
             }
             if (!hasData) {
               WidgetProvider.loading(context);
