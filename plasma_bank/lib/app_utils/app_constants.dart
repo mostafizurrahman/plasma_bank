@@ -16,11 +16,13 @@ class AppRoutes {
 
   static const String pageLocateTerms = '/home/locationTerms';
   static const String pageAddressData = '/home/address';
+  static const String pageBloodTaker = '/home/collector';
   static const String pagePersonData = '/home/personal';
   static const String pageHealthData = '/home/personal/health';
 
   static const String pageDonorList = '/home/donor/list';
   static const String pagePrivateChat =  '/home/private/chat';
+  static const String pageFilterDonor = '/home/filter/donor';
 }
 
 class AppConfig {
@@ -39,6 +41,8 @@ class AppStyle {
   static const double PADDING_S = 8;
 
   static const double ICON_SIZE_S = 26;
+  static const double KEYBOARD_HEIGHT_NUMBER = 230.0;
+  static const double KEYBOARD_HEIGHT_TEXT = 200.0;
 
   static Color greyBackground({alpha = 255}) {
     final _background = (0.9 * 255).toInt();
@@ -56,8 +60,8 @@ class AppStyle {
         BoxShadow(
           color: Color.fromRGBO(0, 0, 0, 0.15),
           offset: Offset(0, 0),
-          blurRadius: 8,
-          spreadRadius: 5,
+          blurRadius: 6,
+          spreadRadius: 4,
         ),
       ],
       borderRadius: BorderRadius.all(
@@ -143,8 +147,8 @@ class AppStyle {
       BoxShadow(
         color: Color.fromRGBO(0, 0, 0, 0.15),
         offset: Offset(0, 0),
-        blurRadius: 12,
-        spreadRadius: 8,
+        blurRadius: 8,
+        spreadRadius: 2.5,
       ),
     ],
     borderRadius: const BorderRadius.all(
@@ -245,13 +249,16 @@ class DeviceInfo {
 final DeviceInfo deviceInfo = DeviceInfo();
 
 class TextConfig {
+  final double animateLen;
   final int maxLen;
+  final int maxLine;
   Timestamped timestamped;
   final bool isDigit;
   final TextEditingController controller = TextEditingController();
   final FocusNode focusNode = FocusNode();
   final String labelText;
-  TextConfig(this.labelText, {this.isDigit = false, this.maxLen = 25});
+  String errorText;
+  TextConfig(this.labelText, {this.isDigit = false, this.maxLen = 25, this.maxLine = 1, this.animateLen = 0.0});
 }
 
 class DisplayData {

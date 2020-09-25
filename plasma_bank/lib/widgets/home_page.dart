@@ -2,7 +2,7 @@ import 'dart:io';
 import 'package:app_settings/app_settings.dart';
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
-import 'package:geolocator/geolocator.dart';
+//import 'package:geolocator/geolocator.dart';
 import 'package:plasma_bank/app_utils/app_constants.dart';
 import 'package:plasma_bank/app_utils/location_provider.dart';
 import 'package:plasma_bank/app_utils/widget_providers.dart';
@@ -20,6 +20,7 @@ import 'package:plasma_bank/widgets/stateless/coronavirus_widget.dart';
 import 'package:plasma_bank/widgets/stateless/donor_widget.dart';
 import 'package:plasma_bank/widgets/stateless/home_plasma_widget.dart';
 import 'package:rxdart/rxdart.dart';
+import 'package:shared_preferences/shared_preferences.dart';
 
 import 'messaging/message_list_widget.dart';
 import 'verification_widget.dart';
@@ -319,16 +320,22 @@ class _HomePageState extends State<HomePageWidget> {
         this._bottomNavigationBehavior.sink.add(3);
       });
     }
-    return MessageListWidget();
+    return MessageListWidget(_onLoginSelectedLogin);
+  }
+
+  _onLoginSelectedLogin(){
+    this._bottomNavigationBehavior.sink.add(4);
+    this._segmentBehavior.sink.add(2);
   }
 
   _registerDonorTap(final bool isRegistration) async {
     if (isRegistration) {
-      _openRegistration();
+      _openAddress();
 //      Navigator.pushNamed(context, AppRoutes.pageLocateTerms);
       //star registration
     } else {
-      Navigator.pushNamed(context, AppRoutes.pageDonorList);
+      Navigator.pushNamed(context, AppRoutes.pageFilterDonor);
+
       //display donor list
     }
   }
@@ -346,10 +353,16 @@ class _HomePageState extends State<HomePageWidget> {
 
   _onCollectTap(bool isCollection) {
     if (isCollection) {
+      Navigator.pushNamed(context, AppRoutes.pageBloodTaker, arguments: {'login_tap' : _onLoginTaped});
       //register collection
     } else {
+      Navigator.pushNamed(context, AppRoutes.pageBloodTaker);
       //show previous list
     }
+  }
+
+  _onLoginTaped(){
+    debugPrint('please login to collector');
   }
 
   _onVerifiedOTP(){
@@ -365,25 +378,16 @@ class _HomePageState extends State<HomePageWidget> {
 
   }
 
-  _openRegistration() async {
-    WidgetProvider.loading(context);
-    final _status = await locationProvider.updateLocation();
-    if (_status == GeolocationStatus.denied) {
-      Navigator.pop(context);
 
-      WidgetTemplate.message(context,
-          'location permission is denied! please, go to app settings and provide location permission to create your account.',
-          actionTitle: 'open app settings',
-          actionIcon: Icon(
-            Icons.settings,
-            color: Colors.white,
-          ), onActionTap: () {
-        Navigator.pop(context);
-        AppSettings.openAppSettings();
-      });
-    } else {
-      final _countryList = await locationProvider.getCountryList();
-      Navigator.pop(context);
+
+
+  _openAddress() async {
+    WidgetProvider.loading(context);
+    final _countryList = await locationProvider.getCountryList().catchError((_error){
+      return null;
+    });
+    Navigator.pop(context);
+    if(_countryList != null) {
       Future.delayed(Duration(milliseconds: 100), () {
         Navigator.pushNamed(context, AppRoutes.pageAddressData,
             arguments: {'country_list': _countryList});

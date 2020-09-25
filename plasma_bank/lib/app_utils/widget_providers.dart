@@ -3,6 +3,7 @@ import 'package:flutter/material.dart';
 import 'dart:ui' as ui;
 
 import 'package:plasma_bank/app_utils/widget_templates.dart';
+import 'package:plasma_bank/widgets/stateful/data_picker_widget.dart';
 
 import 'app_constants.dart';
 import 'image_helper.dart';
@@ -100,7 +101,7 @@ class WidgetProvider {
                   borderRadius:
                       new BorderRadius.all(const Radius.circular(12.0)),
                 ),
-                child: WidgetProvider.loadingBox() ,
+                child: WidgetProvider.loadingBox(),
               ),
             ),
           ),
@@ -109,7 +110,7 @@ class WidgetProvider {
     );
   }
 
-  static Widget loadingBox(){
+  static Widget loadingBox() {
     return Center(
       child: Column(
         mainAxisAlignment: MainAxisAlignment.center,
@@ -210,18 +211,18 @@ class WidgetProvider {
   }
 
   static button(Function _onTap, final String txt, BuildContext context,
-      {padding = 48.0}) {
+      {padding = 50.0}) {
     return Padding(
-      padding: const EdgeInsets.all(12.0),
+      padding: const EdgeInsets.only(right: 10, bottom: 8),
       child: Container(
         decoration: BoxDecoration(
-          borderRadius: BorderRadius.all(Radius.circular(100)),
+          borderRadius: BorderRadius.all(Radius.circular(5)),
         ),
         height: 50,
         width: displayData.width - padding,
         child: RaisedButton(
           shape: RoundedRectangleBorder(
-            borderRadius: BorderRadius.circular(120.0),
+            borderRadius: BorderRadius.circular(5.0),
           ),
           color: AppStyle.theme(),
           onPressed: () {
@@ -240,20 +241,19 @@ class WidgetProvider {
   }
 
   static errorButton(Function _onTap, final String txt, BuildContext context,
-      {padding = 48.0}) {
+      {padding = 50.0}) {
     return Padding(
-      padding: const EdgeInsets.all(12.0),
+      padding: const EdgeInsets.only(right: 10),
       child: Container(
         decoration: BoxDecoration(
-          borderRadius: BorderRadius.all(Radius.circular(100)),
+          borderRadius: BorderRadius.all(Radius.circular(5)),
         ),
         height: 50,
-        width:  - padding,
+        width: displayData.width-padding,
         child: RaisedButton(
-
           shape: RoundedRectangleBorder(
             side: BorderSide(color: AppStyle.theme(), width: 1.5),
-            borderRadius: BorderRadius.circular(120.0),
+            borderRadius: BorderRadius.circular(5.0),
           ),
           color: Colors.white,
           onPressed: () {
@@ -274,33 +274,33 @@ class WidgetProvider {
   static PreferredSize appBar(String _title, {List<Widget> actions}) {
     assert(_title != null, 'TITLE IS NULL');
     return PreferredSize(
-        preferredSize: Size.fromHeight(54.0),
-        child: AppBar(
-          automaticallyImplyLeading: false, // hides leading widget
-          flexibleSpace: AppBar(
-            actions: actions != null ? actions : [],
-            centerTitle: false,
-            backgroundColor: AppStyle.greyBackground(),
-            title: Text(
-              _title,
-              style: TextStyle(color: AppStyle.titleTxtColor()),
-            ),
-            iconTheme: IconThemeData(color: AppStyle.theme()),
-            titleSpacing: 0,
+      preferredSize: Size.fromHeight(54.0),
+      child: AppBar(
+        automaticallyImplyLeading: false, // hides leading widget
+        flexibleSpace: AppBar(
+          actions: actions != null ? actions : [],
+          centerTitle: false,
+          backgroundColor: AppStyle.greyBackground(),
+          title: Text(
+            _title,
+            style: TextStyle(color: AppStyle.titleTxtColor()),
           ),
+          iconTheme: IconThemeData(color: AppStyle.theme()),
+          titleSpacing: 0,
         ),
+      ),
     );
   }
 
   static Widget getInkButton(
-      final double _width,
-      final double _height,
-      final Function _onTap,
-      final IconData _iconName,
-  {final String title, final double iconSize = 25,
-    final Color iconColor = Colors.black,}
-
-      ){
+    final double _width,
+    final double _height,
+    final Function _onTap,
+    final IconData _iconName, {
+    final String title,
+    final double iconSize = 25,
+    final Color iconColor = Colors.black,
+  }) {
     return Container(
       width: _width,
       height: _width,
@@ -319,7 +319,7 @@ class WidgetProvider {
                     size: iconSize,
                     color: iconColor,
                   ),
-                  title != null ? Text(title??'') : SizedBox(),
+                  title != null ? Text(title ?? '') : SizedBox(),
                 ],
               ),
             ),
@@ -327,6 +327,131 @@ class WidgetProvider {
         ),
         color: Colors.transparent,
       ),
+    );
+  }
+
+  static addTextInController(
+      final TextEditingController _selectedController, String _key) {
+    var cursorPos = _selectedController.selection;
+    final String _text = _selectedController.text;
+    int _start = cursorPos.start;
+    int _end = cursorPos.end;
+    String _firstString = _start >= 0 ? _text.substring(0, _start) : _text;
+    String _endString =
+        _end >= 0 && _end >= _start ? _text.substring(_end, _text.length) : '';
+    int _offset =
+        (_start == -1 && _end == -1 ? 0 : _start >= 0 ? _start : _end) + 1;
+    String _output;
+    if (_key.toLowerCase() != 'del') {
+      _firstString += _key;
+      _output = _firstString + _endString;
+    } else {
+      if (_start == _end && _start > 0) {
+        _output =
+            _firstString.substring(0, _firstString.length - 1) + _endString;
+        _offset = _start - 1;
+      } else if (_start == 0 && _end == 0) {
+        _offset = 0;
+        _output = _firstString + _endString;
+      } else if (_end > _start) {
+        _output = _firstString + _endString;
+        _offset = _start;
+      } else {
+        _output = _firstString + _endString;
+        _offset = _output.length;
+      }
+    }
+    _selectedController.text = _output;
+    cursorPos = TextSelection.fromPosition(TextPosition(offset: _offset));
+    _selectedController.selection = cursorPos;
+  }
+
+  static Widget getBackAppBar(BuildContext _context, {final title}) {
+    return AppBar(
+      elevation: 0,
+      iconTheme: IconThemeData(
+        color: Colors.black,
+      ),
+      backgroundColor: Colors.white,
+      leading: Row(
+        children: <Widget>[
+          new IconButton(
+            icon: new Icon(
+              Icons.arrow_back_ios,
+              color: AppStyle.theme(),
+            ),
+            onPressed: () => Navigator.of(_context).pop(),
+          ),
+
+//
+//          _getProfilePicture(donorHandler.loginDonor),
+//          SizedBox(width: 12,),
+        ],
+      ),
+      title: title == null
+          ? SizedBox()
+          : title is String
+              ? Text(
+                  title,
+                  style: TextStyle(fontSize: 22, fontFamily: AppStyle.fontBold, color: Colors.black),
+                )
+              : title,
+      centerTitle: true,
+    );
+  }
+
+  static  openLocationPopUp(BuildContext context, final _data, final _selected, final _closed, final _title) {
+    Future.delayed(
+      Duration(
+        milliseconds: 100,
+      ),
+          () {
+        showDialog(
+          context: context,
+          barrierDismissible: false,
+          builder: (_) => Material(
+            color: Colors.transparent,
+            type: MaterialType.card,
+            child: WillPopScope(
+              onWillPop: () async {
+                return Future<bool>.value(false);
+              },
+              child: DataPickerWidget(
+                _data,
+                _selected,
+                _closed,
+                picketTitle: _title,
+              ),
+            ),
+          ),
+        );
+      },
+    );
+  }
+
+  static Widget bloodGroupWidget(final BuildContext context, final TextConfig _textConfig, {final Function onPopupClosed}){
+    return WidgetTemplate.getTextField(
+      _textConfig,
+      isReadOnly: true,
+      onTap: () {
+        List _data = [
+          'A+',
+          'B+',
+          'AB+',
+          'O+',
+          'A-',
+          'B-',
+          'AB-',
+          'O-'
+        ];
+        WidgetProvider.openLocationPopUp(
+            context,
+            _data,
+                (_data) => _textConfig.controller.text =
+                _data.toString(),
+            onPopupClosed,
+            'SELECT BLOOD GROUP');
+      },
     );
   }
 }

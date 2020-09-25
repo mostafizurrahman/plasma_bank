@@ -1,12 +1,12 @@
 
 
-
+import 'package:dart_ping/dart_ping.dart';
 import 'dart:convert';
-
 import 'package:http/http.dart';
 import 'package:plasma_bank/app_utils/location_provider.dart';
-
 import 'models/zip_data.dart';
+
+
 abstract class Authentication {
 
   /// Apply authentication settings to header and query params.
@@ -242,23 +242,24 @@ class ApiClient {
 
 
   Future<List<dynamic>> getGlobList(final _url, {region = false, city = false}) async {
-
-    final response = await get(_url);
-    if (response.statusCode == 200) {
+    final response = await get(_url).catchError((_error) {
+      return null;
+    });
+    if (response != null && response.statusCode == 200) {
       List _locations = List();
       final List<dynamic> _list = await json.decode(response.body);
-      if(region){
-        for(final _data in _list){
+      if (region) {
+        for (final _data in _list) {
           final _region = Region.fromJson(_data);
           _locations.add(_region);
         }
-      } else if (city){
-        for(final _data in _list){
+      } else if (city) {
+        for (final _data in _list) {
           final _city = City.fromJson(_data);
           _locations.add(_city);
         }
       } else {
-        for(final _data in _list){
+        for (final _data in _list) {
           final _country = Country.fromJson(_data);
           _locations.add(_country);
         }
@@ -268,12 +269,54 @@ class ApiClient {
     return null;
   }
 
+}
 
+class EmailClient {
+  bool _isValid;
+  bool get isValid =>_isValid;
+  final String _emailAddress ;
 
+  EmailClient(this._emailAddress);
 
+  Future<bool> validateEmail() async {
+    if(!this._emailAddress.contains('@')
+        || !this._emailAddress.contains('.') ){
+      return false;
+    }
+    final List<String> _array = this._emailAddress.split('@');
+    if(_array.length == 2 && _array.last.isNotEmpty) {
+      String _validateUrl =
+          "https://api.trumail.io/v2/lookups/json?email=$_emailAddress";
+      final Response _response = await get(_validateUrl).catchError((_error){
+        return null;
+      });
+      if(_response != null && _response.statusCode < 300){
+        final String _body = _response.body.toString();
+        final Map _responseMap = json.decode(_body);
+        this._isValid = _responseMap['deliverable'];
+        return isValid;
+      }
+//      final Response _response = await get("https://${_array.last}").catchError((_error){
+//
+//      });
+//      if(_response != null){
+//        if(_response.statusCode > 299){
+//          return false;
+//        }
+//      } else {
+//        final Response _response = await get("http://${_array.last}").catchError((_error){
+//
+//        });
+//        if(_response == null){
+//          return false;
+//        }
+//        if(_response.statusCode > 299){
+//          return false;
+//        }
+//      }
+    }
 
-
-
-
+    return false;
+  }
 
 }

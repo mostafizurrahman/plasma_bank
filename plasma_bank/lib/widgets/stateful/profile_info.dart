@@ -203,27 +203,7 @@ class _ProfileInfoState extends State<ProfileInfoWidget> {
           decoration: AppStyle.circularShadow(),
           child: ClipRRect(
             borderRadius: BorderRadius.all(Radius.circular(110)),
-            child: Image.network(
-              this.widget.bloodDonor.profilePicture.thumbUrl,
-              fit: BoxFit.cover,
-              loadingBuilder: (BuildContext context, Widget child,
-                  ImageChunkEvent loadingProgress) {
-                if (loadingProgress == null) return child;
-                return Center(
-                  child: CircularProgressIndicator(
-                    strokeWidth: 1.75,
-                    backgroundColor: Colors.red,
-                    valueColor: AlwaysStoppedAnimation<Color>(
-                      Color.fromARGB(255, 220, 220, 200),
-                    ),
-                    value: loadingProgress.expectedTotalBytes != null
-                        ? loadingProgress.cumulativeBytesLoaded /
-                            loadingProgress.expectedTotalBytes
-                        : null,
-                  ),
-                );
-              },
-            ),
+            child: WidgetTemplate.getProfilePicture(this.widget.bloodDonor) ,
           ),
         ),
         SizedBox(

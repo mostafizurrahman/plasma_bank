@@ -100,126 +100,122 @@ class _CameraState extends State<CameraWidget> with WidgetsBindingObserver {
       color: Colors.white,
       child: SafeArea(
         child: Scaffold(
-          body: Padding(
-            padding:
-                const EdgeInsets.only(left: 24, right: 24, top: 24, bottom: 24),
-            child: Stack(
-              alignment: Alignment.topLeft,
-              children: [
-                Container(
-                  decoration: new BoxDecoration(
-                    color: Colors.grey.withAlpha(170),
-                    borderRadius:
-                        new BorderRadius.all(Radius.circular(keyWidth / 2.0)),
-                    boxShadow: [
-                      BoxShadow(
-                        color: Color.fromRGBO(0, 0, 0, 0.15),
-                        offset: Offset(0, 0),
-                        blurRadius: 12,
-                        spreadRadius: 8,
+          body: Stack(
+            alignment: Alignment.topLeft,
+            children: [
+              Container(
+//                  decoration: new BoxDecoration(
+//                    color: Colors.grey.withAlpha(170),
+//                    borderRadius:
+//                        new BorderRadius.all(Radius.circular(keyWidth / 2.0)),
+//                    boxShadow: [
+//                      BoxShadow(
+//                        color: Color.fromRGBO(0, 0, 0, 0.15),
+//                        offset: Offset(0, 0),
+//                        blurRadius: 12,
+//                        spreadRadius: 8,
+//                      ),
+//                    ],
+//                  ),
+                child: StreamBuilder(
+                  stream: this._cameraBehavior.stream,
+                  initialData: false,
+                  builder: (_buildContext, _snapData) {
+                    return Container(
+                      child: _snapData.data
+                          ? this._getCameraPreviewWidget()
+                          : this._getLoader(),
+                    );
+                  },
+                ),
+              ),
+              Positioned(
+                left: 0,
+                top: 0,
+                child: ClipRRect(
+                  child: new Container(
+                    decoration: new BoxDecoration(
+                      color: Colors.white.withAlpha(150),
+                      borderRadius: new BorderRadius.all(
+                          Radius.circular(keyWidth / 2.0)),
+                    ),
+                    width: keyWidth,
+                    height: keyWidth,
+                    child: new Material(
+                      child: new InkWell(
+                        onTap: _onCameraExit,
+                        child: new Center(
+                          child: Container(
+                            height: keyWidth,
+                            width: keyWidth,
+                            child: Icon(
+                              Icons.cancel,
+                              color: AppStyle.theme(),
+                              size: 30,
+                            ),
+                          ),
+                        ),
                       ),
-                    ],
+                      color: Colors.transparent,
+                    ),
                   ),
+                  borderRadius:
+                      BorderRadius.all(Radius.circular(keyWidth / 2.0)),
+                ),
+              ),
+              Positioned(
+                bottom: 12,
+                left: (displayData.width) / 2 - 30,
+                child: Center(
                   child: StreamBuilder(
-                    stream: this._cameraBehavior.stream,
+                    stream: this._captureBehavior.stream,
                     initialData: false,
-                    builder: (_buildContext, _snapData) {
+                    builder: (_context, _snap) {
                       return Container(
-                        child: _snapData.data
-                            ? this._getCameraPreviewWidget()
-                            : this._getLoader(),
+                        decoration: new BoxDecoration(
+                          color: _snap.data
+                              ? AppStyle.theme()
+                              : Colors.white.withAlpha(200),
+                          borderRadius:
+                              new BorderRadius.all(Radius.circular(30)),
+                        ),
+                        height: 60,
+                        width: 60,
+                        child: ClipRRect(
+                          borderRadius:
+                              new BorderRadius.all(Radius.circular(30)),
+                          child: new Material(
+                            child: new InkWell(
+                              onTapCancel: () {
+                                this._captureBehavior.sink.add(false);
+                              },
+                              onTapDown: (_details) {
+                                this._captureBehavior.sink.add(true);
+                              },
+                              onTap: _captureImage,
+                              child: new Center(
+                                child: Container(
+                                  height: keyWidth,
+                                  width: keyWidth,
+                                  child: Icon(
+                                    Icons.camera_alt,
+                                    size: 30,
+                                    color: _snap.data
+                                        ? Colors.white
+                                        : Colors.black,
+                                  ),
+                                ),
+                              ),
+                            ),
+                            color: Colors.transparent,
+                          ),
+                        ),
                       );
                     },
                   ),
                 ),
-                Positioned(
-                  left: 0,
-                  top: 0,
-                  child: ClipRRect(
-                    child: new Container(
-                      decoration: new BoxDecoration(
-                        color: Colors.white.withAlpha(150),
-                        borderRadius: new BorderRadius.all(
-                            Radius.circular(keyWidth / 2.0)),
-                      ),
-                      width: keyWidth,
-                      height: keyWidth,
-                      child: new Material(
-                        child: new InkWell(
-                          onTap: _onCameraExit,
-                          child: new Center(
-                            child: Container(
-                              height: keyWidth,
-                              width: keyWidth,
-                              child: Icon(
-                                Icons.cancel,
-                                color: AppStyle.theme(),
-                                size: 30,
-                              ),
-                            ),
-                          ),
-                        ),
-                        color: Colors.transparent,
-                      ),
-                    ),
-                    borderRadius:
-                        BorderRadius.all(Radius.circular(keyWidth / 2.0)),
-                  ),
-                ),
-                Positioned(
-                  bottom: 12,
-                  left: (MediaQuery.of(context).size.width - 48) / 2 - 30,
-                  child: Center(
-                    child: StreamBuilder(
-                      stream: this._captureBehavior.stream,
-                      initialData: false,
-                      builder: (_context, _snap) {
-                        return Container(
-                          decoration: new BoxDecoration(
-                            color: _snap.data
-                                ? AppStyle.theme()
-                                : Colors.white.withAlpha(200),
-                            borderRadius:
-                                new BorderRadius.all(Radius.circular(30)),
-                          ),
-                          height: 60,
-                          width: 60,
-                          child: ClipRRect(
-                            borderRadius:
-                                new BorderRadius.all(Radius.circular(30)),
-                            child: new Material(
-                              child: new InkWell(
-                                onTapCancel: () {
-                                  this._captureBehavior.sink.add(false);
-                                },
-                                onTapDown: (_details) {
-                                  this._captureBehavior.sink.add(true);
-                                },
-                                onTap: _captureImage,
-                                child: new Center(
-                                  child: Container(
-                                    height: keyWidth,
-                                    width: keyWidth,
-                                    child: Icon(
-                                      Icons.camera_alt,
-                                      size: 30,
-                                      color: _snap.data
-                                          ? Colors.white
-                                          : Colors.black,
-                                    ),
-                                  ),
-                                ),
-                              ),
-                              color: Colors.transparent,
-                            ),
-                          ),
-                        );
-                      },
-                    ),
-                  ),
-                ),
-              ],
-            ),
+              ),
+            ],
           ),
         ),
       ),
@@ -323,7 +319,7 @@ class _CameraState extends State<CameraWidget> with WidgetsBindingObserver {
     Widget _widget;
     this._isCameraDenied = false;
     double _ratio = 1.0;
-    final _width = MediaQuery.of(context).size.width - 64;
+    final _width = displayData.width;
     try {
       _widget = CameraPreview(this._cameraController);
       _ratio = this._cameraController.value.aspectRatio;
@@ -353,12 +349,9 @@ class _CameraState extends State<CameraWidget> with WidgetsBindingObserver {
       );
     }
 
-    return ClipRRect(
-      borderRadius: new BorderRadius.all(Radius.circular(20)),
-      child: AspectRatio(
-        aspectRatio: _ratio,
-        child: _widget,
-      ),
+    return AspectRatio(
+      aspectRatio: _ratio,
+      child: _widget,
     );
   }
 

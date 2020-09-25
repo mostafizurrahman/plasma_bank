@@ -11,14 +11,16 @@ import 'package:plasma_bank/widgets/health_widget.dart';
 import 'package:plasma_bank/widgets/home_page.dart';
 import 'package:plasma_bank/widgets/launch_screen.dart';
 import 'package:plasma_bank/widgets/location_terms.dart';
-import 'package:plasma_bank/widgets/messaging/chat_widget.dart';
+import 'package:plasma_bank/widgets/messaging/private_chat_widget.dart';
 import 'package:plasma_bank/widgets/patient_info.dart';
 import 'package:flutter_statusbarcolor/flutter_statusbarcolor.dart';
 import 'package:plasma_bank/widgets/profile_widget.dart';
+import 'package:plasma_bank/widgets/stateful/blood_collector_widget.dart';
 import 'app_utils/image_helper.dart';
 import 'media/camera_widget.dart';
 import 'package:flutter_localizations/flutter_localizations.dart';
 
+import 'widgets/messaging/filter_widget.dart';
 import 'widgets/stateful/dynamic_keyboard.dart';
 
 //https://www.fda.gov/vaccines-blood-biologics/investigational-new-drug-ind-or-device-exemption-ide-process-cber/recommendations-investigational-covid-19-convalescent-plasma#Recordkeeping
@@ -48,7 +50,6 @@ class _PlasmaState extends State<PlasmaBank> {
         statusBarColor: Colors.transparent,
     ));
     FlutterStatusbarcolor.setStatusBarWhiteForeground(false);
-
     FlutterStatusbarcolor.setStatusBarColor(Colors.transparent);
     return Column(
       children: [
@@ -69,7 +70,7 @@ class _PlasmaState extends State<PlasmaBank> {
             theme: ThemeData(
               fontFamily: 'SF_UIFont',
             ),
-            home: DynamicKeyboardWidget(), //LaunchScreenWidget(),
+            home: LaunchScreenWidget(),
             onGenerateRoute: getGenerateRoute,
           ),
         ),
@@ -99,11 +100,18 @@ class _PlasmaState extends State<PlasmaBank> {
   Route getGenerateRoute(RouteSettings settings) {
     Widget _widget;
 
-    if(settings.name == AppRoutes.pagePrivateChat){
-      _widget = ChatWidget(settings.arguments);
+    if(settings.name == AppRoutes.pageBloodTaker)
+      {
+        _widget = BloodCollectorWidget(settings.arguments);
+      }
+    if(settings.name == AppRoutes.pageFilterDonor){
+      _widget = FilterWidget({});
+    }
+    else if(settings.name == AppRoutes.pagePrivateChat){
+      _widget = PrivateChatWidget(settings.arguments);
     }
     else if(settings.name == AppRoutes.pageDonorList){
-      _widget = DonorListWidget();
+      _widget = DonorListWidget(settings.arguments);
     }
     else if(settings.name == AppRoutes.pageHealthData){
       _widget = HealthWidget(settings.arguments);
@@ -155,7 +163,6 @@ class _PlasmaState extends State<PlasmaBank> {
       return Future<bool>.value(false);
     }
     return Future<bool>.value(true);
-    ;
   }
 
   Route _createRoute(final RouteSettings _settings, final _widget) {

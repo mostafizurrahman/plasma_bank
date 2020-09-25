@@ -1,10 +1,11 @@
 import 'package:cloud_firestore/cloud_firestore.dart';
+import 'package:firebase_database/firebase_database.dart';
 import 'package:flutter/cupertino.dart';
 import 'package:plasma_bank/app_utils/app_constants.dart';
-import 'package:plasma_bank/network/models/abstract_person.dart';
 import 'package:plasma_bank/network/models/blood_collector.dart';
 import 'package:plasma_bank/network/models/blood_donor.dart';
 import 'package:plasma_bank/network/models/plasma_donor.dart';
+import 'package:plasma_bank/widgets/messaging/filter_widget.dart';
 
 class FirebaseRepositories {
   //  Future<List<Country>> getCountries() async {
@@ -42,19 +43,19 @@ class FirebaseRepositories {
   }
 
   Future<DocumentReference> addBloodHunter(dynamic bloodHunter) async {
-    if (bloodHunter is BloodCollector) {
-      final _json = bloodHunter.toJson();
-      final _data = {bloodHunter.mobileNumber: _json};
-      return await _patientCollection.add(_data);
-    } else {
-      return await _patientCollection.add(bloodHunter);
-    }
+//    if (bloodHunter is BloodCollector) {
+//      final _json = bloodHunter.toJson();
+//      final _data = {bloodHunter.mobileNumber: _json};
+//      return await _patientCollection.add(_data);
+//    } else {
+//      return await _patientCollection.add(bloodHunter);
+//    }
   }
 
   updatePatient(BloodCollector bloodHunter) async {
-    await _patientCollection
-        .document(bloodHunter.reference.documentID)
-        .updateData(bloodHunter.toJson());
+//    await _patientCollection
+//        .document(bloodHunter.reference.documentID)
+//        .updateData(bloodHunter.toJson());
   }
 
   Stream<DocumentSnapshot> getEmails() {
@@ -96,6 +97,11 @@ class FirebaseRepositories {
     return _updated;
   }
 
+  uploadBloodCollector(final BloodCollector bloodCollector) async {
+    await Firestore.instance
+        .collection('collector').document(bloodCollector.email).setData(bloodCollector.toJson());
+  }
+
   uploadBloodDonor(final BloodDonor bloodDonor, List<String> _emails) async {
     await Firestore.instance
         .collection('donor')
@@ -135,10 +141,17 @@ class FirebaseRepositories {
   }
 
 
-  Stream<QuerySnapshot> getDonorList(final Map _queryParameters) {
+  Stream<QuerySnapshot> getDonorList(final FilterData filterData) {
 
-    final _reference = Firestore.instance.collection('donor');
-    _reference.getDocuments();
-    return _reference.where('disease', isNull: true).snapshots();
+   final _reference = Firestore.instance.collection('donor')
+        .where('disease', isNull: true ,)
+       .where('address.code', isEqualTo: filterData.code)
+       .where('address.state', isEqualTo: filterData.region)
+       .where('address.city', isEqualTo: filterData.city);
+//        .where('address.city', isEqualTo: filterData.city);
+    if(filterData.bloodGroup != null && filterData.bloodGroup.isNotEmpty){
+      return _reference.where('blood_group',  isEqualTo: filterData.bloodGroup).snapshots();
+    }
+    return _reference.snapshots();
   }
 }

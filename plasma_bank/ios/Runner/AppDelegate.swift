@@ -1,5 +1,6 @@
 import UIKit
 import Flutter
+import AVFoundation
 
 @UIApplicationMain
 
@@ -27,6 +28,9 @@ import Flutter
                 result(["package_name" : _bundleID,
                         "device_name" : _type,
                         "device_id":_device ])
+            } else if call.method == "playSound" {
+                let _soundID:SystemSoundID =  1104 ///Int(arc4random()) % 2 == 0 ? 1104 : 1103
+                AudioServicesPlaySystemSound (_soundID)
             }
         })
     }

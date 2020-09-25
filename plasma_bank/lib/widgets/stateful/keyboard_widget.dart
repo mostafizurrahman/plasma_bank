@@ -1,12 +1,10 @@
 
-
-
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
+import 'package:flutter/services.dart';
+import 'package:plasma_bank/app_utils/app_constants.dart';
 
-
-class KeyboardWidget extends StatefulWidget{
-
+class KeyboardWidget extends StatefulWidget {
   final Function(String) onKeyPressed;
   KeyboardWidget(this.onKeyPressed);
   @override
@@ -15,12 +13,12 @@ class KeyboardWidget extends StatefulWidget{
   }
 }
 
-class _KeyboardState extends State<KeyboardWidget>{
-
+class _KeyboardState extends State<KeyboardWidget> {
+  final platform = const MethodChannel('flutter.plasma.com.device_info');
   @override
   Widget build(BuildContext context) {
     return Container(
-      height: 230,
+      height: AppStyle.KEYBOARD_HEIGHT_NUMBER,
       decoration: BoxDecoration(
         color: Color.fromARGB(255, 220, 220, 220),
         boxShadow: [
@@ -40,14 +38,12 @@ class _KeyboardState extends State<KeyboardWidget>{
     );
   }
 
-
-
   List<Widget> _getKeyboard() {
     final _data = [
       ['1', '2', '3'],
       ['4', '5', '6'],
       ['7', '8', '9'],
-      ['d', '0', "x"],
+      ['done', '0', "x"],
     ];
     final _edges = [
       EdgeInsets.fromLTRB(0, 0, 8, 0),
@@ -88,7 +84,13 @@ class _KeyboardState extends State<KeyboardWidget>{
           height: keyWidth,
           child: new Material(
             child: new InkWell(
-              onTap: () => this.widget.onKeyPressed(_value),
+              onTap: () {
+                platform
+                    .invokeMethod('playSound')
+                    .then((value) => debugPrint(value.toString()))
+                    .catchError((_error) => debugPrint(_error.toString()));
+                this.widget.onKeyPressed(_value);
+              },
               child: new Center(
                 child: Container(
                   height: keyWidth,
@@ -109,7 +111,7 @@ class _KeyboardState extends State<KeyboardWidget>{
     if (_keyValue == "x") {
       return Icon(Icons.backspace);
     }
-    if (_keyValue == "d") {
+    if (_keyValue == "done") {
       return Icon(
         Icons.check_circle,
         color: Colors.green,
@@ -123,5 +125,4 @@ class _KeyboardState extends State<KeyboardWidget>{
       ),
     );
   }
-
 }

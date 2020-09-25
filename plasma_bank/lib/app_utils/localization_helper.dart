@@ -5,7 +5,7 @@ import 'package:flutter/cupertino.dart';
 class LocalizationHelper {
   String _languageCode;
   LocalizationHelper() {
-    this._languageCode = ui.window.locale.languageCode;
+    this._languageCode = ui.window?.locale?.languageCode ?? 'en';
     debugPrint(this._languageCode);
     //english, bangla, hindi, chinese, japanese, french, spanish, german, latin arabic
 //    List< String> _supported = ['en', 'bn', 'fr', 'hi', 'de', 'es', 'la', 'ja', 'ar'];

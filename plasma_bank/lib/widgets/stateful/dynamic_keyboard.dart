@@ -1,14 +1,24 @@
 import 'dart:io';
 
 import 'package:flutter/cupertino.dart';
+import 'package:flutter/gestures.dart';
 import 'package:flutter/material.dart';
+import 'package:flutter/services.dart';
 import 'package:plasma_bank/app_utils/app_constants.dart';
 import 'package:rxdart/rxdart.dart';
 
 class DynamicKeyboardWidget extends StatefulWidget {
+  final IconData doneButtonIcon;
+  final Function(String) onKeyPressed;
+  final Function(String) onKeyDownStart;
+  final Function onDeleteLongPressed;
+  DynamicKeyboardWidget(this.onKeyPressed,
+      {this.onKeyDownStart,
+      this.onDeleteLongPressed,
+      this.doneButtonIcon = Icons.check_circle});
+
   @override
   State<StatefulWidget> createState() {
-    // TODO: implement createState
     return _DynamicKeyboardState();
   }
 }
@@ -20,7 +30,8 @@ class _DynamicKeyboardState extends State<DynamicKeyboardWidget> {
   BehaviorSubject<bool> _upperCasedBehavior = BehaviorSubject();
   BehaviorSubject<int> _numberBehavior = BehaviorSubject();
 
-  double _keyboardHeight = 200;
+  double _keyboardHeight = AppStyle.KEYBOARD_HEIGHT_TEXT;
+  final platform = const MethodChannel('flutter.plasma.com.device_info');
 
   @override
   void initState() {
@@ -40,28 +51,18 @@ class _DynamicKeyboardState extends State<DynamicKeyboardWidget> {
   Widget build(BuildContext context) {
     // TODO: implement build
     _keyboardHeight = 210;
-    displayData.setData(context);
+//    displayData.setData(context);
     return Container(
-      child: Scaffold(
-//        body: Container(height: 100, color: Colors.green,),
-        backgroundColor: Colors.white,
-        bottomNavigationBar: Padding(
-          padding: EdgeInsets.only(bottom: displayData.bottom),
-          child: Container(
 //            decoration: AppStyle.lightDecoration,
-            color: Color.fromARGB(200, 230, 230, 230),
-            width: MediaQuery.of(context).size.width,
-            height: _keyboardHeight,
-            child: StreamBuilder<int>(
-              initialData: _keyboardString,
-              stream: _numberBehavior.stream,
-              builder: (context, snapshot) {
-                return _getKeyboard(snapshot.data);
-              }
-            ),
-          ),
-        ),
-      ),
+      color: Color.fromARGB(200, 230, 230, 230),
+      width: MediaQuery.of(context).size.width,
+      height: _keyboardHeight,
+      child: StreamBuilder<int>(
+          initialData: _keyboardString,
+          stream: _numberBehavior.stream,
+          builder: (context, snapshot) {
+            return _getKeyboard(snapshot.data);
+          }),
     );
   }
 
@@ -87,22 +88,26 @@ class _DynamicKeyboardState extends State<DynamicKeyboardWidget> {
       ["ABC", "space", "DONE"]
     ];
 
-    List<Widget> _columnWidgets =   _index == _keyboardString ? [
-      _get10CharactersRow(_keyDataTxt[0], isFirstRow: true),
-      _get9CharactersRow(_keyDataTxt[1]),
-      _get9TCharactersRow(_keyDataTxt[2]),
-      _get3CharactersRow(_keyDataTxt[3]),
-    ] : _index == _keyboardNumber ? [
-      _get10CharactersRow(_keyDataNum[0], isFirstRow: true),
-      _get10CharactersRow(_keyDataNum[1]),
-      _get7CharactersRow(_keyDataNum[2]),
-      _get3CharactersRow(_keyDataNum[3]),
-    ] :  [
-      _get10CharactersRow(_keyDataChar[0], isFirstRow: true),
-      _get10CharactersRow(_keyDataChar[1]),
-      _get7CharactersRow(_keyDataChar[2]),
-      _get3CharactersRow(_keyDataChar[3]),
-    ] ;
+    List<Widget> _columnWidgets = _index == _keyboardString
+        ? [
+            _get10CharactersRow(_keyDataTxt[0], isFirstRow: true),
+            _get9CharactersRow(_keyDataTxt[1]),
+            _get9TCharactersRow(_keyDataTxt[2]),
+            _get3CharactersRow(_keyDataTxt[3]),
+          ]
+        : _index == _keyboardNumber
+            ? [
+                _get10CharactersRow(_keyDataNum[0], isFirstRow: true),
+                _get10CharactersRow(_keyDataNum[1]),
+                _get7CharactersRow(_keyDataNum[2]),
+                _get3CharactersRow(_keyDataNum[3]),
+              ]
+            : [
+                _get10CharactersRow(_keyDataChar[0], isFirstRow: true),
+                _get10CharactersRow(_keyDataChar[1]),
+                _get7CharactersRow(_keyDataChar[2]),
+                _get3CharactersRow(_keyDataChar[3]),
+              ];
 
     return StreamBuilder<bool>(
         stream: _upperCasedBehavior.stream,
@@ -278,7 +283,19 @@ class _DynamicKeyboardState extends State<DynamicKeyboardWidget> {
             color: isSpecial ? Colors.grey : Colors.white,
             child: Ink(
               child: InkWell(
-                onTap: () => _onKeyPressed(_key),
+                onTapDown: (value) => _onKeyStarted(_key),
+                onTapCancel: () {
+                  if (this.widget.onKeyDownStart != null) {
+                    this.widget.onKeyDownStart(null);
+                  }
+                },
+                onTap: () {
+                  _onKeyPressed(_key);
+                  platform
+                      .invokeMethod('playSound')
+                      .then((value) => debugPrint(value.toString()))
+                      .catchError((_error) => debugPrint(_error.toString()));
+                },
                 child: Center(
                   child: _key == 'TOG'
                       ? _getToggleIcon()
@@ -315,15 +332,22 @@ class _DynamicKeyboardState extends State<DynamicKeyboardWidget> {
   }
 
   Widget _getDeleteIcon() {
-    return Icon(
-      Icons.backspace,
-      color: Colors.black,
+    return GestureDetector(
+      onLongPress: () {
+        if (this.widget.onDeleteLongPressed != null) {
+          this.widget.onDeleteLongPressed();
+        }
+      },
+      child: Icon(
+        Icons.backspace,
+        color: Colors.black,
+      ),
     );
   }
 
   Widget _getDoneIcon() {
     return Icon(
-      Icons.check_circle_outline,
+      this.widget.doneButtonIcon,
       color: Colors.black,
     );
   }
@@ -334,25 +358,47 @@ class _DynamicKeyboardState extends State<DynamicKeyboardWidget> {
       initialData: false,
       builder: (context, snapshot) {
         return Icon(
-         snapshot.data
-              ? Icons.file_download
-              : Icons.file_upload, //
+          snapshot.data ? Icons.file_download : Icons.file_upload, //
           color: Colors.black,
         );
-      }
+      },
     );
   }
 
   _onKeyPressed(final String _key) {
+    final bool _isUpperCased = _upperCasedBehavior.value ?? false;
     if (_key == 'TOG') {
-      final _isUpperCased = _upperCasedBehavior.value ?? false;
       this._upperCasedBehavior.sink.add(!_isUpperCased);
-    } else if (_key == '123'){
+    } else if (_key == '123') {
       this._numberBehavior.sink.add(_keyboardNumber);
-    } else if (_key == 'ABC'){
+    } else if (_key == 'ABC') {
       this._numberBehavior.sink.add(_keyboardString);
-    } else if  (_key == '#+='){
+    } else if (_key == '#+=') {
       this._numberBehavior.sink.add(_keyboardSpecial);
+    } else {
+      this.widget.onKeyPressed(
+          _isUpperCased ? _key.toUpperCase() : _key.toLowerCase());
+    }
+  }
+
+  _onKeyStarted(final String _key) {
+    if (this.widget.onKeyDownStart != null) {
+      final bool _isUpperCased = _upperCasedBehavior.value ?? false;
+      if (_key == 'TOG' ||
+          _key == '123' ||
+          _key == 'ABC' ||
+          _key == '#+=' ||
+          _key == 'DONE') {
+      } else {
+        if (_key == 'DEL') {
+          this.widget.onKeyDownStart('del');
+        } else if (_key == 'space') {
+          this.widget.onKeyDownStart('spc');
+        } else {
+          this.widget.onKeyDownStart(
+              _isUpperCased ? _key.toUpperCase() : _key.toLowerCase());
+        }
+      }
     }
   }
 }

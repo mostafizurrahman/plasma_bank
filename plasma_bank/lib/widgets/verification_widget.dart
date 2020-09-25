@@ -2,7 +2,6 @@ import 'dart:async';
 import 'dart:math';
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
-import 'package:flutter/services.dart';
 import 'package:plasma_bank/app_utils/app_constants.dart';
 import 'package:plasma_bank/app_utils/widget_providers.dart';
 import 'package:plasma_bank/app_utils/widget_templates.dart';
@@ -144,7 +143,7 @@ class _VerificationState extends State<VerificationWidget> {
 
   _onKeyPressed(final String inputKey) {
     debugPrint(inputKey);
-    if (inputKey == 'd') {
+    if (inputKey == 'done') {
       this._keyboardBehavior.sink.add(false);
     } else if (inputKey == 'x') {
       this._otpDigits[this._selectedBoxIndex] = '';

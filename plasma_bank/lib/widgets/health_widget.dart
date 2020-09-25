@@ -83,31 +83,7 @@ class _HealthState extends BaseKeyboardState<HealthWidget> {
     return super.build(context);
   }
 
-  Widget _getTitle(final String _title, final IconData _icon) {
-    return Padding(
-      padding: EdgeInsets.only(top: 48, bottom: 12),
-      child: Row(
-        children: [
-          WidgetProvider.circledIcon(
-            Icon(
-              _icon,
-              color: AppStyle.theme(),
-            ),
-          ),
-          SizedBox(
-            width: 12,
-          ),
-          Text(
-            _title,
-            style: TextStyle(
-              fontSize: 24,
-              fontFamily: AppStyle.fontBold,
-            ),
-          ),
-        ],
-      ),
-    );
-  }
+
 
   Widget _getPButton(String _data, final _width, final ratio) {
     return Container(
@@ -449,7 +425,7 @@ class _HealthState extends BaseKeyboardState<HealthWidget> {
       child: Column(
         crossAxisAlignment: CrossAxisAlignment.start,
         children: [
-          this._getTitle('PHYSICAL INFO', Icons.person),
+          WidgetTemplate.getSectionTitle('PHYSICAL INFO', Icons.person),
           CustomPaint(
             size: Size(MediaQuery.of(context).size.width, 1.0),
             painter: DashLinePainter(),
@@ -490,7 +466,7 @@ class _HealthState extends BaseKeyboardState<HealthWidget> {
             showCursor: false,
             onTap: () => this._showDatePicker(this._lastDonationConfig),
           ),
-          this._getTitle('BEHAVIOR INFO', Icons.accessibility),
+          WidgetTemplate.getSectionTitle('BEHAVIOR INFO', Icons.accessibility),
           CustomPaint(
             size: Size(MediaQuery.of(context).size.width, 1.0),
             painter: DashLinePainter(),
@@ -517,7 +493,7 @@ class _HealthState extends BaseKeyboardState<HealthWidget> {
               onPressed: () => WidgetTemplate.message(context, _disease),
             ),
           ),
-          this._getTitle('COVID-19 INFO', Icons.brightness_high),
+          WidgetTemplate.getSectionTitle('COVID-19 INFO', Icons.brightness_high),
           CustomPaint(
             size: Size(MediaQuery.of(context).size.width, 1.0),
             painter: DashLinePainter(),
@@ -561,7 +537,7 @@ class _HealthState extends BaseKeyboardState<HealthWidget> {
               );
             },
           ),
-          this._getTitle('PRESCRIPTION', Icons.description),
+          WidgetTemplate.getSectionTitle('PRESCRIPTION', Icons.description),
           CustomPaint(
             size: Size(MediaQuery.of(context).size.width, 1.0),
             painter: DashLinePainter(),
