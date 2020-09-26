@@ -7,7 +7,7 @@ import 'package:plasma_bank/app_utils/widget_providers.dart';
 import 'package:plasma_bank/app_utils/widget_templates.dart';
 import 'package:plasma_bank/media/dash_painter.dart';
 import 'package:plasma_bank/network/api_client.dart';
-import 'package:plasma_bank/network/donor_handler.dart';
+import 'package:plasma_bank/network/person_handler.dart';
 import 'package:plasma_bank/network/firebase_repositories.dart';
 import 'package:plasma_bank/widgets/base/base_state.dart';
 import 'package:plasma_bank/widgets/base_widget.dart';

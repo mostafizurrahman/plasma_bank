@@ -8,7 +8,7 @@ import 'package:plasma_bank/app_utils/location_provider.dart';
 import 'package:plasma_bank/app_utils/widget_providers.dart';
 import 'package:plasma_bank/app_utils/widget_templates.dart';
 import 'package:plasma_bank/network/covid_data_helper.dart';
-import 'package:plasma_bank/network/donor_handler.dart';
+import 'package:plasma_bank/network/person_handler.dart';
 import 'package:plasma_bank/network/firebase_repositories.dart';
 import 'package:plasma_bank/network/imgur_handler.dart';
 import 'package:plasma_bank/network/models/blood_donor.dart';
@@ -353,7 +353,7 @@ class _HomePageState extends State<HomePageWidget> {
 
   _onCollectTap(bool isCollection) {
     if (isCollection) {
-      Navigator.pushNamed(context, AppRoutes.pageBloodTaker, arguments: {'login_tap' : _onLoginTaped});
+      this._openAddress(isBloodTaker:true);
       //register collection
     } else {
       Navigator.pushNamed(context, AppRoutes.pageBloodTaker);
@@ -381,16 +381,18 @@ class _HomePageState extends State<HomePageWidget> {
 
 
 
-  _openAddress() async {
+  _openAddress({bool isBloodTaker = false}) async {
     WidgetProvider.loading(context);
     final _countryList = await locationProvider.getCountryList().catchError((_error){
       return null;
     });
     Navigator.pop(context);
+    final Map _map = isBloodTaker ? {'login_tap' : _onLoginTaped, 'country_list': _countryList} : {'country_list': _countryList};
+    final _route = isBloodTaker ? AppRoutes.pageBloodTaker : AppRoutes.pageAddressData;
     if(_countryList != null) {
       Future.delayed(Duration(milliseconds: 100), () {
-        Navigator.pushNamed(context, AppRoutes.pageAddressData,
-            arguments: {'country_list': _countryList});
+        Navigator.pushNamed(context, _route,
+            arguments: _map);
       });
     }
   }

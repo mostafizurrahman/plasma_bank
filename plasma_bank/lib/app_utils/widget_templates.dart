@@ -5,6 +5,7 @@ import 'package:flutter/services.dart';
 import 'package:intl/intl.dart';
 import 'package:plasma_bank/network/imgur_handler.dart';
 import 'package:plasma_bank/network/message_repository.dart';
+import 'package:plasma_bank/network/models/abstract_person.dart';
 import 'package:plasma_bank/network/models/blood_donor.dart';
 
 import 'package:plasma_bank/widgets/stateless/message_widget.dart';
@@ -323,7 +324,7 @@ class WidgetTemplate {
     );
   }
 
-  static Widget getProfilePicture(final BloodDonor _donor,
+  static Widget getProfilePicture(final Person _donor,
       {double proHeight = 50}) {
 //    return WidgetTemplate.getImageWidget(_donor.profilePicture);
     return ClipRRect(

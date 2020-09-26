@@ -58,7 +58,7 @@ class _DonorListState extends State<DonorListWidget> {
 //          'BLOOD DONORS',
 //        ),
 
-        WidgetProvider.getBackAppBar(
+            WidgetProvider.getBackAppBar(
           context,
           title: Text(
             'BLOOD DONORS',
@@ -70,7 +70,8 @@ class _DonorListState extends State<DonorListWidget> {
             bottom: displayData.bottom,
           ),
           child: StreamBuilder<QuerySnapshot>(
-            stream: _repository.getDonorList(this.widget.getData('filter_data')),
+            stream:
+                _repository.getDonorList(this.widget.getData('filter_data')),
             builder: (context, snapshot) {
               final QuerySnapshot _documentData = snapshot.data;
               if (snapshot.data == null) {
@@ -117,7 +118,8 @@ class _DonorListState extends State<DonorListWidget> {
               ),
               ClipRRect(
                 borderRadius: BorderRadius.all(Radius.circular(110)),
-                child: WidgetTemplate.getProfilePicture(bloodDonor, proHeight: 65),
+                child:
+                    WidgetTemplate.getProfilePicture(bloodDonor, proHeight: 65),
               ),
               SizedBox(
                 width: 12,
@@ -130,12 +132,13 @@ class _DonorListState extends State<DonorListWidget> {
                         crossAxisAlignment: CrossAxisAlignment.start,
                         mainAxisAlignment: MainAxisAlignment.end,
                         children: <Widget>[
-                          Text(bloodDonor.fullName.toUpperCase(), style: TextStyle(fontSize: 13),),
-
+                          Text(
+                            bloodDonor.fullName.toUpperCase(),
+                            style: TextStyle(fontSize: 13),
+                          ),
                           Container(
                             height: 60,
                             width: displayData.width - 160,
-
                             child: Row(
                               mainAxisAlignment: MainAxisAlignment.start,
                               crossAxisAlignment: CrossAxisAlignment.center,
@@ -148,17 +151,23 @@ class _DonorListState extends State<DonorListWidget> {
                                 SizedBox(
                                   width: 16,
                                 ),
-                                _getAction(Icons.chat_bubble_outline, 2, bloodDonor)
+                                _getAction(
+                                    Icons.chat_bubble_outline, 2, bloodDonor)
                               ],
                             ),
                           ),
                         ],
                       ),
                     ),
-                    Container(width: 50, height: 90,
-                      child: Center(child: Text(bloodDonor.bloodGroup ?? "" , style: TextStyle(fontSize: 20, color: Colors.white),)),
-
-                      decoration:  BoxDecoration(
+                    Container(
+                      width: 50,
+                      height: 90,
+                      child: Center(
+                          child: Text(
+                        bloodDonor.bloodGroup ?? "",
+                        style: TextStyle(fontSize: 20, color: Colors.white),
+                      )),
+                      decoration: BoxDecoration(
                         color: Colors.red,
 //                        boxShadow: [
 //                          BoxShadow(
@@ -170,7 +179,7 @@ class _DonorListState extends State<DonorListWidget> {
 //                        ],
                         borderRadius: BorderRadius.only(
                           topRight: Radius.circular(8),
-bottomRight: Radius.circular(8),
+                          bottomRight: Radius.circular(8),
 //                          Radius.circular(1000),
                         ),
                       ),
@@ -208,8 +217,7 @@ bottomRight: Radius.circular(8),
     );
   }
 
-  _onFilterApplied(final FilterData _data){
-
+  _onFilterApplied(final FilterData _data) {
     debugPrint('selected');
   }
 }

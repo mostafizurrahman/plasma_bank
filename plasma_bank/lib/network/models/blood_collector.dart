@@ -1,52 +1,34 @@
 import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:flutter/cupertino.dart';
 
+import '../imgur_handler.dart';
 import '../models/abstract_person.dart';
 
-class BloodCollector {
-  String email;
-  String mobile;
+class BloodCollector extends Person {
+
+
   String bloodCount;
-  String bloodGroup;
-  String collectorName;
   String injectionDate;
   String hospitalAddress;
-  String collectorAddress;
   String diseaseName;
 
-  BloodCollector(
-      this.email, this.mobile, this.collectorName, this.collectorAddress,
-      {this.bloodGroup,
-      this.bloodCount,
-      this.hospitalAddress,
-      this.injectionDate,
-        this.diseaseName,
-      });
+  BloodCollector( Map _inputData) : super(_inputData) {
 
-  BloodCollector.fromJson(final Map _data){
-    this.email = _data['email'];
-    this.mobile = _data['mobile'];
-    this.bloodCount = _data['bag_count'];
-    this.bloodGroup = _data['blood_group'];
-    this.diseaseName = _data['disease_name'];
-    this.collectorName = _data['collector_name'];
-    this.injectionDate = _data['injection_date'];
-    this.hospitalAddress = _data['hospital_address'];
-    this.collectorAddress = _data['collector_address'];
+    this.hospitalAddress = _inputData['hospital_address'];
+    this.injectionDate = _inputData['injection_date'];
+    this.bloodCount = _inputData['bag_count'];
+    this.diseaseName = _inputData['disease_name'];
+
   }
 
+
   Map<String, dynamic> toJson(){
-    return {
-    'email' :  this.email,
-    'mobile' : this.mobile,
-    'bag_count' : this.bloodCount,
-    'blood_group' : this.bloodGroup,
-    'disease_name' : this.diseaseName,
-    'collector_name' : this.collectorName,
-    'injection_date' : this.injectionDate,
-    'hospital_address' : this.hospitalAddress,
-    'collector_address' : this.collectorAddress,
-    };
+    Map _data = super.toJson();
+    _data['hospital_address'] = this.hospitalAddress;
+    _data['injection_date'] = this.injectionDate;
+    _data['blood_count'] = this.bloodCount;
+    _data['disease_name'] = this.diseaseName;
+    _data;
   }
 //  Person.fromMap(Map<String, dynamic> map, {this.reference})
 //      : assert(map['name'] != null),

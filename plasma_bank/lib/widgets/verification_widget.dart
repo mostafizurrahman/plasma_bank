@@ -5,7 +5,7 @@ import 'package:flutter/material.dart';
 import 'package:plasma_bank/app_utils/app_constants.dart';
 import 'package:plasma_bank/app_utils/widget_providers.dart';
 import 'package:plasma_bank/app_utils/widget_templates.dart';
-import 'package:plasma_bank/network/donor_handler.dart';
+import 'package:plasma_bank/network/person_handler.dart';
 import 'package:plasma_bank/widgets/stateful/keyboard_widget.dart';
 import 'package:rxdart/rxdart.dart';
 

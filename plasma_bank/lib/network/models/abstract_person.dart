@@ -45,7 +45,7 @@ class Address {
   }
 }
 
-abstract class Person {
+class Person {
 
   String verificationCode;
   bool hasValidPostal;

@@ -2,6 +2,7 @@ import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:firebase_database/firebase_database.dart';
 import 'package:flutter/cupertino.dart';
 import 'package:plasma_bank/app_utils/app_constants.dart';
+import 'package:plasma_bank/network/models/abstract_person.dart';
 import 'package:plasma_bank/network/models/blood_collector.dart';
 import 'package:plasma_bank/network/models/blood_donor.dart';
 import 'package:plasma_bank/network/models/plasma_donor.dart';
@@ -58,14 +59,21 @@ class FirebaseRepositories {
 //        .updateData(bloodHunter.toJson());
   }
 
-  Stream<DocumentSnapshot> getEmails() {
+  Stream<DocumentSnapshot> getDonorEmails() {
     return Firestore.instance
         .collection('donor')
         .document(deviceInfo.deviceUUID)
         .snapshots();
   }
 
-  Future<BloodDonor> getDonorData(final String _email) async {
+  Stream<DocumentSnapshot> getTakerEmails() {
+    return Firestore.instance
+        .collection('collector')
+        .document(deviceInfo.deviceUUID)
+        .snapshots();
+  }
+
+  Future<Person> getDonorData(final String _email) async {
     DocumentSnapshot _data = await Firestore.instance
         .collection('donor')
         .document(_email)
@@ -83,6 +91,24 @@ class FirebaseRepositories {
     }
     return null;
   }
+
+  Future<Person> getCollectorData(final String _email) async {
+    DocumentSnapshot _data = await Firestore.instance
+        .collection("collector")
+        .document(_email)
+        .get()
+        .catchError((error) {
+      return null;
+    });
+    if (_data.exists) {
+      if (_data.data.isNotEmpty) {
+        return Person.fromMap(_data.data);
+      }
+    }
+    return null;
+  }
+
+
 
   Future<bool> updateDonationDate(String _date, String _email) async {
     bool _updated = true;
