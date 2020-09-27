@@ -11,7 +11,6 @@ class DonorWidget extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-
 //    Navigator.pop(context);
     return SafeArea(
       child: Container(
@@ -63,47 +62,34 @@ class DonorWidget extends StatelessWidget {
                     child: Container(
                       width: displayData.width,
                       child: Column(
-                        crossAxisAlignment: CrossAxisAlignment.end,
+                        crossAxisAlignment: CrossAxisAlignment.center,
                         mainAxisAlignment: MainAxisAlignment.end,
                         children: [
-                          Row(
-                            crossAxisAlignment: CrossAxisAlignment.end,
-                            mainAxisAlignment: MainAxisAlignment.end,
-                            children: [
-                              FloatingActionButton(
-                                heroTag: '__hero',
-                                onPressed: () {
-                                  this._onTap(false);
-                                },
-                                backgroundColor: Colors.white,
-                                child: Icon(
-                                  Icons.group,
-                                  color: AppStyle
-                                      .theme(), //Color.fromARGB(255, 240, 10, 80),
-                                  size: 35,
-                                ),
-                              ),
-                            ],
+                          getButton(
+                            () => this._onTap(false),
+                            'FIND DONORS',
+                            Icon(
+                              Icons.group,
+                              color: Colors
+                                  .white, //Color.fromARGB(255, 240, 10, 80),
+                              size: 30,
+                            ),
                           ),
                           SizedBox(
                             height: 12,
                           ),
-                          Row(
-                            crossAxisAlignment: CrossAxisAlignment.end,
-                            mainAxisAlignment: MainAxisAlignment.end,
-                            children: [
-                              FloatingActionButton(
-                                onPressed: () {
-                                  this._onTap(true);
-                                },
-                                backgroundColor: Colors.white,
-                                child: Icon(
-                                  Icons.add,
-                                  color: AppStyle.theme(),
-                                  size: 50,
-                                ),
-                              ),
-                            ],
+                          getButton(
+                            () => this._onTap(true),
+                            'REGISTER DONOR',
+                            Icon(
+                              Icons.add,
+                              color: Colors
+                                  .white, //Color.fromARGB(255, 240, 10, 80),
+                              size: 30,
+                            ),
+                          ),
+                          SizedBox(
+                            height: 12,
                           ),
                         ],
                       ),
@@ -116,12 +102,33 @@ class DonorWidget extends StatelessWidget {
         ),
       ),
     );
+  }
 
-//    Scaffold(
-//      backgroundColor: Colors.transparent,
-//      body: ,
-////              floatingActionButtonLocation: FloatingActionButtonLocation.endFloat,
-//      floatingActionButton: ,
-//    )
+  Widget getButton(Function _onTap, String _title, Icon icon) {
+    return SizedBox(
+      width: displayData.width - 96,
+      height: 45,
+      child: RaisedButton(
+        color: AppStyle.theme().withAlpha(180),
+        onPressed: _onTap,
+        child: Row(
+          mainAxisAlignment: MainAxisAlignment.center,
+          children: <Widget>[
+            icon,
+            SizedBox(
+              width: 12,
+            ),
+            Text(
+              _title,
+              textAlign: TextAlign.center,
+              style: TextStyle(
+                color: Colors.white,
+                fontSize: 12,
+              ),
+            )
+          ],
+        ),
+      ),
+    );
   }
 }
