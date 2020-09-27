@@ -13,18 +13,34 @@ class PersonHandler {
 
   factory PersonHandler() {
     _personHandler._init();
-    _personHandler._readDeviceList();
+    _personHandler.readDeviceList();
     return _personHandler;
   }
 
   List<String> _donorList;
+  List<String> get donorList{
+    return _donorList;
+  }
   List<String> _takerList;
-  List<Person> _bloodDonorList;
-  List<Person> _bloodTakerList;
-
+  List<String> get collectorList{
+    return _takerList;
+  }
+  final List<Person> _bloodDonorList = [];
+  List<Person> get bloodDonorList{
+    return _bloodDonorList;
+  }
+  final List<Person> _bloodTakerList = [];
+  List<Person> get bloodCollectorList{
+    return _bloodTakerList;
+  }
   final BehaviorSubject<Person> _loginEmailBehavior = BehaviorSubject();
+  BehaviorSubject<Person> get loginEmailBehavior{
+    return _loginEmailBehavior;
+  }
   final BehaviorSubject<String> _verifyEmailBehavior = BehaviorSubject();
-
+  BehaviorSubject<String> get verifyEmailBehavior{
+    return _verifyEmailBehavior;
+  }
   //login email GET/SET
   String _loginEmail;
   String get loginEmail {
@@ -124,8 +140,8 @@ class PersonHandler {
 
   ///TODO :: LISTING OF DONORS
 
-  StreamSubscription _donorSubscriptionID;
-  StreamSubscription _takerSubscriptionID;
+  StreamSubscription<DocumentSnapshot> _donorSubscriptionID;
+  StreamSubscription<DocumentSnapshot> _takerSubscriptionID;
 
   closeListSubscriptions(final List<String> _emailList) {
     _donorSubscriptionID.cancel();
@@ -133,10 +149,10 @@ class PersonHandler {
 //    donorHandler.donorEmails = _emailList;
   }
 
-  _readDeviceList() {
+  readDeviceList() {
     final _repository = FirebaseRepositories();
-    final Stream _donorStream = _repository.getDonorEmails();
-    final Stream _collectorStream = _repository.getTakerEmails();
+    final Stream<DocumentSnapshot> _donorStream = _repository.getDonorEmails();
+    final Stream<DocumentSnapshot> _collectorStream = _repository.getTakerEmails();
     _donorSubscriptionID = _donorStream.listen(_onDeviceDonorEmailRead);
     _takerSubscriptionID = _collectorStream.listen(_onDeviceTakerEmailRead);
   }
@@ -145,7 +161,7 @@ class PersonHandler {
     if (snapshot.data != null && snapshot.data.isNotEmpty) {
       _addDeviceEmail(snapshot, true);
     } else {
-      debugPrint('empty');
+      _readPerson([], true);
     }
   }
 
@@ -153,24 +169,27 @@ class PersonHandler {
     if (snapshot.data != null && snapshot.data.isNotEmpty) {
       _addDeviceEmail(snapshot, false);
     } else {
-      debugPrint('empty');
+      _readPerson([], false);
     }
   }
 
   _addDeviceEmail(final DocumentSnapshot snapshot, final bool isDonor) {
-    snapshot.data.forEach((k, v) {
-      debugPrint('key :' + k.toString() + ' value ' + v.toString());
-      if (v is List<dynamic>) {
-        List<String> _list = List();
-        for (int i = 0; i < v.length; i++) {
-          final _value = v[i];
-          if (_value is String) {
-            _list.add(_value);
+
+      snapshot.data.forEach((k, v) {
+        debugPrint('key :' + k.toString() + ' value ' + v.toString());
+        if (v is List<dynamic>) {
+          List<String> _list = List();
+          for (int i = 0; i < v.length; i++) {
+            final _value = v[i];
+            if (_value is String) {
+              _list.add(_value);
+            }
           }
+          _readPerson(_list, isDonor);
         }
-        _readPerson(_list, isDonor);
-      }
-    });
+      });
+
+
   }
 
   _readPerson(final List<String> _list, final bool isDonor) async {
@@ -233,61 +252,6 @@ class PersonHandler {
     debugPrint(_error.toString());
   }
 
-
-
-
-
-
-//  String _loginEmail;
-//  Person loginDonor;
-
-//  PublishSubject<String> donorLoginBehavior = PublishSubject();
-//  PublishSubject<Person> donorBehavior = PublishSubject();
-
-//  dispose() {
-//    _personHandler.donorLoginBehavior.close();
-//    if (!donorLoginBehavior.isClosed) {
-//      donorLoginBehavior.close();
-//    }
-//    closeDonor();
-//  }
-//
-//  closeDonor() {
-//    _personHandler.donorBehavior.close();
-//    if (!donorBehavior.isClosed) {
-//      donorBehavior.close();
-//    }
-//  }
-
-//  List<String> _donorEmails = List();
-//  List<String> _collectorEmails = List();
-//  List<Person> donorDataList = [];
-//
-//  List<String> get donorEmails {
-//    return _donorEmails;
-//  }
-//
-//  set donorEmails(List<String> _emails) {
-//    _emails.forEach(
-//      (_email) {
-//        if (!_donorEmails.contains(_email)) {
-//          _donorEmails.add(_email);
-//          final _repository = FirebaseRepositories();
-//          _repository.getDonorData(_email).then(
-//            (value) {
-//              if (value != null) {
-//                donorDataList.add(value);
-//              }
-//            },
-//          );
-//        }
-//      },
-//    );
-//  }
-//
-//  bool hasExistingAccount(final String _email) {
-//    return this._donorEmails.contains(_email);
-//  }
 
 }
 

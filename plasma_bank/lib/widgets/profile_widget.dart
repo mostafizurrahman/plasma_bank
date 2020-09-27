@@ -122,23 +122,23 @@ class _ProfileState extends BaseKeyboardState<ProfileWidget> {
             super.setError(this._phoneConfig);
           } else {
             bool hasData = false;
-            if (donorHandler.hasExistingAccount(_email)) {
+            WidgetProvider.loading(context);
+            final bool isDonor = await donorHandler.isEmailRegisteredAsDonor(_email);
+            final bool isTaker = await donorHandler.isEmailRegisteredAsTaker(_email);
+            if (isDonor || isTaker) {
               this._onEmailExist(_email);
               hasData = true;
             }
-            WidgetProvider.loading(context);
             final _emailClient = EmailClient(_email);
-            if(!await _emailClient.validateEmail().catchError((_error){
+            final bool _hasValidEmail = await _emailClient.validateEmail().catchError((_error){
               return false;
-            })){
+            })??false;
+            if(!_hasValidEmail){
               Navigator.pop(context);
               WidgetTemplate.message(context, 'this email is invalid. please! enter a valid email address and try again, later. thank you!');
               hasData = true;
-            } else {
-              Navigator.pop(context);
             }
             if (!hasData) {
-              WidgetProvider.loading(context);
               final _repository = FirebaseRepositories();
               if (await _repository.getDonorData(_email) == null) {
                 final Map _arguments = Map.from(this.widget.arguments);
@@ -157,6 +157,8 @@ class _ProfileState extends BaseKeyboardState<ProfileWidget> {
                 Navigator.pop(context);
                 this._onEmailExist(_email);
               }
+            } else {
+              Navigator.pop(context);
             }
           }
           this.skipTouch = false;
@@ -170,7 +172,7 @@ class _ProfileState extends BaseKeyboardState<ProfileWidget> {
         onActionTap: () {
       Navigator.popUntil(context, ModalRoute.withName(AppRoutes.pageRouteHome));
       Future.delayed(Duration(microseconds: 200), () async {
-        donorHandler.donorLoginBehavior.sink.add(_email);
+        donorHandler.verificationEmail = _email;
       });
     });
   }

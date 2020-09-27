@@ -1,5 +1,6 @@
 import 'dart:io';
 
+import 'package:app_settings/app_settings.dart';
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter/src/widgets/framework.dart';
@@ -62,7 +63,7 @@ class _CollectorState extends BaseAddressState<BloodCollectorWidget> {
   @override
   double getContentHeight() {
     // TODO: implement getContentHeight
-    return 1500;
+    return 1650;
   }
 
   @override
@@ -291,6 +292,7 @@ class _CollectorState extends BaseAddressState<BloodCollectorWidget> {
             'hospital_address' : _hospital,
             'injection_date' : _date,
             'bag_count' : _bags,
+
             'disease_name' : _disease,
           };
 

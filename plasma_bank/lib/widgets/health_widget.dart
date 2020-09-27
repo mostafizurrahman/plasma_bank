@@ -281,7 +281,7 @@ class _HealthState extends BaseKeyboardState<HealthWidget> {
   }
 
   _openDataUploader(final BloodDonor donor){
-    showDialog(context: this.context, builder: (_)=>UploaderWidget(donor, donorHandler.donorEmails, onCompleted));
+    showDialog(context: this.context, builder: (_)=>UploaderWidget(donor, onCompleted));
   }
 
 

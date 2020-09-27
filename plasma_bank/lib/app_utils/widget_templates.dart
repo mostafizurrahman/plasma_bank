@@ -326,6 +326,14 @@ class WidgetTemplate {
 
   static Widget getProfilePicture(final Person _donor,
       {double proHeight = 50}) {
+    if(_donor == null || _donor.profilePicture == null || _donor.profilePicture.imageUrl == null){
+      return Center(
+        child: Container(width:proHeight, height: proHeight , child: Icon(Icons.person, size: 30,), decoration: BoxDecoration(
+            borderRadius: BorderRadius.all(  Radius.circular(200)),
+            border: Border.all(width: 0.75,color: Colors.grey,style: BorderStyle.solid)
+        ),),
+      );
+    }
 //    return WidgetTemplate.getImageWidget(_donor.profilePicture);
     return ClipRRect(
       borderRadius: BorderRadius.all(Radius.circular(100)),
@@ -349,6 +357,7 @@ class WidgetTemplate {
   }
 
   static Widget getImageWidget(final ImgurResponse _response) {
+
     return Image.network(
       _response.thumbUrl,
       fit: BoxFit.cover,

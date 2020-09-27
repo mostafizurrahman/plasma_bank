@@ -80,10 +80,10 @@ class _AccountState extends State<AccountsWidget> {
             }
             return ListView.builder(
               scrollDirection: Axis.vertical,
-              itemCount: donorHandler.donorDataList.length,
+              itemCount: donorHandler.bloodDonorList.length,
 //            itemExtent: 120,
               itemBuilder: (_context, _index) {
-                final _data = donorHandler.donorDataList[_index];
+                final _data = donorHandler.bloodDonorList[_index];
                 return _getDonorWidget(_data);
 
 //                            this.getCountryItem(_data);

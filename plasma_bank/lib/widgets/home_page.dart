@@ -1,3 +1,4 @@
+import 'dart:async';
 import 'dart:io';
 import 'package:app_settings/app_settings.dart';
 import 'package:flutter/cupertino.dart';
@@ -41,25 +42,36 @@ class _HomePageState extends State<HomePageWidget> {
   final _db = FirebaseRepositories();
   bool visible = false;
 
+//  StreamSubscription _verifySubscription;
+//  StreamSubscription _loginSubscriptoin;
   @override
   void initState() {
     super.initState();
-    donorHandler.donorLoginBehavior.listen(_openLoginWidget);
-    donorHandler.readLoginData(this._loginBehavior);
+    donorHandler.verifyEmailBehavior.listen(_openLoginWidget);
+//    _loginSubscriptoin = donorHandler.loginEmailBehavior.listen((value) { })
+//    donorHandler.readLoginData(this._loginBehavior);
   }
 
-  _openLoginWidget(final String value) async {
-    donorHandler.verificationEmail = value;
-    final _data = {
-      '\"email\"' : '\"$value\"' ,
-      '\"codes\"': '\"${donorHandler.identifier}\"',
-      '\"channel\"': '\"${deviceInfo.appPlatform}\"',
-      '\"pkg_name\"': '\"${deviceInfo.appBundleID}\"',
-    };
+//  _closeVerification(){
+//    _verifySubscription.cancel();
+//  }
 
-    WidgetProvider.loading(context);
-    final _handler = ImgurHandler();
-    _handler.sendCode(_data).then(_onCodeSend).catchError(_onError);
+  _openLoginWidget(final String value) async {
+
+    if (value != null && value.isNotEmpty) {
+      final _data = {
+        '\"email\"': '\"$value\"',
+        '\"codes\"': '\"${donorHandler.identifier}\"',
+        '\"channel\"': '\"${deviceInfo.appPlatform}\"',
+        '\"pkg_name\"': '\"${deviceInfo.appBundleID}\"',
+      };
+      debugPrint(
+          "_______________________________________________________$value ___________________________________");
+
+      WidgetProvider.loading(context);
+      final _handler = ImgurHandler();
+      _handler.sendCode(_data).then(_onCodeSend).catchError(_onError);
+    }
   }
 
   _onCodeSend(final _response) {
@@ -99,7 +111,8 @@ class _HomePageState extends State<HomePageWidget> {
 
   @override
   Widget build(BuildContext context) {
-
+//    Navigator.pop(context);
+//    donorHandler.readDeviceList();
     return StreamBuilder(
       stream: this._bottomNavigationBehavior.stream,
       initialData: 2,
@@ -226,7 +239,7 @@ class _HomePageState extends State<HomePageWidget> {
     return Container(
       width: displayData.width,
       height:  displayData.height * 0.75,
-      child: SwitchWidget(_onSwitched, _onLogout, _onLoginProfile, donorHandler.loginDonor),
+      child: SwitchWidget(_onSwitched, _onLogout, _onLoginProfile),
     );
   }
 
@@ -241,7 +254,7 @@ class _HomePageState extends State<HomePageWidget> {
   Widget _getLoginWidget() {
     return StreamBuilder(
       stream: _loginBehavior.stream,
-      initialData: donorHandler.loginDonor,
+      initialData: donorHandler.loginEmailBehavior.value,
       builder: (context, snapshot) {
         if (snapshot.hasData && snapshot.data != null) {
           if (snapshot.data is String) {
@@ -365,15 +378,16 @@ class _HomePageState extends State<HomePageWidget> {
     debugPrint('please login to collector');
   }
 
+  StreamSubscription _loginSubscription;
   _onVerifiedOTP(){
-    donorHandler.loginEmail = donorHandler.verificationEmail;
-    donorHandler.donorBehavior.listen((value) {
-      donorHandler.closeDonor();
+    if(_loginSubscription!= null){
+      _loginSubscription.cancel();
+    }
+    donorHandler.setLoginEmail(donorHandler.verificationEmail);
+    _loginSubscription = donorHandler.loginEmailBehavior.listen((value) {
       this._loginBehavior.sink.add(value);
       this._segmentBehavior.sink.add(1);
       donorHandler.verificationEmail = null;
-    }).onError((error){
-      donorHandler.closeDonor();
     });
 
   }
@@ -401,13 +415,15 @@ class _HomePageState extends State<HomePageWidget> {
     this._openLoginWidget(donorHandler.verificationEmail);
   }
 
-  _onLogout(String _email) {
-    donorHandler.logoutEmail(_email);
+  _onLogout() {
+    final String _email = donorHandler.loginEmail;
+    donorHandler.setLoginEmail(null);
     this._loginBehavior.sink.add(null);
     WidgetTemplate.message(context, "The account associated with $_email is logout successfully!");
   }
 
   _onSwitched(String _email) {
-    this._openLoginWidget(_email);
+    donorHandler.verificationEmail = _email;
+//    this._openLoginWidget(_email);
   }
 }

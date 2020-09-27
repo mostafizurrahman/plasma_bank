@@ -24,7 +24,7 @@ class DonorWidget extends StatelessWidget {
           child: Container(
             width: displayData.width,
             height: MediaQuery.of(context).size.height -
-                (displayData.top > 0 ? 50 : 60) -
+                (displayData.top > 0 ? 60 : 70) -
                 displayData.bottom -
                 displayData.top,
             //color: Color.fromARGB(255, _background, _background, _background),

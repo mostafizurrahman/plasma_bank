@@ -33,10 +33,7 @@ abstract class BaseKeyboardState<T extends BaseWidget> extends State<T> {
 //    );
   }
 
-  @override
-  void dispose() {
-    super.dispose();
-  }
+
 //  onKeyboardVisibilityChanged(final bool isKeyboardVisible) {
 //    _keyboardState = isKeyboardVisible;
 //    debugPrint(isKeyboardVisible.toString());

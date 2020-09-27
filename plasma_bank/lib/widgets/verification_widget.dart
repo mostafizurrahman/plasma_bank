@@ -262,9 +262,7 @@ class _VerificationState extends State<VerificationWidget> {
     }
     if (_otp.length == 6 && donorHandler.verifyIDF(_otp)) {
       this.widget.onCodeVerified();
-      Future.delayed(Duration(microseconds: 300), (){
-        Navigator.pop(context);
-      });
+      Navigator.pop(context);
     } else {
       Navigator.pop(context);
       Future.delayed(Duration(microseconds: 300), (){
@@ -273,8 +271,6 @@ class _VerificationState extends State<VerificationWidget> {
                 +  this.widget.emailAddress ?? 'email'
                 + ', enter all digits properly.');
       });
-
-
     }
   }
 
