@@ -2,6 +2,7 @@ import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
 import 'package:plasma_bank/app_utils/app_constants.dart';
 import 'package:plasma_bank/app_utils/image_helper.dart';
+import 'package:plasma_bank/app_utils/widget_providers.dart';
 
 class DonorWidget extends StatelessWidget {
   final bool visible;
@@ -65,9 +66,9 @@ class DonorWidget extends StatelessWidget {
                         crossAxisAlignment: CrossAxisAlignment.center,
                         mainAxisAlignment: MainAxisAlignment.end,
                         children: [
-                          getButton(
+                          WidgetProvider.getBloodActionButton(
                             () => this._onTap(false),
-                            'FIND DONORS',
+                            'FIND A DONOR',
                             Icon(
                               Icons.group,
                               color: Colors
@@ -78,9 +79,9 @@ class DonorWidget extends StatelessWidget {
                           SizedBox(
                             height: 12,
                           ),
-                          getButton(
+                          WidgetProvider.getBloodActionButton(
                             () => this._onTap(true),
-                            'REGISTER DONOR',
+                            'REGISTER AS DONOR',
                             Icon(
                               Icons.add,
                               color: Colors
@@ -104,31 +105,5 @@ class DonorWidget extends StatelessWidget {
     );
   }
 
-  Widget getButton(Function _onTap, String _title, Icon icon) {
-    return SizedBox(
-      width: displayData.width - 96,
-      height: 45,
-      child: RaisedButton(
-        color: AppStyle.theme().withAlpha(180),
-        onPressed: _onTap,
-        child: Row(
-          mainAxisAlignment: MainAxisAlignment.center,
-          children: <Widget>[
-            icon,
-            SizedBox(
-              width: 12,
-            ),
-            Text(
-              _title,
-              textAlign: TextAlign.center,
-              style: TextStyle(
-                color: Colors.white,
-                fontSize: 12,
-              ),
-            )
-          ],
-        ),
-      ),
-    );
-  }
+
 }

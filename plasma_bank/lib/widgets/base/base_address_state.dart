@@ -18,11 +18,11 @@ class BaseAddressState<T extends BaseWidget> extends BaseKeyboardState {
   final TextConfig _regionConfig = TextConfig('region/state');
   final TextConfig _cityConfig = TextConfig('city/county/division');
   final TextConfig _streetConfig = TextConfig('street/locality',
-      maxLen: 100, animateLen: AppStyle.KEYBOARD_HEIGHT_TEXT);
+      maxLen: 100, animateLen: 400);
   final TextConfig _zipConfig = TextConfig('zip/po',
-      isDigit: true, maxLen: 6, animateLen: AppStyle.KEYBOARD_HEIGHT_TEXT);
+      isDigit: true, maxLen: 6, animateLen: 400);
   final TextConfig _houseConfig = TextConfig('house/other',
-      maxLen: 75, animateLen: AppStyle.KEYBOARD_HEIGHT_TEXT);
+      maxLen: 75, animateLen: 400);
 
   @override
   void initState() {
@@ -116,7 +116,7 @@ class BaseAddressState<T extends BaseWidget> extends BaseKeyboardState {
     }
   }
 
-  onAddressCompleted(Map _address){
+  onAddressCompleted(Map _address) async {
     Navigator.pushNamed(
       context,
       AppRoutes.pagePersonData,
@@ -187,6 +187,7 @@ class BaseAddressState<T extends BaseWidget> extends BaseKeyboardState {
     final _countryList = this.widget.getData('country_list');
     WidgetProvider.openLocationPopUp(context, _countryList, _onCountrySelected,
         _onPopupClosed, 'PICK YOUR COUNTRY');
+    skipPopup = false;
   }
 
   _openRegionList() async {
@@ -304,6 +305,9 @@ class BaseAddressState<T extends BaseWidget> extends BaseKeyboardState {
     return SizedBox();
   }
 
+  Widget getTopWidget(){
+    return SizedBox();
+  }
 
   @override
   double getContentHeight() {
@@ -318,7 +322,7 @@ class BaseAddressState<T extends BaseWidget> extends BaseKeyboardState {
       child: Column(
         crossAxisAlignment: CrossAxisAlignment.start,
         children: [
-
+          getTopWidget(),
           Padding(
             padding: EdgeInsets.only(top: 24, bottom: 12),
             child: Row(

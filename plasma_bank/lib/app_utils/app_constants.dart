@@ -258,7 +258,7 @@ class TextConfig {
   final FocusNode focusNode = FocusNode();
   final String labelText;
   String errorText;
-  TextConfig(this.labelText, {this.isDigit = false, this.maxLen = 25, this.maxLine = 1, this.animateLen = 0.0});
+  TextConfig(this.labelText, {this.isDigit = false, this.maxLen = 75, this.maxLine = 1, this.animateLen = 0.0});
 }
 
 class DisplayData {

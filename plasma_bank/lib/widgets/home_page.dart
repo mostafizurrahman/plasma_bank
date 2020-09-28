@@ -369,7 +369,9 @@ class _HomePageState extends State<HomePageWidget> {
       this._openAddress(isBloodTaker:true);
       //register collection
     } else {
-      Navigator.pushNamed(context, AppRoutes.pageBloodTaker);
+      _openAddress(isBloodTaker: true);
+//      sdfs
+//      Navigator.pushNamed(context, AppRoutes.pageBloodTaker);
       //show previous list
     }
   }

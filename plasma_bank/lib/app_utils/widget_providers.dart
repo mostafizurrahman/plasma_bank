@@ -401,31 +401,24 @@ class WidgetProvider {
   }
 
   static  openLocationPopUp(BuildContext context, final _data, final _selected, final _closed, final _title) {
-    Future.delayed(
-      Duration(
-        milliseconds: 100,
-      ),
-          () {
-        showDialog(
-          context: context,
-          barrierDismissible: false,
-          builder: (_) => Material(
-            color: Colors.transparent,
-            type: MaterialType.card,
-            child: WillPopScope(
-              onWillPop: () async {
-                return Future<bool>.value(false);
-              },
-              child: DataPickerWidget(
-                _data,
-                _selected,
-                _closed,
-                picketTitle: _title,
-              ),
-            ),
+    showDialog(
+      context: context,
+      barrierDismissible: false,
+      builder: (_) => Material(
+        color: Colors.transparent,
+        type: MaterialType.card,
+        child: WillPopScope(
+          onWillPop: () async {
+            return Future<bool>.value(false);
+          },
+          child: DataPickerWidget(
+            _data,
+            _selected,
+            _closed,
+            picketTitle: _title,
           ),
-        );
-      },
+        ),
+      ),
     );
   }
 
@@ -452,6 +445,38 @@ class WidgetProvider {
             onPopupClosed,
             'SELECT BLOOD GROUP');
       },
+    );
+  }
+
+  static Widget getBloodActionButton(Function _onTap, String _title, Icon icon) {
+    return SizedBox(
+      width: displayData.width - 48,
+      height: 45,
+      child: RaisedButton(
+        shape: RoundedRectangleBorder(
+        borderRadius: BorderRadius.circular(5.0),
+      ),
+
+        color: AppStyle.theme(),
+        onPressed: _onTap,
+        child: Row(
+          mainAxisAlignment: MainAxisAlignment.center,
+          children: <Widget>[
+            icon,
+            SizedBox(
+              width: 12,
+            ),
+            Text(
+              _title,
+              textAlign: TextAlign.center,
+              style: TextStyle(
+                color: Colors.white,
+                fontSize: 12,
+              ),
+            )
+          ],
+        ),
+      ),
     );
   }
 }

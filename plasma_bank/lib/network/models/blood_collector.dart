@@ -19,6 +19,7 @@ class BloodCollector extends Person {
     this.bloodCount = _inputData['bag_count'];
     this.diseaseName = _inputData['disease_name'];
 
+
   }
 
 
@@ -28,7 +29,7 @@ class BloodCollector extends Person {
     _data['injection_date'] = this.injectionDate;
     _data['blood_count'] = this.bloodCount;
     _data['disease_name'] = this.diseaseName;
-    _data;
+    return _data;
   }
 //  Person.fromMap(Map<String, dynamic> map, {this.reference})
 //      : assert(map['name'] != null),

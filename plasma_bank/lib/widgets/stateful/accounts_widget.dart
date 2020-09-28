@@ -1,6 +1,7 @@
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
 import 'package:plasma_bank/app_utils/app_constants.dart';
+import 'package:plasma_bank/network/models/abstract_person.dart';
 import 'package:plasma_bank/network/person_handler.dart';
 import 'package:plasma_bank/network/models/blood_donor.dart';
 import 'package:plasma_bank/network/models/plasma_donor.dart';
@@ -95,7 +96,7 @@ class _AccountState extends State<AccountsWidget> {
     );
   }
 
-  Widget _getDonorWidget(final BloodDonor bloodDonor) {
+  Widget _getDonorWidget(final Person bloodDonor) {
     bool _isPlasmaDonor = bloodDonor is PlasmaDonor;
 
     return Padding(

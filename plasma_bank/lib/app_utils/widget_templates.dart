@@ -383,7 +383,7 @@ class WidgetTemplate {
 
   static Widget getSectionTitle(final String _title, final IconData _icon) {
     return Padding(
-      padding: EdgeInsets.only(top: 48, bottom: 12),
+      padding: EdgeInsets.only(top: 32, bottom: 12),
       child: Row(
         children: [
           WidgetProvider.circledIcon(

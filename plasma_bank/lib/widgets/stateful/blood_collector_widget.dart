@@ -12,7 +12,10 @@ import 'package:plasma_bank/app_utils/widget_templates.dart';
 import 'package:plasma_bank/media/dash_painter.dart';
 import 'package:plasma_bank/network/api_client.dart';
 import 'package:plasma_bank/network/firebase_repositories.dart';
+import 'package:plasma_bank/network/imgur_handler.dart';
+import 'package:plasma_bank/network/models/abstract_person.dart';
 import 'package:plasma_bank/network/models/blood_collector.dart';
+import 'package:plasma_bank/network/person_handler.dart';
 import 'package:plasma_bank/widgets/base/base_address_state.dart';
 import 'package:plasma_bank/widgets/base/base_state.dart';
 import 'package:plasma_bank/widgets/base_widget.dart';
@@ -49,27 +52,24 @@ class _CollectorState extends BaseAddressState<BloodCollectorWidget> {
 
   @override
   String getActionTitle() {
-    // TODO: implement getActionTitle
     return 'REGISTER';
   }
 
   @override
   String getAppBarTitle() {
-    // TODO: implement getAppBarTitle
-    return 'BLOOD COLLECTION';
+    return 'COLLECTOR';
   }
 
 
   @override
   double getContentHeight() {
-    // TODO: implement getContentHeight
-    return 1650;
+    return 930;
   }
 
   @override
   void dispose() {
     super.dispose();
-    this._profileBehavior.close();
+    _profileBehavior.close();
   }
 
   Widget getImageWidget() {
@@ -126,7 +126,7 @@ class _CollectorState extends BaseAddressState<BloodCollectorWidget> {
         'image_named': 'profile',
         'is_front_camera': true,
         'on_captured_function': _onCaptured,
-        'route_name': AppRoutes.pagePersonData,
+        'route_name': AppRoutes.pageBloodTaker,
       };
       Navigator.pushNamed(context, AppRoutes.pageRouteCamera,
           arguments: arguments);
@@ -154,21 +154,18 @@ class _CollectorState extends BaseAddressState<BloodCollectorWidget> {
   }
 
   @override
-  Widget getBottomWidget() {
-    // TODO: implement getBottomWidget
+  Widget getTopWidget() {
+    // TODO: implement getTopWidget
     return Column(
       children: <Widget>[
-        SizedBox(height: 16,),
         WidgetTemplate.getSectionTitle('PERSONAL INFO', Icons.info_outline),
         Padding(
-          padding: EdgeInsets.only(top: 24, bottom: 24),
+          padding: EdgeInsets.only(top: 12, bottom: 12),
           child: Center(
             child: this.getImageWidget(),
           ),
         ),
-        CustomPaint(
-          painter: DashLinePainter(),
-        ),
+
         WidgetTemplate.getCustomTextField(
           this._nameConfig,
               () => super.onTextFieldTapped(this._nameConfig),
@@ -181,6 +178,15 @@ class _CollectorState extends BaseAddressState<BloodCollectorWidget> {
           this._emailConfig,
               () => super.onTextFieldTapped(this._emailConfig),
         ),
+      ],
+    );
+  }
+
+
+  Widget BottomWidget() {
+    // TODO: implement getBottomWidget
+    return Column(
+      children: <Widget>[
 
         WidgetTemplate.getSectionTitle('REASONS', Icons.info_outline),
         SizedBox(
@@ -260,7 +266,7 @@ class _CollectorState extends BaseAddressState<BloodCollectorWidget> {
   _onPopupClosed() {}
 
   @override
-  onAddressCompleted(Map _address) {
+  onAddressCompleted(Map _address) async {
     // TODO: implement onAddressCompleted
     final String _name = this._nameConfig.controller.text;
     final String _email = this._emailConfig.controller.text;
@@ -273,61 +279,48 @@ class _CollectorState extends BaseAddressState<BloodCollectorWidget> {
       super.setError(_emailConfig);
     } else {
       WidgetProvider.loading(context);
-      final _emailClient = EmailClient(_email);
-      _emailClient.validateEmail().then((value) {
+      final bool isTaker = await donorHandler.isEmailRegisteredAsTaker(_email);
+      final bool isDonor = !isTaker ? await donorHandler.isEmailRegisteredAsDonor(_email) : isTaker;
+      if(isTaker || isDonor){
         Navigator.pop(context);
+        WidgetTemplate.message(context, 'email is already registered, please! goto settings and login to post a blood collection request');
+        return;
+      }
+      final _emailClient = EmailClient(_email);
+
+      _emailClient.validateEmail().then((value) {
         if(value){
-          final String _disease = this._diseaseConfig.controller.text;
-          final String _hospital = this._hospitalConfig.controller.text;
-          final String _group = this._bloodConfig.controller.text;
-          final String _bags = this._countConfig.controller.text;
-          final String _date = this._dateConfig.controller.text;
 
           final Map _takerData = {
             'name' : _name,
             'mobile' : _mobile,
             'email' : _email,
-            'blood_group' : _group,
             'address' : _address,
-            'hospital_address' : _hospital,
-            'injection_date' : _date,
-            'bag_count' : _bags,
-
-            'disease_name' : _disease,
           };
-
-//          this.fullName = _map['name'];
-//          this.mobileNumber = _map['mobile'];
-//          this.bloodGroup = _map['blood_group'];
-//          this.address = Address.fromMap(_map['address']);
-//          this.emailAddress = _map['email'];
-//          this.profilePicture = ImgurResponse(jsonData:  _map['profile']);
-//          this.age = _map['age'];
-//          this.birthDate = getDOB(_map['age']);
-//          this.hasValidPostal = _map['is_valid_postal'] ?? false;
-//          this.verificationCode = _map['code'];
-//          this.hospitalAddress = _inputData['hospital_address'];
-//          this.injectionDate = _inputData['injection_date'];
-//          this.bloodCount = _inputData['bag_count'];
-//          this.diseaseName = _inputData['disease_name'];
-//
+          if(this._profileBehavior.value != null){
+            final String _image = ImgurHandler.getBase64(this._profileBehavior.value);
+            final ImgurHandler _handler = ImgurHandler();
+             _handler.uploadImage(_image).then((_response){
+               _takerData['profile']  = _response.toJson();
+               _uploadTakerData(_takerData);
+            }).catchError((_error){
+              Navigator.pop(context);
+             });
+          } else {
+            _uploadTakerData(_takerData);
+          }
 
 
 
-          final BloodCollector _collector = BloodCollector(_takerData);
-          final FirebaseRepositories _repository = FirebaseRepositories();
-          _repository.uploadBloodCollector(_collector).then((data) {
-            Navigator.pop(context);
-            WidgetTemplate.message(context,
-                'your registration was successful! please! login to continue...',
-                actionTitle: 'LOGIN', onActionTap: () {
-                  Navigator.pop(context);
-                  final Function _onTap = this.widget.getData('login_tap');
-                  _onTap();
-                });
-          }).catchError((_error) {
-            Navigator.pop(context);
-          });
+//          final String _disease = this._diseaseConfig.controller.text;
+//          final String _hospital = this._hospitalConfig.controller.text;
+//          final String _group = this._bloodConfig.controller.text;
+//          final String _bags = this._countConfig.controller.text;
+//          final String _date = this._dateConfig.controller.text;
+
+
+
+
         } else {
           Navigator.pop(context);
           WidgetTemplate.message(context, 'this email is invalid. please! enter a valid email address and try again, later. thank you!');
@@ -335,11 +328,25 @@ class _CollectorState extends BaseAddressState<BloodCollectorWidget> {
       }).catchError((_error){
         Navigator.pop(context);
       });
-
-
     }
   }
 
+  _uploadTakerData(Map _takerData){
+    final BloodCollector _collector = BloodCollector(_takerData);
+    final FirebaseRepositories _repository = FirebaseRepositories();
+    _repository.uploadBloodCollector(_collector).then((data) {
+      Navigator.pop(context);
+      WidgetTemplate.message(context,
+          'your registration was successful! please! login to continue...',
+          actionTitle: 'LOGIN', onActionTap: () {
+            Navigator.pop(context);
+            final Function _onTap = this.widget.getData('login_tap');
+            _onTap();
+          });
+    }).catchError((_error) {
+      Navigator.pop(context);
+    });
+  }
 
 
   _showDatePicker(TextConfig _controller) async {
