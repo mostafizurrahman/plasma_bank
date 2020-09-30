@@ -6,6 +6,7 @@ import 'package:plasma_bank/app_utils/widget_providers.dart';
 import 'package:plasma_bank/app_utils/widget_templates.dart';
 import 'package:plasma_bank/media/dash_painter.dart';
 import 'package:plasma_bank/network/firebase_repositories.dart';
+import 'package:plasma_bank/network/models/abstract_person.dart';
 import 'package:plasma_bank/network/models/blood_donor.dart';
 import 'package:plasma_bank/network/models/plasma_donor.dart';
 import 'package:plasma_bank/widgets/base_widget.dart';
@@ -29,6 +30,9 @@ class _DonorListState extends State<DonorListWidget> {
   BehaviorSubject<List<BloodDonor>> _listBehavior = BehaviorSubject();
   final _repository = FirebaseRepositories();
 
+  bool isDonorList;
+
+
   @override
   void dispose() {
     // TODO: implement dispose
@@ -40,6 +44,7 @@ class _DonorListState extends State<DonorListWidget> {
   void initState() {
     // TODO: implement initState
     super.initState();
+    this.isDonorList = widget.getData('is_donor');
   }
 
   @override
@@ -70,8 +75,9 @@ class _DonorListState extends State<DonorListWidget> {
             bottom: displayData.bottom,
           ),
           child: StreamBuilder<QuerySnapshot>(
-            stream:
-                _repository.getDonorList(this.widget.getData('filter_data')),
+            stream: this.isDonorList ?
+                _repository.getDonorList(this.widget.getData('filter_data')) :
+            _repository.getCollectorList(this.widget.getData('filter_data')),
             builder: (context, snapshot) {
               final QuerySnapshot _documentData = snapshot.data;
               if (snapshot.data == null) {
@@ -79,6 +85,7 @@ class _DonorListState extends State<DonorListWidget> {
                   child: WidgetProvider.loadingBox(),
                 );
               }
+              debugPrint(_documentData.documents.toString());
               return ListView.builder(
                 scrollDirection: Axis.vertical,
                 itemCount: _documentData.documents.length + 1,
@@ -89,7 +96,7 @@ class _DonorListState extends State<DonorListWidget> {
                     ); //WidgetTemplate.getPageAppBar(context);
                   }
                   final _data = _documentData.documents[_index - 1].data;
-                  final _donor = BloodDonor.fromMap(_data);
+                  final _donor = Person.fromMap(_data);
                   return _getDonorWidget(_donor);
                 },
               );
@@ -100,7 +107,7 @@ class _DonorListState extends State<DonorListWidget> {
     );
   }
 
-  Widget _getDonorWidget(final BloodDonor bloodDonor) {
+  Widget _getDonorWidget(final Person bloodDonor) {
     bool _isPlasmaDonor = bloodDonor is PlasmaDonor;
 
     return Padding(
@@ -194,14 +201,14 @@ class _DonorListState extends State<DonorListWidget> {
     );
   }
 
-  _communicate(int index, BloodDonor bloodDonor) {
+  _communicate(int index, Person bloodDonor) {
     if (index == 2) {
       Navigator.pushNamed(context, AppRoutes.pagePrivateChat,
           arguments: {'donor': bloodDonor});
     }
   }
 
-  Widget _getAction(IconData _iconData, int index, BloodDonor bloodDonor) {
+  Widget _getAction(IconData _iconData, int index, Person bloodDonor) {
     return Container(
       decoration: AppStyle.circularShadow(),
       child: ClipRRect(

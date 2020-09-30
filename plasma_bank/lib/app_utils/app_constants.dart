@@ -16,6 +16,7 @@ class AppRoutes {
 
   static const String pageLocateTerms = '/home/locationTerms';
   static const String pageAddressData = '/home/address';
+  static const String pagePostBlood = '/home/blood/post';
   static const String pageBloodTaker = '/home/collector';
   static const String pagePersonData = '/home/personal';
   static const String pageHealthData = '/home/personal/health';

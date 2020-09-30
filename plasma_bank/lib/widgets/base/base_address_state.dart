@@ -5,6 +5,7 @@ import 'package:plasma_bank/app_utils/widget_templates.dart';
 import 'package:plasma_bank/app_utils/app_constants.dart';
 import 'package:plasma_bank/app_utils/location_provider.dart';
 import 'package:plasma_bank/app_utils/widget_providers.dart';
+import 'package:plasma_bank/network/models/abstract_person.dart';
 import 'package:plasma_bank/widgets/base/base_state.dart';
 
 import '../base_widget.dart';
@@ -28,6 +29,17 @@ class BaseAddressState<T extends BaseWidget> extends BaseKeyboardState {
   void initState() {
     super.initState();
     _setLocation();
+  }
+
+  onPersonSet(final Person _loginPerson){
+
+    this._countryConfig.controller.text = _loginPerson.address.country;
+    this._countryCodeConfig.controller.text = _loginPerson.address.code;
+    this._regionConfig.controller.text = _loginPerson.address.state;
+    this._cityConfig.controller.text = _loginPerson.address.city;
+    this._streetConfig.controller.text = _loginPerson.address.street;
+    this._zipConfig.controller.text = _loginPerson.address.postalCode;
+    this._houseConfig.controller.text = _loginPerson.address.house;
   }
 
 

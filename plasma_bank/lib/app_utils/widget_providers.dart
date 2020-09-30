@@ -249,7 +249,7 @@ class WidgetProvider {
           borderRadius: BorderRadius.all(Radius.circular(5)),
         ),
         height: 50,
-        width: displayData.width-padding,
+        width: displayData.width - padding,
         child: RaisedButton(
           shape: RoundedRectangleBorder(
             side: BorderSide(color: AppStyle.theme(), width: 1.5),
@@ -393,14 +393,18 @@ class WidgetProvider {
           : title is String
               ? Text(
                   title,
-                  style: TextStyle(fontSize: 22, fontFamily: AppStyle.fontBold, color: Colors.black),
+                  style: TextStyle(
+                      fontSize: 22,
+                      fontFamily: AppStyle.fontBold,
+                      color: Colors.black),
                 )
               : title,
       centerTitle: true,
     );
   }
 
-  static  openLocationPopUp(BuildContext context, final _data, final _selected, final _closed, final _title) {
+  static openLocationPopUp(BuildContext context, final _data, final _selected,
+      final _closed, final _title) {
     showDialog(
       context: context,
       barrierDismissible: false,
@@ -422,41 +426,32 @@ class WidgetProvider {
     );
   }
 
-  static Widget bloodGroupWidget(final BuildContext context, final TextConfig _textConfig, {final Function onPopupClosed}){
+  static Widget bloodGroupWidget(
+      final BuildContext context, final TextConfig _textConfig,
+      {final Function onPopupClosed}) {
     return WidgetTemplate.getTextField(
       _textConfig,
       isReadOnly: true,
       onTap: () {
-        List _data = [
-          'A+',
-          'B+',
-          'AB+',
-          'O+',
-          'A-',
-          'B-',
-          'AB-',
-          'O-'
-        ];
-        WidgetProvider.openLocationPopUp(
-            context,
-            _data,
-                (_data) => _textConfig.controller.text =
-                _data.toString(),
-            onPopupClosed,
-            'SELECT BLOOD GROUP');
+        List _data = ['A+', 'B+', 'AB+', 'O+', 'A-', 'B-', 'AB-', 'O-'];
+        WidgetProvider.openLocationPopUp(context, _data, (_data) {
+          if (_data != null && _data.isNotEmpty) {
+            _textConfig.controller.text = _data.toString();
+          }
+        }, onPopupClosed, 'SELECT BLOOD GROUP');
       },
     );
   }
 
-  static Widget getBloodActionButton(Function _onTap, String _title, Icon icon) {
+  static Widget getBloodActionButton(
+      Function _onTap, String _title, Icon icon) {
     return SizedBox(
       width: displayData.width - 48,
       height: 45,
       child: RaisedButton(
         shape: RoundedRectangleBorder(
-        borderRadius: BorderRadius.circular(5.0),
-      ),
-
+          borderRadius: BorderRadius.circular(5.0),
+        ),
         color: AppStyle.theme(),
         onPressed: _onTap,
         child: Row(

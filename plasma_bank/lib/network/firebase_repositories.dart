@@ -217,7 +217,7 @@ class FirebaseRepositories {
   Stream<QuerySnapshot> getCollectorList(final FilterData filterData) {
 
     final _reference = Firestore.instance.collection('collector')
-        .where('code', isNull: true ,)
+        .where('age', isNull: true ,)
         .where('address.code', isEqualTo: filterData.code)
         .where('address.state', isEqualTo: filterData.region)
         .where('address.city', isEqualTo: filterData.city);

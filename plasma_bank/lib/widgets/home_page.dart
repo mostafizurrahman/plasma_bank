@@ -57,7 +57,6 @@ class _HomePageState extends State<HomePageWidget> {
 //  }
 
   _openLoginWidget(final String value) async {
-
     if (value != null && value.isNotEmpty) {
       final _data = {
         '\"email\"': '\"$value\"',
@@ -166,7 +165,6 @@ class _HomePageState extends State<HomePageWidget> {
   }
 
   _getHomeScreen(BuildContext _context) {
-
     double _top = displayData.top;
     final _height = 1340.0;
 
@@ -178,22 +176,47 @@ class _HomePageState extends State<HomePageWidget> {
       child: Padding(
         padding: EdgeInsets.only(
             left: 24, right: 24, top: (_top + 24.0), bottom: 24),
-        child: Column(
-          mainAxisAlignment: MainAxisAlignment.start,
-          crossAxisAlignment: CrossAxisAlignment.center,
-          children: [
-            CoronavirusWidget(this._db.getGlobalCovidData(), displayData.width),
-            HomePlasmaWidget(_profileHeight, _onTapDonor),
-            HomePlasmaWidget(_profileHeight, _onTapDonor, isBloodDonor: true),
-          ],
+        child: Scaffold(
+          body: Column(
+            mainAxisAlignment: MainAxisAlignment.start,
+            crossAxisAlignment: CrossAxisAlignment.center,
+            children: [
+              CoronavirusWidget(
+                  this._db.getGlobalCovidData(), displayData.width),
+              HomePlasmaWidget(_profileHeight, _onTapDonor),
+              HomePlasmaWidget(_profileHeight, _onTapDonor, isBloodDonor: true),
+            ],
+          ),
+          floatingActionButton: WidgetProvider.getBloodActionButton(
+            () => this._openBloodRequest(),
+            'POST A BLOOD REQUEST',
+            Icon(
+              Icons.place,
+              color: Colors.white, //Color.fromARGB(255, 240, 10, 80),
+              size: 30,
+            ),
+          ),
         ),
       ),
     );
   }
 
+  _openBloodRequest() {
+    if (donorHandler.loginEmail == null) {
+      WidgetTemplate.message(context,
+          'you are not logged in, please login as blood donor or blood collector then post a blood request',
+          onActionTap: () {
+        Navigator.pop(context);
+        this._bottomNavigationBehavior.sink.add(4);
+        this._segmentBehavior.sink.add(2);
+      });
+    } else {
+      Navigator.pushNamed(context, AppRoutes.pagePostBlood);
+    }
+  }
+
   Widget _getSettingsWidget(
       BuildContext _context, final double _navigatorHeight) {
-
     return Container(
       width: displayData.width,
       height: displayData.height - _navigatorHeight,
@@ -219,13 +242,17 @@ class _HomePageState extends State<HomePageWidget> {
                   groupValue: snapshot.data,
                   children: loadTabs(),
                 ),
-                SizedBox(height: 4,),
+                SizedBox(
+                  height: 4,
+                ),
                 Expanded(
                   child: snapshot.data == 0
                       ? _getAccountListWidget()
                       : snapshot.data == 1
                           ? _getLoginWidget()
-                          : snapshot.data == 2 ? _getSwitchAccount() : Container(),
+                          : snapshot.data == 2
+                              ? _getSwitchAccount()
+                              : Container(),
                 ),
               ],
             );
@@ -238,12 +265,12 @@ class _HomePageState extends State<HomePageWidget> {
   Widget _getSwitchAccount() {
     return Container(
       width: displayData.width,
-      height:  displayData.height * 0.75,
+      height: displayData.height * 0.75,
       child: SwitchWidget(_onSwitched, _onLogout, _onLoginProfile),
     );
   }
 
-  _onLoginProfile(){
+  _onLoginProfile() {
     _bottomNavigationBehavior.sink.add(1);
   }
 
@@ -261,7 +288,8 @@ class _HomePageState extends State<HomePageWidget> {
             return Container(
               width: displayData.width,
               height: displayData.height * 0.75,
-              child: VerificationWidget(snapshot.data, _onVerifiedOTP, _resendOTP ),
+              child:
+                  VerificationWidget(snapshot.data, _onVerifiedOTP, _resendOTP),
             );
           }
           if (snapshot.data is BloodDonor) {
@@ -297,7 +325,7 @@ class _HomePageState extends State<HomePageWidget> {
           child: Text(
             _data[i],
             style: TextStyle(
-              fontSize: 10,
+                fontSize: 10,
                 color: _selected == i ? Colors.white : AppStyle.theme()),
           ),
         ),
@@ -336,7 +364,7 @@ class _HomePageState extends State<HomePageWidget> {
     return MessageListWidget(_onLoginSelectedLogin);
   }
 
-  _onLoginSelectedLogin(){
+  _onLoginSelectedLogin() {
     this._bottomNavigationBehavior.sink.add(4);
     this._segmentBehavior.sink.add(2);
   }
@@ -347,7 +375,8 @@ class _HomePageState extends State<HomePageWidget> {
 //      Navigator.pushNamed(context, AppRoutes.pageLocateTerms);
       //star registration
     } else {
-      Navigator.pushNamed(context, AppRoutes.pageFilterDonor);
+      Navigator.pushNamed(context, AppRoutes.pageFilterDonor,
+          arguments: {'is_donor': true});
 
       //display donor list
     }
@@ -366,23 +395,25 @@ class _HomePageState extends State<HomePageWidget> {
 
   _onCollectTap(bool isCollection) {
     if (isCollection) {
-      this._openAddress(isBloodTaker:true);
+      this._openAddress(isBloodTaker: true);
       //register collection
     } else {
-      _openAddress(isBloodTaker: true);
+      Navigator.pushNamed(context, AppRoutes.pageFilterDonor,
+          arguments: {'is_donor': false});
+//      _openAddress(isBloodTaker: true);
 //      sdfs
 //      Navigator.pushNamed(context, AppRoutes.pageBloodTaker);
       //show previous list
     }
   }
 
-  _onLoginTaped(){
+  _onLoginTaped() {
     debugPrint('please login to collector');
   }
 
   StreamSubscription _loginSubscription;
-  _onVerifiedOTP(){
-    if(_loginSubscription!= null){
+  _onVerifiedOTP() {
+    if (_loginSubscription != null) {
       _loginSubscription.cancel();
     }
     donorHandler.setLoginEmail(donorHandler.verificationEmail);
@@ -391,29 +422,28 @@ class _HomePageState extends State<HomePageWidget> {
       this._segmentBehavior.sink.add(1);
       donorHandler.verificationEmail = null;
     });
-
   }
-
-
-
 
   _openAddress({bool isBloodTaker = false}) async {
     WidgetProvider.loading(context);
-    final _countryList = await locationProvider.getCountryList().catchError((_error){
+    final _countryList =
+        await locationProvider.getCountryList().catchError((_error) {
       return null;
     });
     Navigator.pop(context);
-    final Map _map = isBloodTaker ? {'login_tap' : _onLoginTaped, 'country_list': _countryList} : {'country_list': _countryList};
-    final _route = isBloodTaker ? AppRoutes.pageBloodTaker : AppRoutes.pageAddressData;
-    if(_countryList != null) {
+    final Map _map = isBloodTaker
+        ? {'login_tap': _onLoginTaped, 'country_list': _countryList}
+        : {'country_list': _countryList};
+    final _route =
+        isBloodTaker ? AppRoutes.pageBloodTaker : AppRoutes.pageAddressData;
+    if (_countryList != null) {
       Future.delayed(Duration(milliseconds: 100), () {
-        Navigator.pushNamed(context, _route,
-            arguments: _map);
+        Navigator.pushNamed(context, _route, arguments: _map);
       });
     }
   }
 
-  _resendOTP(){
+  _resendOTP() {
     this._openLoginWidget(donorHandler.verificationEmail);
   }
 
@@ -421,7 +451,8 @@ class _HomePageState extends State<HomePageWidget> {
     final String _email = donorHandler.loginEmail;
     donorHandler.setLoginEmail(null);
     this._loginBehavior.sink.add(null);
-    WidgetTemplate.message(context, "The account associated with $_email is logout successfully!");
+    WidgetTemplate.message(
+        context, "The account associated with $_email is logout successfully!");
   }
 
   _onSwitched(String _email) {

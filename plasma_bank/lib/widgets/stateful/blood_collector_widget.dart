@@ -42,13 +42,7 @@ class _CollectorState extends BaseAddressState<BloodCollectorWidget> {
   final TextConfig _phoneConfig = TextConfig('mobile #', isDigit: true);
 //  final TextConfig _addressConfig =
 //      TextConfig('address', maxLine: 2, animateLen: 200);
-  final TextConfig _diseaseConfig = TextConfig('disease', animateLen: 350);
-  final TextConfig _countConfig =
-      TextConfig('blood bags count', isDigit: true, maxLen: 1);
-  final TextConfig _hospitalConfig =
-      TextConfig('hospital address', animateLen: 350, maxLen: 250);
-  final TextConfig _bloodConfig = TextConfig('blood group');
-  final TextConfig _dateConfig = TextConfig('date for blood');
+
 
   @override
   String getActionTitle() {
@@ -183,83 +177,6 @@ class _CollectorState extends BaseAddressState<BloodCollectorWidget> {
   }
 
 
-  Widget BottomWidget() {
-    // TODO: implement getBottomWidget
-    return Column(
-      children: <Widget>[
-
-        WidgetTemplate.getSectionTitle('REASONS', Icons.info_outline),
-        SizedBox(
-          height: 24,
-        ),
-        Text(
-          'enter brief details about the disease for whom you are collecting the blood, so that donner may realise the relevancy of blood donation. ignore, if you are unwilling to disclose.',
-          textAlign: TextAlign.justify,
-        ),
-        WidgetTemplate.getCustomTextField(
-          this._diseaseConfig,
-              () => super.onTextFieldTapped(this._diseaseConfig),
-        ),
-        SizedBox(
-          height: 24,
-        ),
-        Text(
-          'enter the hospital name or address, so that near by donner may contact you soon.',
-          textAlign: TextAlign.justify,
-        ),
-        WidgetTemplate.getCustomTextField(
-          this._hospitalConfig,
-              () => super.onTextFieldTapped(this._hospitalConfig),
-        ),
-        SizedBox(
-          height: 24,
-        ),
-        Text(
-          'enter the number of total blood bags you need for the patient.',
-          textAlign: TextAlign.justify,
-        ),
-        WidgetTemplate.getCustomTextField(
-          this._countConfig,
-              () => super.onTextFieldTapped(this._countConfig),
-        ),
-
-        SizedBox(
-          height: 24,
-        ),
-        Text(
-          'enter the approximate date when you need the blood.',
-          textAlign: TextAlign.justify,
-        ),
-        WidgetTemplate.getTextField(
-          this._dateConfig,
-          isReadOnly: true,
-          showCursor: false,
-          onTap: () => this._showDatePicker(this._dateConfig),
-        ),
-        SizedBox(
-          height: 24,
-        ),
-        Text(
-          'you may specify the blood group, which you are looking for. it will help you find the blood more easily.',
-          textAlign: TextAlign.justify,
-        ),
-        WidgetTemplate.getTextField(
-          _bloodConfig,
-          maxLen: 15,
-          isReadOnly: true,
-          onTap: () {
-            List _data = ['A+', 'B+', 'AB+', 'O+', 'A-', 'B-', 'AB-', 'O-'];
-            WidgetProvider.openLocationPopUp(
-                context,
-                _data,
-                    (_data) => _bloodConfig.controller.text = _data.toString(),
-                _onPopupClosed,
-                'SELECT BLOOD GROUP');
-          },
-        ),
-      ],
-    );
-  }
 
 
 
@@ -349,16 +266,5 @@ class _CollectorState extends BaseAddressState<BloodCollectorWidget> {
   }
 
 
-  _showDatePicker(TextConfig _controller) async {
-    final _dateTime = await showDatePicker(
-        context: context,
-        initialDate:  DateTime.now(),
-        lastDate: DateTime(DateTime.now().year+2),
-        firstDate: DateTime.now());
-    if (_dateTime != null) {
-      String date = DateFormat("dd MMM, yyyy").format(_dateTime);
-      _controller.controller.text = date;
-//      _controller.timestamped = _dateTime;
-    }
-  }
+
 }
