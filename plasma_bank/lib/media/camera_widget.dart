@@ -9,7 +9,7 @@ import 'package:permission_handler/permission_handler.dart';
 import 'package:plasma_bank/app_utils/app_constants.dart';
 
 import 'package:plasma_bank/app_utils/widget_templates.dart';
-import 'package:plasma_bank/widgets/base_widget.dart';
+import 'package:plasma_bank/widgets/base/base_widget.dart';
 import 'package:rxdart/rxdart.dart';
 
 class CameraWidget extends BaseWidget {

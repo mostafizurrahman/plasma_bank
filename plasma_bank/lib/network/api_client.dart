@@ -296,24 +296,6 @@ class EmailClient {
         this._isValid = _responseMap['deliverable'];
         return isValid;
       }
-//      final Response _response = await get("https://${_array.last}").catchError((_error){
-//
-//      });
-//      if(_response != null){
-//        if(_response.statusCode > 299){
-//          return false;
-//        }
-//      } else {
-//        final Response _response = await get("http://${_array.last}").catchError((_error){
-//
-//        });
-//        if(_response == null){
-//          return false;
-//        }
-//        if(_response.statusCode > 299){
-//          return false;
-//        }
-//      }
     }
 
     return false;

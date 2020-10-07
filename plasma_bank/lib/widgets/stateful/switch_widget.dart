@@ -1,18 +1,21 @@
+import 'dart:ffi';
+
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
 import 'package:plasma_bank/app_utils/app_constants.dart';
 import 'package:plasma_bank/app_utils/widget_providers.dart';
 import 'package:plasma_bank/app_utils/widget_templates.dart';
-import 'package:plasma_bank/network/donor_handler.dart';
+import 'package:plasma_bank/network/models/abstract_person.dart';
+import 'package:plasma_bank/network/person_handler.dart';
 import 'package:plasma_bank/network/models/blood_donor.dart';
 import 'package:rxdart/rxdart.dart';
 
 class SwitchWidget extends StatefulWidget {
   final Function(String) onSwitched;
-  final Function(String) onLogOut;
+  final Function onLogOut;
   final Function onLogin;
-  final BloodDonor bloodDonor;
-  SwitchWidget(this.onSwitched, this.onLogOut, this.onLogin, this.bloodDonor);
+
+  SwitchWidget(this.onSwitched, this.onLogOut, this.onLogin);
 
   @override
   State<StatefulWidget> createState() {
@@ -22,9 +25,21 @@ class SwitchWidget extends StatefulWidget {
 }
 
 class _SwitchState extends State<SwitchWidget> {
+
+  Person _loginPerson;
+
   final TextConfig _emailConfig = TextConfig('email');
 
   BehaviorSubject<bool> _logoutBehavior = BehaviorSubject<bool>();
+
+  @override
+  void initState() {
+    // TODO: implement initState
+    super.initState();
+    _loginPerson = donorHandler.loginEmailBehavior.value;
+  }
+
+
   @override
   void dispose() {
     // TODO: implement dispose
@@ -35,6 +50,8 @@ class _SwitchState extends State<SwitchWidget> {
   }
   @override
   Widget build(BuildContext context) {
+//    Navigator.pop(context);
+
     return Scaffold(
       backgroundColor: Colors.transparent,
       body: Padding(
@@ -97,7 +114,7 @@ class _SwitchState extends State<SwitchWidget> {
                             SizedBox(
                               width: 12,
                             ),
-                            _getProfile(),
+                            WidgetTemplate.getProfilePicture(_loginPerson),
                             SizedBox(
                               width: 12,
                             ),
@@ -105,16 +122,16 @@ class _SwitchState extends State<SwitchWidget> {
                               crossAxisAlignment: CrossAxisAlignment.start,
                               mainAxisAlignment: MainAxisAlignment.end,
                               children: <Widget>[
-                                Text(this.widget.bloodDonor.fullName),
+                                Text(_loginPerson.fullName),
                                 Text(
-                                  this.widget.bloodDonor.emailAddress,
+                                  _loginPerson.emailAddress,
                                   style: TextStyle(
                                       fontSize: 12,
                                       color: Colors.black54,
                                       height: 1.5),
                                 ),
                                 Text(
-                                  this.widget.bloodDonor.mobileNumber,
+                                  _loginPerson.mobileNumber,
                                   style: TextStyle(
                                       fontSize: 12,
                                       color: Colors.grey,
@@ -123,7 +140,7 @@ class _SwitchState extends State<SwitchWidget> {
                                 Container(
 
                                   width:
-                                  displayData.width - 48 - 99,
+                                  displayData.width - 48 - 75,
 //                                color: Colors.grey,
                                   child: Row(
                                     crossAxisAlignment: CrossAxisAlignment.end,
@@ -132,17 +149,7 @@ class _SwitchState extends State<SwitchWidget> {
                                       Ink(
                                         child: InkWell(
                                           onTap: (){
-                                            final _email = this.widget.bloodDonor.emailAddress;
-                                            this.widget.onLogOut(_email);
-                                            WidgetProvider.loading(context);
-                                            Future.delayed(Duration(seconds: 1), (){
-                                              Navigator.pop(context);
-                                              donorHandler.loginEmail = null;
-                                              this._logoutBehavior.sink.add(false);
-
-                                              WidgetTemplate.message(context, 'The donor account of $_email has been logged out successfully!');
-                                              Navigator.pop(context);
-                                            });
+                                            this.widget.onLogOut();
                                           },
                                           child: Icon(
                                             Icons.cancel,
@@ -180,11 +187,11 @@ class _SwitchState extends State<SwitchWidget> {
       child: ClipRRect(
         borderRadius:
         BorderRadius.all(Radius.circular(110)),
-        child: this.widget.bloodDonor.profilePicture?.imageUrl != null ?
+        child: _loginPerson.profilePicture?.imageUrl != null ?
 //                            Icon(Icons.person, size: 60,)
 
         Image(
-          image: NetworkImage( this.widget.bloodDonor.profilePicture.imageUrl),
+          image: NetworkImage( _loginPerson.profilePicture.imageUrl),
           fit: BoxFit.fitWidth,
         )
 

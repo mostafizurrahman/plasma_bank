@@ -8,6 +8,7 @@ import 'package:rxdart/rxdart.dart';
 class AppConstants {}
 
 class AppRoutes {
+  static const String pageBloodDetails = "/home/donor/list/blood_details";
   static const String pageRouteHome = "/home";
   static const String pageRouteDonor = "/home/donor";
   static const String pageRouteEntry = "/home/entry";
@@ -16,6 +17,7 @@ class AppRoutes {
 
   static const String pageLocateTerms = '/home/locationTerms';
   static const String pageAddressData = '/home/address';
+  static const String pagePostBlood = '/home/blood/post';
   static const String pageBloodTaker = '/home/collector';
   static const String pagePersonData = '/home/personal';
   static const String pageHealthData = '/home/personal/health';
@@ -258,7 +260,7 @@ class TextConfig {
   final FocusNode focusNode = FocusNode();
   final String labelText;
   String errorText;
-  TextConfig(this.labelText, {this.isDigit = false, this.maxLen = 25, this.maxLine = 1, this.animateLen = 0.0});
+  TextConfig(this.labelText, {this.isDigit = false, this.maxLen = 75, this.maxLine = 1, this.animateLen = 0.0});
 }
 
 class DisplayData {

@@ -1,5 +1,7 @@
+import 'dart:async';
 import 'dart:io';
 
+import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
@@ -8,7 +10,7 @@ import 'package:plasma_bank/app_utils/app_constants.dart';
 import 'package:plasma_bank/app_utils/image_helper.dart';
 import 'package:plasma_bank/app_utils/localization_helper.dart';
 import 'package:plasma_bank/app_utils/widget_templates.dart';
-import 'package:plasma_bank/network/donor_handler.dart';
+import 'package:plasma_bank/network/person_handler.dart';
 import 'package:plasma_bank/network/firebase_repositories.dart';
 
 class LaunchScreenWidget extends StatefulWidget {
@@ -30,36 +32,22 @@ class _LaunchScreenState extends State<LaunchScreenWidget> {
   }
 
 
+
   _setDeviceInfo() async {
 
     const platform = const MethodChannel('flutter.plasma.com.device_info');
     final Map<dynamic, dynamic> _deviceIno = await platform.invokeMethod('getPackageInfo');
-
     deviceInfo.appPlatform = Platform.isIOS ? 'iOS' : Platform.isAndroid ? 'Android' : 'unknown';
     deviceInfo.appBundleID = _deviceIno['package_name'];
     deviceInfo.deviceUUID = _deviceIno['device_id'].toString().toUpperCase();
+    debugPrint(deviceInfo.deviceUUID);
     deviceInfo.deviceNamed = _deviceIno['device_name'];
-    final _repository = FirebaseRepositories();
-    _repository.getEmails().listen((event) {
-      if(event.data != null && event.data.isNotEmpty){
-        event.data.forEach((k,v) {
-          debugPrint('key :' + k.toString() + ' value ' + v.toString());
-          if(v is List<dynamic>){
-            List<String> _list = List();
-            v.forEach((value) {
-              if(value is String) {
-                _list.add(value);
-              }
-            });
-            donorHandler.donorEmails = _list;
-          }
-        });
-      } else {
-        debugPrint('empty');
-      }
-    });
+
     debugPrint('done');
   }
+
+
+
 
   @override
   Widget build(BuildContext context) {

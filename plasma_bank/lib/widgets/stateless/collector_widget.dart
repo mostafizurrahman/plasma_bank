@@ -2,11 +2,14 @@ import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
 import 'package:plasma_bank/app_utils/app_constants.dart';
 import 'package:plasma_bank/app_utils/image_helper.dart';
+import 'package:plasma_bank/app_utils/widget_providers.dart';
 
 class CollectorWidget extends StatelessWidget {
   final bool visible;
   final Function(bool) _onCollectTap;
-  CollectorWidget(this.visible, this._onCollectTap);
+  final Function _onBloodRequested;
+  final Function _onListOfRequests;
+  CollectorWidget(this.visible, this._onCollectTap, this._onBloodRequested, this._onListOfRequests);
 
   @override
   Widget build(BuildContext context) {
@@ -26,7 +29,7 @@ class CollectorWidget extends StatelessWidget {
           child: Container(
             width: _width,
             height: MediaQuery.of(context).size.height -
-                (_top > 0 ? 43 : 60) -
+                (_top > 0 ? 70 : 80) -
                 _bottom -
                 _top,
             //color: Color.fromARGB(255, _background, _background, _background),
@@ -50,79 +53,85 @@ class CollectorWidget extends StatelessWidget {
                       style: TextStyle(
                         fontSize: 28,
                         fontFamily: AppStyle.fontBold,
+                        color: AppStyle.theme(),
                       ),
                     ),
                   ),
                   Padding(
                     padding: EdgeInsets.only(
-                        top: 28, bottom: 110, left: 24, right: 24),
+                        top: 16,  left: 24, right: 24),
                     child: Text(
-                      'collect a beg of blood for a reason, let the reason to be life. there is no great joy than saving a life.',
+                      'collect a beg of blood for a reason, let the reason to be life.',
                       style: TextStyle(fontSize: 16, height: 1.3, color: Colors.black.withAlpha(175)),
                     ),
                   ),
-                ],
-              ),
-              floatingActionButtonLocation: FloatingActionButtonLocation.endFloat,
-              floatingActionButton: Padding(
-                padding: EdgeInsets.only(right: 12, bottom: 8),
-                child: Container(
-                  width: 135,
-                  height: 60,
-                  child: Column(
-                    crossAxisAlignment: CrossAxisAlignment.end,
-                    children: [
-                      Container(
-                        width: _width,
-                        child: Row(
-                          crossAxisAlignment: CrossAxisAlignment.end,
-                          mainAxisAlignment: MainAxisAlignment.end,
-                          children: [
-                            Row(
-                              crossAxisAlignment: CrossAxisAlignment.end,
-                              mainAxisAlignment: MainAxisAlignment.end,
-                              children: [
-                                FloatingActionButton(
-                                  heroTag: '__hero',
-                                  onPressed: () {
-                                    this._onCollectTap(false);
-                                  },
-                                  backgroundColor: Colors.white,
-                                  child: Icon(
-                                    Icons.group,
-                                    color: AppStyle
-                                        .theme(), //Color.fromARGB(255, 240, 10, 80),
-                                    size: 35,
-                                  ),
-                                ),
-                              ],
-                            ),
-                            SizedBox(
-                              width: 16,
-                            ),
-                            Row(
-                              crossAxisAlignment: CrossAxisAlignment.end,
-                              mainAxisAlignment: MainAxisAlignment.end,
-                              children: [
-                                FloatingActionButton(
-                                  onPressed: () {
-                                    this._onCollectTap(true);
-                                  },
-                                  backgroundColor: Colors.white,
-                                  child: Icon(
-                                    Icons.add,
-                                    color: AppStyle.theme(),
-                                    size: 50,
-                                  ),
-                                ),
-                              ],
-                            ),
-                          ],
-                        ),
-                      ),
-                    ],
+
+                  SizedBox(
+                    height: 16,
                   ),
-                ),
+                  Container(
+                    width: displayData.width,
+                    child: Column(
+                      crossAxisAlignment: CrossAxisAlignment.center,
+                      mainAxisAlignment: MainAxisAlignment.end,
+                      children: [
+                        WidgetProvider.getBloodActionButton(
+                              () => this._onCollectTap(false),
+                          'LIST OF PEOPLE WHO ARE LOOKING FOR BLOODS',
+                          Icon(
+                            Icons.group,
+                            color: Colors
+                                .white, //Color.fromARGB(255, 240, 10, 80),
+                            size: 30,
+                          ),
+                        ),
+                        SizedBox(
+                          height: 16,
+                        ),
+                        WidgetProvider.getBloodActionButton(
+                              () => this._onCollectTap(true),
+                          'REGISTER TO POST A BLOOD REQUEST',
+                          Icon(
+                            Icons.add,
+                            color: Colors
+                                .white, //Color.fromARGB(255, 240, 10, 80),
+                            size: 30,
+                          ),
+                        ),
+                        SizedBox(
+                          height: 16,
+                        ),
+                        WidgetProvider.getBloodActionButton(
+                              this._onListOfRequests,
+                          'LIST OF BLOOD REQUESTS IN A SPECIFIC AREA',
+                          Icon(
+                            Icons.format_list_bulleted,
+                            color: Colors
+                                .white, //Color.fromARGB(255, 240, 10, 80),
+                            size: 30,
+                          ),
+                        ),
+                        SizedBox(
+                          height: 16,
+                        ),
+                        WidgetProvider.getBloodActionButton(
+                              this._onBloodRequested,
+                          'POST A REQUEST TO GET BLOOD',
+                          Icon(
+                            Icons.add_circle,
+                            color: Colors
+                                .white, //Color.fromARGB(255, 240, 10, 80),
+                            size: 30,
+                          ),
+                        ),
+                        SizedBox(
+                          height: 16,
+                        ),
+                      ],
+                    ),
+                  ),
+                  SizedBox(height: 24,),
+                ],
               ),
             ),
           ),

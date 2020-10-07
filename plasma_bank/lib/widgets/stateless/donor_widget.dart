@@ -2,6 +2,7 @@ import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
 import 'package:plasma_bank/app_utils/app_constants.dart';
 import 'package:plasma_bank/app_utils/image_helper.dart';
+import 'package:plasma_bank/app_utils/widget_providers.dart';
 
 class DonorWidget extends StatelessWidget {
   final bool visible;
@@ -11,7 +12,6 @@ class DonorWidget extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-
 //    Navigator.pop(context);
     return SafeArea(
       child: Container(
@@ -24,7 +24,7 @@ class DonorWidget extends StatelessWidget {
           child: Container(
             width: displayData.width,
             height: MediaQuery.of(context).size.height -
-                (displayData.top > 0 ? 50 : 60) -
+                (displayData.top > 0 ? 60 : 70) -
                 displayData.bottom -
                 displayData.top,
             //color: Color.fromARGB(255, _background, _background, _background),
@@ -63,47 +63,34 @@ class DonorWidget extends StatelessWidget {
                     child: Container(
                       width: displayData.width,
                       child: Column(
-                        crossAxisAlignment: CrossAxisAlignment.end,
+                        crossAxisAlignment: CrossAxisAlignment.center,
                         mainAxisAlignment: MainAxisAlignment.end,
                         children: [
-                          Row(
-                            crossAxisAlignment: CrossAxisAlignment.end,
-                            mainAxisAlignment: MainAxisAlignment.end,
-                            children: [
-                              FloatingActionButton(
-                                heroTag: '__hero',
-                                onPressed: () {
-                                  this._onTap(false);
-                                },
-                                backgroundColor: Colors.white,
-                                child: Icon(
-                                  Icons.group,
-                                  color: AppStyle
-                                      .theme(), //Color.fromARGB(255, 240, 10, 80),
-                                  size: 35,
-                                ),
-                              ),
-                            ],
+                          WidgetProvider.getBloodActionButton(
+                            () => this._onTap(false),
+                            'FIND A DONOR',
+                            Icon(
+                              Icons.group,
+                              color: Colors
+                                  .white, //Color.fromARGB(255, 240, 10, 80),
+                              size: 30,
+                            ),
                           ),
                           SizedBox(
                             height: 12,
                           ),
-                          Row(
-                            crossAxisAlignment: CrossAxisAlignment.end,
-                            mainAxisAlignment: MainAxisAlignment.end,
-                            children: [
-                              FloatingActionButton(
-                                onPressed: () {
-                                  this._onTap(true);
-                                },
-                                backgroundColor: Colors.white,
-                                child: Icon(
-                                  Icons.add,
-                                  color: AppStyle.theme(),
-                                  size: 50,
-                                ),
-                              ),
-                            ],
+                          WidgetProvider.getBloodActionButton(
+                            () => this._onTap(true),
+                            'REGISTER AS DONOR',
+                            Icon(
+                              Icons.add,
+                              color: Colors
+                                  .white, //Color.fromARGB(255, 240, 10, 80),
+                              size: 30,
+                            ),
+                          ),
+                          SizedBox(
+                            height: 12,
                           ),
                         ],
                       ),
@@ -116,12 +103,7 @@ class DonorWidget extends StatelessWidget {
         ),
       ),
     );
-
-//    Scaffold(
-//      backgroundColor: Colors.transparent,
-//      body: ,
-////              floatingActionButtonLocation: FloatingActionButtonLocation.endFloat,
-//      floatingActionButton: ,
-//    )
   }
+
+
 }

@@ -5,6 +5,7 @@ import 'package:flutter/services.dart';
 import 'package:intl/intl.dart';
 import 'package:plasma_bank/network/imgur_handler.dart';
 import 'package:plasma_bank/network/message_repository.dart';
+import 'package:plasma_bank/network/models/abstract_person.dart';
 import 'package:plasma_bank/network/models/blood_donor.dart';
 
 import 'package:plasma_bank/widgets/stateless/message_widget.dart';
@@ -323,8 +324,16 @@ class WidgetTemplate {
     );
   }
 
-  static Widget getProfilePicture(final BloodDonor _donor,
+  static Widget getProfilePicture(final Person _donor,
       {double proHeight = 50}) {
+    if(_donor == null || _donor.profilePicture == null || _donor.profilePicture.imageUrl == null){
+      return Center(
+        child: Container(width:proHeight, height: proHeight , child: Icon(Icons.person, size: 30,), decoration: BoxDecoration(
+            borderRadius: BorderRadius.all(  Radius.circular(200)),
+            border: Border.all(width: 0.75,color: Colors.grey,style: BorderStyle.solid)
+        ),),
+      );
+    }
 //    return WidgetTemplate.getImageWidget(_donor.profilePicture);
     return ClipRRect(
       borderRadius: BorderRadius.all(Radius.circular(100)),
@@ -348,6 +357,7 @@ class WidgetTemplate {
   }
 
   static Widget getImageWidget(final ImgurResponse _response) {
+
     return Image.network(
       _response.thumbUrl,
       fit: BoxFit.cover,
@@ -373,7 +383,7 @@ class WidgetTemplate {
 
   static Widget getSectionTitle(final String _title, final IconData _icon) {
     return Padding(
-      padding: EdgeInsets.only(top: 48, bottom: 12),
+      padding: EdgeInsets.only(top: 32, bottom: 12),
       child: Row(
         children: [
           WidgetProvider.circledIcon(

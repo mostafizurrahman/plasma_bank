@@ -3,7 +3,7 @@ import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
 import 'package:plasma_bank/app_utils/app_constants.dart';
 import 'package:plasma_bank/app_utils/widget_templates.dart';
-import 'package:plasma_bank/network/donor_handler.dart';
+import 'package:plasma_bank/network/person_handler.dart';
 import 'package:plasma_bank/network/firebase_repositories.dart';
 import 'package:plasma_bank/network/imgur_handler.dart';
 import 'package:plasma_bank/network/models/blood_donor.dart';
@@ -13,9 +13,8 @@ import 'package:rxdart/rxdart.dart';
 
 class UploaderWidget extends StatefulWidget {
   final BloodDonor bloodDonor;
-  final List<String> emails;
   final Function(bool) onCompleted;
-  UploaderWidget(this.bloodDonor, this.emails, this.onCompleted);
+  UploaderWidget(this.bloodDonor, this.onCompleted);
 
   @override
   State<StatefulWidget> createState() {
@@ -263,10 +262,10 @@ class _UploaderState extends State<UploaderWidget> {
       final _fireRepository = FirebaseRepositories();
       final BloodDonor _donor = this.widget.bloodDonor;
       await _fireRepository
-          .uploadBloodDonor(_donor, this.widget.emails)
+          .uploadBloodDonor(_donor)
           .catchError(_onUploadError);
 
-        donorHandler.donorDataList.add(this.widget.bloodDonor);
+        donorHandler.bloodDonorList.add(this.widget.bloodDonor);
         Navigator.pop(context);
         WidgetTemplate.message(context, 'your account associated with email ${this.widget.bloodDonor.emailAddress} is created successfully, you can login to your account by email code verification, in OPTION menu!\nThank You!',
         onActionTap: ()=>this.widget.onCompleted(true), onTapped:()=>this.widget.onCompleted(true), headerColor: Colors.green, titleIcon: Icon(Icons.done, color: Colors.green,) );

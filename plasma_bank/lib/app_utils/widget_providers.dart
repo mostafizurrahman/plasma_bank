@@ -249,7 +249,7 @@ class WidgetProvider {
           borderRadius: BorderRadius.all(Radius.circular(5)),
         ),
         height: 50,
-        width: displayData.width-padding,
+        width: displayData.width - padding,
         child: RaisedButton(
           shape: RoundedRectangleBorder(
             side: BorderSide(color: AppStyle.theme(), width: 1.5),
@@ -388,70 +388,157 @@ class WidgetProvider {
 //          SizedBox(width: 12,),
         ],
       ),
+      titleSpacing: 0,
       title: title == null
           ? SizedBox()
           : title is String
               ? Text(
                   title,
-                  style: TextStyle(fontSize: 22, fontFamily: AppStyle.fontBold, color: Colors.black),
+                  style: TextStyle(
+                      fontSize: 22,
+                      fontFamily: AppStyle.fontBold,
+                      color: Colors.black),
                 )
               : title,
-      centerTitle: true,
+      centerTitle: false,
     );
   }
 
-  static  openLocationPopUp(BuildContext context, final _data, final _selected, final _closed, final _title) {
-    Future.delayed(
-      Duration(
-        milliseconds: 100,
-      ),
-          () {
-        showDialog(
-          context: context,
-          barrierDismissible: false,
-          builder: (_) => Material(
-            color: Colors.transparent,
-            type: MaterialType.card,
-            child: WillPopScope(
-              onWillPop: () async {
-                return Future<bool>.value(false);
-              },
-              child: DataPickerWidget(
-                _data,
-                _selected,
-                _closed,
-                picketTitle: _title,
-              ),
-            ),
+  static openLocationPopUp(BuildContext context, final _data, final _selected,
+      final _closed, final _title) {
+    showDialog(
+      context: context,
+      barrierDismissible: false,
+      builder: (_) => Material(
+        color: Colors.transparent,
+        type: MaterialType.card,
+        child: WillPopScope(
+          onWillPop: () async {
+            return Future<bool>.value(false);
+          },
+          child: DataPickerWidget(
+            _data,
+            _selected,
+            _closed,
+            picketTitle: _title,
           ),
-        );
-      },
+        ),
+      ),
     );
   }
 
-  static Widget bloodGroupWidget(final BuildContext context, final TextConfig _textConfig, {final Function onPopupClosed}){
+  static Widget bloodGroupWidget(
+      final BuildContext context, final TextConfig _textConfig,
+      {final Function onPopupClosed}) {
     return WidgetTemplate.getTextField(
       _textConfig,
       isReadOnly: true,
       onTap: () {
-        List _data = [
-          'A+',
-          'B+',
-          'AB+',
-          'O+',
-          'A-',
-          'B-',
-          'AB-',
-          'O-'
-        ];
-        WidgetProvider.openLocationPopUp(
-            context,
-            _data,
-                (_data) => _textConfig.controller.text =
-                _data.toString(),
-            onPopupClosed,
-            'SELECT BLOOD GROUP');
+        List _data = ['A+', 'B+', 'AB+', 'O+', 'A-', 'B-', 'AB-', 'O-'];
+        WidgetProvider.openLocationPopUp(context, _data, (_data) {
+          if (_data != null && _data.isNotEmpty) {
+            _textConfig.controller.text = _data.toString();
+          }
+        }, onPopupClosed, 'SELECT BLOOD GROUP');
       },
     );
   }
+
+  static Widget getBloodActionButton(
+      Function _onTap, String _title, Icon icon) {
+    return SizedBox(
+      width: displayData.width - 48,
+      height: 45,
+      child: RaisedButton(
+        shape: RoundedRectangleBorder(
+          borderRadius: BorderRadius.circular(5.0),
+        ),
+        color: AppStyle.theme(),
+        onPressed: _onTap,
+        child: Row(
+          mainAxisAlignment: MainAxisAlignment.center,
+          children: <Widget>[
+            icon,
+            SizedBox(
+              width: 12,
+            ),
+            Expanded(
+              child: Text(
+                _title,
+                textAlign: TextAlign.center,
+                style: TextStyle(
+                  color: Colors.white,
+                  fontWeight: FontWeight.w600,
+                  fontSize: 12,
+                ),
+              ),
+            )
+          ],
+        ),
+      ),
+    );
+  }
+
+  static Widget getMaterialButton(Function _onTap, IconData _icon,
+      {double dimension = 45}) {
+    return Container(
+      width: dimension,
+      height: dimension,
+      decoration: AppStyle.circularShadow(),
+      child: ClipRRect(
+        borderRadius: BorderRadius.all(Radius.circular(dimension)),
+        child: Material(
+          color: Colors.transparent,
+          child: Ink(
+            child: InkWell(
+              onTap: _onTap,
+              child: Icon(
+                _icon,
+                color: AppStyle.theme(),
+              ),
+            ),
+          ),
+        ),
+      ),
+    );
+  }
+
+  static Widget getCustomAppBar(
+      BuildContext _context, String _title, String _leading,
+      {Function onTapped}) {
+    return Container(
+      color: Colors.white,
+      child: Padding(
+        padding: const EdgeInsets.only(left: 24.0, top: 8, bottom: 8),
+        child: Row(
+          children: <Widget>[
+            Padding(
+              padding: EdgeInsets.only(right: 16),
+              child: WidgetProvider.getMaterialButton(() {
+                if (onTapped != null) {
+                  onTapped();
+                }
+                Navigator.pop(_context);
+              }, Icons.arrow_back_ios),
+            ),
+            Text(
+              _title,
+//              '_title${this.widget.bloodInfo.bloodGroup}',
+              style: TextStyle(
+                fontFamily: AppStyle.fontBold,
+                fontSize: 24,
+                color: AppStyle.theme(),
+              ),
+            ),
+            Text(
+              _leading,
+              style: TextStyle(fontFamily: AppStyle.fontBold, fontSize: 18),
+            ),
+          ],
+        ),
+      ),
+    );
+  }
+
+
 }

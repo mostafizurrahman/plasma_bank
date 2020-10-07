@@ -9,8 +9,9 @@ import 'package:intl/intl.dart';
 import 'package:plasma_bank/app_utils/app_constants.dart';
 import 'package:plasma_bank/app_utils/widget_providers.dart';
 import 'package:plasma_bank/app_utils/widget_templates.dart';
-import 'package:plasma_bank/network/donor_handler.dart';
+import 'package:plasma_bank/network/person_handler.dart';
 import 'package:plasma_bank/network/message_repository.dart';
+import 'package:plasma_bank/network/models/abstract_person.dart';
 import 'package:plasma_bank/network/models/blood_donor.dart';
 import 'package:plasma_bank/network/sqlit_database.dart';
 import 'package:plasma_bank/widgets/base/base_chat_widget.dart';
@@ -66,7 +67,7 @@ class _PrivateChatState extends BaseChatState<PrivateChatWidget> {
   }
 
   _initChatWidget() async {
-    final BloodDonor _donor = super.widget.getData('donor');
+    final Person _donor = super.widget.getData('donor');
     _messageRepository = MessageRepository.fromMail(_donor.emailAddress);
     _sqliteDatabase = new SqliteDatabase(
         donorHandler.loginEmail, _donor.emailAddress, _onInitialized);
@@ -398,7 +399,7 @@ class _PrivateChatState extends BaseChatState<PrivateChatWidget> {
   }
 
   Widget _getTopBar() {
-    final BloodDonor _donor = super.widget.getData('donor');
+    final Person _donor = super.widget.getData('donor');
     final Widget _title = Container(
       height: 50,
       child: Row(

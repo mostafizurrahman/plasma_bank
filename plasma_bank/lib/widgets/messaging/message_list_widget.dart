@@ -5,7 +5,7 @@ import 'package:intl/intl.dart';
 import 'package:plasma_bank/app_utils/app_constants.dart';
 import 'package:plasma_bank/app_utils/widget_providers.dart';
 import 'package:plasma_bank/app_utils/widget_templates.dart';
-import 'package:plasma_bank/network/donor_handler.dart';
+import 'package:plasma_bank/network/person_handler.dart';
 import 'package:plasma_bank/network/message_repository.dart';
 import 'package:plasma_bank/network/models/blood_donor.dart';
 
@@ -30,7 +30,7 @@ class _MessageListState extends State<MessageListWidget> {
       ),
       backgroundColor: Colors.transparent,
       leading: Padding(
-        padding: const EdgeInsets.only(left: 12),
+        padding: const EdgeInsets.only(left: 20),
         child: Icon(
           Icons.mail,
           size: 35,
