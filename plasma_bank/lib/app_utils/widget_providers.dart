@@ -388,6 +388,7 @@ class WidgetProvider {
 //          SizedBox(width: 12,),
         ],
       ),
+      titleSpacing: 0,
       title: title == null
           ? SizedBox()
           : title is String
@@ -399,7 +400,7 @@ class WidgetProvider {
                       color: Colors.black),
                 )
               : title,
-      centerTitle: true,
+      centerTitle: false,
     );
   }
 
@@ -474,4 +475,67 @@ class WidgetProvider {
       ),
     );
   }
+
+  static Widget getMaterialButton(Function _onTap, IconData _icon,
+      {double dimension = 45}) {
+    return Container(
+      width: dimension,
+      height: dimension,
+      decoration: AppStyle.circularShadow(),
+      child: ClipRRect(
+        borderRadius: BorderRadius.all(Radius.circular(dimension)),
+        child: Material(
+          color: Colors.transparent,
+          child: Ink(
+            child: InkWell(
+              onTap: _onTap,
+              child: Icon(
+                _icon,
+                color: AppStyle.theme(),
+              ),
+            ),
+          ),
+        ),
+      ),
+    );
+  }
+
+  static Widget getCustomAppBar(
+      BuildContext _context, String _title, String _leading,
+      {Function onTapped}) {
+    return Container(
+      color: Colors.white,
+      child: Padding(
+        padding: const EdgeInsets.only(left: 24.0, top: 8, bottom: 8),
+        child: Row(
+          children: <Widget>[
+            Padding(
+              padding: EdgeInsets.only(right: 16),
+              child: WidgetProvider.getMaterialButton(() {
+                if (onTapped != null) {
+                  onTapped();
+                }
+                Navigator.pop(_context);
+              }, Icons.arrow_back_ios),
+            ),
+            Text(
+              _title,
+//              '_title${this.widget.bloodInfo.bloodGroup}',
+              style: TextStyle(
+                fontFamily: AppStyle.fontBold,
+                fontSize: 24,
+                color: AppStyle.theme(),
+              ),
+            ),
+            Text(
+              _leading,
+              style: TextStyle(fontFamily: AppStyle.fontBold, fontSize: 18),
+            ),
+          ],
+        ),
+      ),
+    );
+  }
+
+
 }

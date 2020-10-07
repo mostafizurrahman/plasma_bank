@@ -20,6 +20,11 @@ class ImgurResponse {
     }
   }
 
+  ImgurResponse.fromThumb(final String _thumb){
+    this.thumbUrl = _thumb;
+  }
+
+
   setThumb(){
     if (this.imageUrl != null && this.imageUrl.isNotEmpty) {
       if (this.imageUrl.endsWith('.jpg')) {

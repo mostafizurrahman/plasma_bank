@@ -8,6 +8,7 @@ import 'package:rxdart/rxdart.dart';
 class AppConstants {}
 
 class AppRoutes {
+  static const String pageBloodDetails = "/home/donor/list/blood_details";
   static const String pageRouteHome = "/home";
   static const String pageRouteDonor = "/home/donor";
   static const String pageRouteEntry = "/home/entry";

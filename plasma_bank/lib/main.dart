@@ -6,6 +6,7 @@ import 'package:flutter/services.dart';
 import 'package:plasma_bank/app_utils/app_constants.dart';
 import 'package:plasma_bank/media/preview_widget.dart';
 import 'package:plasma_bank/widgets/address_widget.dart';
+import 'package:plasma_bank/widgets/blood_details.dart';
 import 'package:plasma_bank/widgets/donor_list_widget.dart';
 import 'package:plasma_bank/widgets/health_widget.dart';
 import 'package:plasma_bank/widgets/home_page.dart';
@@ -37,7 +38,6 @@ class PlasmaBank extends StatefulWidget {
 }
 
 class _PlasmaState extends State<PlasmaBank> {
-
   final Connectivity _connectivity = Connectivity();
 
   @override
@@ -48,7 +48,7 @@ class _PlasmaState extends State<PlasmaBank> {
   @override
   Widget build(BuildContext context) {
     SystemChrome.setSystemUIOverlayStyle(SystemUiOverlayStyle(
-        statusBarColor: Colors.transparent,
+      statusBarColor: Colors.transparent,
     ));
     FlutterStatusbarcolor.setStatusBarWhiteForeground(false);
     FlutterStatusbarcolor.setStatusBarColor(Colors.transparent);
@@ -78,19 +78,20 @@ class _PlasmaState extends State<PlasmaBank> {
         StreamBuilder(
           stream: this._connectivity.onConnectivityChanged,
           initialData: ConnectivityResult.wifi,
-          builder: (_context, _data){
-            if(_data.hasData && _data.data != ConnectivityResult.none){
+          builder: (_context, _data) {
+            if (_data.hasData && _data.data != ConnectivityResult.none) {
               return SizedBox();
             }
-            return Container( height: 20,
-                decoration: BoxDecoration(
-              color: AppStyle.theme(),
-              image: DecorationImage(
-                image: ImageHelper.getImageAsset('no_internet.png'),
-                fit: BoxFit.fitHeight,
-                alignment: Alignment.centerLeft,
+            return Container(
+              height: 20,
+              decoration: BoxDecoration(
+                color: AppStyle.theme(),
+                image: DecorationImage(
+                  image: ImageHelper.getImageAsset('no_internet.png'),
+                  fit: BoxFit.fitHeight,
+                  alignment: Alignment.centerLeft,
+                ),
               ),
-            ),
             );
           },
         )
@@ -101,38 +102,31 @@ class _PlasmaState extends State<PlasmaBank> {
   Route getGenerateRoute(RouteSettings settings) {
     Widget _widget;
 
-    if(settings.name == AppRoutes.pagePostBlood){
+    if(settings.name == AppRoutes.pageBloodDetails){
+      _widget = BloodDetails(settings.arguments);
+    }
+    else if (settings.name == AppRoutes.pagePostBlood) {
       _widget = RequestBloodWidget(settings.arguments);
-    }
-    else if(settings.name == AppRoutes.pageBloodTaker)
-      {
-        _widget = BloodCollectorWidget(settings.arguments);
-      }
-    else if(settings.name == AppRoutes.pageFilterDonor){
+    } else if (settings.name == AppRoutes.pageBloodTaker) {
+      _widget = BloodCollectorWidget(settings.arguments);
+    } else if (settings.name == AppRoutes.pageFilterDonor) {
       _widget = FilterWidget(settings.arguments);
-    }
-    else if(settings.name == AppRoutes.pagePrivateChat){
+    } else if (settings.name == AppRoutes.pagePrivateChat) {
       _widget = PrivateChatWidget(settings.arguments);
-    }
-    else if(settings.name == AppRoutes.pageDonorList){
+    } else if (settings.name == AppRoutes.pageDonorList) {
       _widget = DonorListWidget(settings.arguments);
-    }
-    else if(settings.name == AppRoutes.pageHealthData){
+    } else if (settings.name == AppRoutes.pageHealthData) {
       _widget = HealthWidget(settings.arguments);
     }
-    if(settings.name == AppRoutes.pagePersonData){
+    if (settings.name == AppRoutes.pagePersonData) {
       _widget = ProfileWidget(settings.arguments);
-    }
-    else if (settings.name == AppRoutes.pageAddressData) {
+    } else if (settings.name == AppRoutes.pageAddressData) {
       _widget = AddressWidget(settings.arguments);
-    }
-    else if (settings.name == AppRoutes.pageLocateTerms) {
+    } else if (settings.name == AppRoutes.pageLocateTerms) {
       _widget = LocationTerms();
-    }
-    else if (settings.name == AppRoutes.pageRouteCamera) {
+    } else if (settings.name == AppRoutes.pageRouteCamera) {
       _widget = CameraWidget(settings.arguments);
-    }
-    else if (settings.name == AppRoutes.pageRouteDonor) {
+    } else if (settings.name == AppRoutes.pageRouteDonor) {
       _widget = PatientInfoWidget();
     } else if (settings.name == AppRoutes.pageRouteHome) {
       _widget = HomePageWidget();

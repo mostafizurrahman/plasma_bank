@@ -27,7 +27,7 @@ class CollectorWidget extends StatelessWidget {
           child: Container(
             width: _width,
             height: MediaQuery.of(context).size.height -
-                (_top > 0 ? 55 : 75) -
+                (_top > 0 ? 70 : 80) -
                 _bottom -
                 _top,
             //color: Color.fromARGB(255, _background, _background, _background),

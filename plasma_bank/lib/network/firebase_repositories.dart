@@ -54,11 +54,19 @@ class FirebaseRepositories {
 //    }
   }
 
-  updatePatient(BloodCollector bloodHunter) async {
-//    await _patientCollection
-//        .document(bloodHunter.reference.documentID)
-//        .updateData(bloodHunter.toJson());
-  }
+//  Future<bool> updateBloodRequestPatient(Map bloodRequest) async {
+//    bool _updated = true;
+//    final Person _person = donorHandler.loginEmailBehavior.value;
+//    final String _path = _person.isDonor ? 'donor' : 'collector';
+//    await Firestore.instance
+//        .collection(_path)
+//        .document(_person.emailAddress)
+//        .updateData({'blood_data': bloodRequest}).catchError((_error) {
+//      _updated = false;
+//      debugPrint('error+occurred  ___________ ' + _error.toString());
+//    });
+//    return _updated;
+//  }
 
   Stream<DocumentSnapshot> getDonorEmails() {
     return Firestore.instance
@@ -109,15 +117,12 @@ class FirebaseRepositories {
     return null;
   }
 
-
-
   Future<bool> updateDonationDate(String _date, String _email) async {
     bool _updated = true;
     await Firestore.instance
         .collection('donor')
         .document(_email)
-        .updateData({'donation_date' : _date})
-        .catchError((_error) {
+        .updateData({'donation_date': _date}).catchError((_error) {
       _updated = false;
       debugPrint('error+occurred  ___________ ' + _error.toString());
     });
@@ -142,22 +147,22 @@ class FirebaseRepositories {
         .catchError((_error) {
       debugPrint('error+occurred  ___________ ' + _error.toString());
     });
-    final _code = (bloodCollector?.hasValidPostal ?? false)
-        ? bloodCollector.address.postalCode
-        : '-1';
-    await Firestore.instance
-        .collection('donor')
-        .document(bloodCollector.address.country)
-        .collection(bloodCollector.address.state)
-        .document(bloodCollector.address.city)
-        .collection('data')
-        .document(bloodCollector.emailAddress)
-        .setData({
-      'email': bloodCollector.emailAddress,
-      'postal': _code,
-    }).catchError((_error) {
-      debugPrint('error+occurred  ___________ ' + _error.toString());
-    });
+//    final _code = (bloodCollector?.hasValidPostal ?? false)
+//        ? bloodCollector.address.postalCode
+//        : '-1';
+//    await Firestore.instance
+//        .collection('donor')
+//        .document(bloodCollector.address.country)
+//        .collection(bloodCollector.address.state)
+//        .document(bloodCollector.address.city)
+//        .collection('data')
+//        .document(bloodCollector.emailAddress)
+//        .setData({
+//      'email': bloodCollector.emailAddress,
+//      'postal': _code,
+//    }).catchError((_error) {
+//      debugPrint('error+occurred  ___________ ' + _error.toString());
+//    });
   }
 
   uploadBloodDonor(final BloodDonor bloodDonor) async {
@@ -178,52 +183,98 @@ class FirebaseRepositories {
         .catchError((_error) {
       debugPrint('error+occurred  ___________ ' + _error.toString());
     });
-    final _code = (bloodDonor?.hasValidPostal ?? false)
-        ? bloodDonor.address.postalCode
-        : '-1';
-    await Firestore.instance
-        .collection('donor')
-        .document(bloodDonor.address.country)
-        .collection(bloodDonor.address.state)
-        .document(bloodDonor.address.city)
-        .collection('data')
-        .document(bloodDonor.emailAddress)
-        .setData({
-      'group': bloodDonor.bloodGroup,
-      'weight': bloodDonor.weight,
-      'height': bloodDonor.height,
-      'covid': bloodDonor is PlasmaDonor,
-      'postal': _code,
-    }).catchError((_error) {
-      debugPrint('error+occurred  ___________ ' + _error.toString());
-    });
+//    final _code = (bloodDonor?.hasValidPostal ?? false)
+//        ? bloodDonor.address.postalCode
+//        : '-1';
+//    await Firestore.instance
+//        .collection('donor')
+//        .document(bloodDonor.address.country)
+//        .collection(bloodDonor.address.state)
+//        .document(bloodDonor.address.city)
+//        .collection('data')
+//        .document(bloodDonor.emailAddress)
+//        .setData({
+//      'group': bloodDonor.bloodGroup,
+//      'weight': bloodDonor.weight,
+//      'height': bloodDonor.height,
+//      'covid': bloodDonor is PlasmaDonor,
+//      'postal': _code,
+//    }).catchError((_error) {
+//      debugPrint('error+occurred  ___________ ' + _error.toString());
+//    });
   }
 
+  Future<bool> uploadBloodRequest(Map bloodRequest) async {
+    bool isUpdated = true;
+    final Person _loginPerson = donorHandler.loginEmailBehavior.value;
+    if (_loginPerson != null) {
+      bloodRequest['client_email'] = _loginPerson.emailAddress;
+      bloodRequest['client_name'] = _loginPerson.fullName;
+      bloodRequest['client_mobile'] = _loginPerson.mobileNumber;
+      bloodRequest['client_picture'] = _loginPerson.profilePicture != null
+          ? _loginPerson.profilePicture.thumbUrl
+          : null;
+      await Firestore.instance
+          .collection('blood_request')
+          .document(_loginPerson.emailAddress)
+          .setData(bloodRequest)
+          .catchError((_error) {
+        isUpdated = false;
+        debugPrint('error+occurred  ___________ ' + _error.toString());
+      });
+    }
+    return isUpdated;
+  }
 
   Stream<QuerySnapshot> getDonorList(final FilterData filterData) {
-
-   final _reference = Firestore.instance.collection('donor')
-        .where('disease', isNull: true ,)
-       .where('address.code', isEqualTo: filterData.code)
-       .where('address.state', isEqualTo: filterData.region)
-       .where('address.city', isEqualTo: filterData.city);
+    final _reference = Firestore.instance
+        .collection('donor')
+        .where(
+          'disease',
+          isNull: true,
+        )
+        .where('address.code', isEqualTo: filterData.code)
+        .where('address.state', isEqualTo: filterData.region)
+        .where('address.city', isEqualTo: filterData.city);
 //        .where('address.city', isEqualTo: filterData.city);
-    if(filterData.bloodGroup != null && filterData.bloodGroup.isNotEmpty){
-      return _reference.where('blood_group',  isEqualTo: filterData.bloodGroup).snapshots();
+    if (filterData.bloodGroup != null && filterData.bloodGroup.isNotEmpty) {
+      return _reference
+          .where('blood_group', isEqualTo: filterData.bloodGroup)
+          .snapshots();
+    }
+    return _reference.snapshots();
+  }
+
+  Stream<QuerySnapshot> getBloodRequestList(final FilterData filterData) {
+    final _reference = Firestore.instance
+        .collection('blood_request')
+        .where('address.code', isEqualTo: filterData.code)
+        .where('address.state', isEqualTo: filterData.region)
+        .where('address.city', isEqualTo: filterData.city);
+//        .where('address.city', isEqualTo: filterData.city);
+    if (filterData.bloodGroup != null && filterData.bloodGroup.isNotEmpty) {
+      return _reference
+          .where('blood_group', isEqualTo: filterData.bloodGroup)
+          .snapshots();
     }
     return _reference.snapshots();
   }
 
   Stream<QuerySnapshot> getCollectorList(final FilterData filterData) {
-
-    final _reference = Firestore.instance.collection('collector')
-        .where('age', isNull: true ,)
+    final _reference = Firestore.instance
+        .collection('collector')
+        .where(
+          'age',
+          isNull: true,
+        )
         .where('address.code', isEqualTo: filterData.code)
         .where('address.state', isEqualTo: filterData.region)
         .where('address.city', isEqualTo: filterData.city);
 //        .where('address.city', isEqualTo: filterData.city);
-    if(filterData.bloodGroup != null && filterData.bloodGroup.isNotEmpty){
-      return _reference.where('blood_group',  isEqualTo: filterData.bloodGroup).snapshots();
+    if (filterData.bloodGroup != null && filterData.bloodGroup.isNotEmpty) {
+      return _reference
+          .where('blood_group', isEqualTo: filterData.bloodGroup)
+          .snapshots();
     }
     return _reference.snapshots();
   }

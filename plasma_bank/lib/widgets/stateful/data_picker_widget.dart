@@ -123,12 +123,30 @@ class _DataPickerState extends State<DataPickerWidget> {
               floatingActionButtonLocation:
                   FloatingActionButtonLocation.centerDocked,
               floatingActionButton: this.widget.hasDoneButton
-                  ? WidgetProvider.button(
-                      _onDataPicked,
-                      "SELECT",
-                      context,
-                      padding: 96,
-                    )
+                  ?
+              Container(color: AppStyle.theme(), height: 60,
+                child: Material(
+                  color: Colors.transparent,
+                  child: Ink(
+                    child: InkWell(
+                      onTap: _onDataPicked,
+                      child: SizedBox(width: displayData.width - 48, height: 60,
+                      child: Center(
+                        child: Text('SELECT' , style: TextStyle(fontSize: 20, color: Colors.white),),
+                      ),
+
+                      ),
+                    ),
+                  ),
+                ),
+              )
+
+//              WidgetProvider.button(
+//                      _onDataPicked,
+//                      "SELECT",
+//                      context,
+//                      padding: 96,
+//                    )
                   : SizedBox(),
             ),
           ),

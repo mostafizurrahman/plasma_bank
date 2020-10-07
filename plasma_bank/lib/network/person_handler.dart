@@ -17,6 +17,7 @@ class PersonHandler {
     return _personHandler;
   }
 
+  bool loginAsDonor = false;
   List<String> _donorList;
   List<String> get donorList{
     return _donorList;
@@ -67,7 +68,8 @@ class PersonHandler {
   }
 
   //set null on verified and after login
-  set verificationEmail(final String _email) {
+  setVerificationEmail(final String _email, final bool isDonor) {
+    this.loginAsDonor = isDonor;
     this._verifyEmailBehavior.sink.add(_email);
   }
 
@@ -111,6 +113,7 @@ class PersonHandler {
 
   _onLoginPersonLoaded(final Person _person) {
     if (_person != null) {
+      _person.isDonor = this.loginAsDonor;
       this._loginEmailBehavior.sink.add(_person);
       this._verifyEmailBehavior.sink.add(null);
     }
@@ -129,12 +132,12 @@ class PersonHandler {
   }
 
   //set this email after verification, use null as email for logout
-  setLoginEmail(final String _email, {final bool isDonor = true}) {
+  setLoginEmail(final String _email) {
     if (_email == null) {
       this._onLoginError(null);
       this._removeSharedData();
     } else {
-      initLoginPerson(_email, isDonor: isDonor);
+      initLoginPerson(_email, isDonor: loginAsDonor);
     }
   }
 
@@ -202,11 +205,13 @@ class PersonHandler {
     for(int i = 0; i < _list.length; i++){
       if(isDonor){
         final Person _person = await _repository.getDonorData(_list[i]);
+        _person.isDonor = true;
         if(_person != null){
           this._bloodDonorList.add(_person);
         }
       } else {
         final Person _person = await _repository.getCollectorData(_list[i]);
+        _person.isDonor = false;
         if(_person != null){
           this._bloodDonorList.add(_person);
         }

@@ -24,8 +24,11 @@ class ProfileWidget extends BaseWidget {
 
 class _ProfileState extends BaseKeyboardState<ProfileWidget> {
   final TextConfig _nameConfig = TextConfig('name');
-  final TextConfig _emailConfig = TextConfig('email', );
-  final TextConfig _phoneConfig = TextConfig('mobile #', isDigit: true, maxLen: 16);
+  final TextConfig _emailConfig = TextConfig(
+    'email',
+  );
+  final TextConfig _phoneConfig =
+      TextConfig('mobile #', isDigit: true, maxLen: 16);
   final String _message =
       'This email has registered as Blood Donor! Please, Login and verify the account';
   String profileImage;
@@ -106,73 +109,61 @@ class _ProfileState extends BaseKeyboardState<ProfileWidget> {
   bool skipTouch = false;
 
   _saveProfile() {
-    if (!this.skipTouch) {
-      this.skipTouch = true;
-      Future.delayed(
-        Duration(seconds: 1),
-        () async {
-          final String _name = this._nameConfig.controller.text;
-          final String _email = this._emailConfig.controller.text;
-          final String _mobile = this._phoneConfig.controller.text;
-          if (_name.isEmpty) {
-            super.setError(this._nameConfig);
-          } else if (_email.isEmpty) {
-            super.setError(this._emailConfig);
-          } else if (_mobile.isEmpty) {
-            super.setError(this._phoneConfig);
-          } else {
-            bool hasData = false;
-            WidgetProvider.loading(context);
-            final bool isDonor = await donorHandler.isEmailRegisteredAsDonor(_email);
-            final bool isTaker = await donorHandler.isEmailRegisteredAsTaker(_email);
-            if (isDonor || isTaker) {
-              this._onEmailExist(_email);
-              hasData = true;
-            }
-            final _emailClient = EmailClient(_email);
-            final bool _hasValidEmail = await _emailClient.validateEmail().catchError((_error){
-              return false;
-            })??false;
-            if(!_hasValidEmail){
-              Navigator.pop(context);
-              WidgetTemplate.message(context, 'this email is invalid. please! enter a valid email address and try again, later. thank you!');
-              hasData = true;
-            }
-            if (!hasData) {
-              final _repository = FirebaseRepositories();
-              if (await _repository.getDonorData(_email) == null) {
-                final Map _arguments = Map.from(this.widget.arguments);
-                Navigator.pop(context);
-                _arguments['name'] = _name;
-                _arguments['email'] = _email;
-                _arguments['mobile'] = _mobile;
-                _arguments['profile'] = {
-                  'link': profileImage,
-                  'deletehash': ''
-                };
-                Navigator.pop(context);
-                Navigator.pushNamed(context, AppRoutes.pageHealthData,
-                    arguments: _arguments);
-              } else {
-                Navigator.pop(context);
-                this._onEmailExist(_email);
-              }
-            } else {
-              Navigator.pop(context);
-            }
+    WidgetProvider.loading(context);
+    Future.delayed(
+      Duration(seconds: 1),
+      () async {
+        final String _name = this._nameConfig.controller.text;
+        final String _email = this._emailConfig.controller.text;
+        final String _mobile = this._phoneConfig.controller.text;
+        if (_name.isEmpty) {
+          super.setError(this._nameConfig);
+        } else if (_email.isEmpty) {
+          super.setError(this._emailConfig);
+        } else if (_mobile.isEmpty) {
+          super.setError(this._phoneConfig);
+        } else {
+          bool hasData = false;
+          final bool isDonor =
+              await donorHandler.isEmailRegisteredAsDonor(_email);
+          final bool isTaker =
+              await donorHandler.isEmailRegisteredAsTaker(_email);
+          if (isDonor || isTaker) {
+            this._onEmailExist(_email, isDonor);
+            hasData = true;
           }
-          this.skipTouch = false;
-        },
-      );
-    }
+          final _emailClient = EmailClient(_email);
+          final bool _hasValidEmail =
+              await _emailClient.validateEmail() ?? false;
+          if (!hasData) {
+            final Map _arguments = Map.from(this.widget.arguments);
+            Navigator.pop(context);
+            _arguments['name'] = _name;
+            _arguments['email'] = _email;
+            _arguments['mobile'] = _mobile;
+            _arguments['profile'] = {'link': profileImage, 'deletehash': ''};
+            Navigator.pop(context);
+            Navigator.pushNamed(context, AppRoutes.pageHealthData,
+                arguments: _arguments);
+          } else {
+            Navigator.pop(context);
+          }
+          if (!_hasValidEmail) {
+            WidgetTemplate.message(context,
+                'this email is invalid. please! enter a valid email address and try again, later. thank you!');
+            hasData = true;
+          }
+        }
+      },
+    );
   }
 
-  _onEmailExist(final String _email) {
+  _onEmailExist(final String _email, final bool isDonor) {
     WidgetTemplate.message(context, this._message, actionTitle: 'OPEN LOGIN',
         onActionTap: () {
       Navigator.popUntil(context, ModalRoute.withName(AppRoutes.pageRouteHome));
       Future.delayed(Duration(microseconds: 200), () async {
-        donorHandler.verificationEmail = _email;
+        donorHandler.setVerificationEmail(_email, isDonor);
       });
     });
   }
@@ -246,16 +237,16 @@ class _ProfileState extends BaseKeyboardState<ProfileWidget> {
 //          ),
           WidgetTemplate.getCustomTextField(
             this._nameConfig,
-                () => super.onTextFieldTapped(this._nameConfig),
+            () => super.onTextFieldTapped(this._nameConfig),
           ),
 
           WidgetTemplate.getCustomTextField(
             this._emailConfig,
-                () => super.onTextFieldTapped(this._emailConfig),
+            () => super.onTextFieldTapped(this._emailConfig),
           ),
           WidgetTemplate.getCustomTextField(
             this._phoneConfig,
-                () => super.onTextFieldTapped(this._phoneConfig),
+            () => super.onTextFieldTapped(this._phoneConfig),
           ),
 
 //          WidgetTemplate.getTextField(

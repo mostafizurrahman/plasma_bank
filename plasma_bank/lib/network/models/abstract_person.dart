@@ -1,8 +1,50 @@
 import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:plasma_bank/app_utils/image_helper.dart';
+import 'package:plasma_bank/app_utils/location_provider.dart';
 import 'dart:convert';
 import 'package:plasma_bank/network/imgur_handler.dart';
 import 'package:intl/intl.dart';
+
+class BloodInfo
+{
+  Address hospitalAddress;
+  String clientPicture;
+  String clientName;
+  String clientMobile;
+  String clientEmail;
+  String bloodGroup;
+  String bloodBags;
+  String diseaseName;
+  String injectionDate;
+  BloodInfo.fromJson(final Map _inputData){
+    if(_inputData != null){
+      hospitalAddress = Address.fromMap(_inputData['address']);
+      bloodGroup = _inputData['blood_group'];
+      bloodBags = _inputData['bag_count'];
+      injectionDate = _inputData['injection_date'];
+      diseaseName = _inputData['disease'];
+      clientEmail = _inputData['client_email'];
+      clientName = _inputData['client_name'];
+      clientMobile = _inputData['client_mobile'];
+      clientPicture = _inputData['client_picture'];
+    }
+  }
+
+  Map toJson(){
+    return {
+      'address' : hospitalAddress.toJson(),
+      'blood_group' : bloodGroup,
+      'bag_count' : bloodBags,
+      'injection_date' : injectionDate,
+      'disease' : diseaseName,
+      'client_email' : clientEmail,
+      'client_name' : clientName,
+      'client_mobile' : clientMobile,
+      'client_picture' : clientPicture,
+    };
+  }
+
+}
 
 class Address {
   String country;
@@ -23,10 +65,10 @@ class Address {
       this.postalCode});
 
   Address.fromMap(Map<String, dynamic> json) {
-    this.country = json['country'];
+    this.country = LocationProvider.clearCasedPlace(json['country'] ?? '');
     this.street = json['street'];
-    this.state = json['state'];
-    this.city = json['city'];
+    this.state = LocationProvider.clearCasedPlace(json['state'] ?? '');
+    this.city = LocationProvider.clearCasedPlace(json['city'] ?? '');
     this.postalCode = json['zip'];
     this.house = json['house'];
     this.code = json['code'];
@@ -47,6 +89,7 @@ class Address {
 
 class Person {
 
+  BloodInfo bloodInfo;
   String verificationCode;
   bool hasValidPostal;
   String age;
@@ -57,6 +100,7 @@ class Person {
   String mobileNumber;
   Address address;
   String birthDate;
+  bool isDonor;
   DocumentReference reference;
 
   Person(final Map<dynamic, dynamic> _map) {
@@ -70,6 +114,7 @@ class Person {
     this.birthDate = getDOB(_map['age']);
     this.hasValidPostal = _map['is_valid_postal'] ?? false;
     this.verificationCode = _map['code'];
+    this.bloodInfo = BloodInfo.fromJson(_map['blood_data']);
   }
 
 //  final String name;

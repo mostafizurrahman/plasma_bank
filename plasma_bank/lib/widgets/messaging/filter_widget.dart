@@ -5,6 +5,8 @@ import 'package:plasma_bank/app_utils/app_constants.dart';
 import 'package:plasma_bank/app_utils/location_provider.dart';
 import 'package:plasma_bank/app_utils/widget_providers.dart';
 import 'package:plasma_bank/app_utils/widget_templates.dart';
+import 'package:plasma_bank/network/models/abstract_person.dart';
+import 'package:plasma_bank/network/person_handler.dart';
 import 'package:plasma_bank/widgets/base/base_state.dart';
 import 'package:plasma_bank/widgets/base_widget.dart';
 
@@ -35,8 +37,6 @@ class _FilterState extends BaseKeyboardState<FilterWidget> {
 
   final TextConfig _regionConfig = TextConfig('region/state');
   final TextConfig _cityConfig = TextConfig('city/county/division');
-  final TextConfig _streetConfig = TextConfig('street/locality');
-  final TextConfig _zipConfig = TextConfig('zip/po', isDigit: true);
   final TextConfig _bloodConfig = TextConfig('blood group');
 
   bool isDonorFilter;
@@ -64,11 +64,19 @@ class _FilterState extends BaseKeyboardState<FilterWidget> {
 //    );
   }
 
+
+  onPersonSet(final Person _loginPerson){
+
+    this._countryConfig.controller.text = _loginPerson.address.country;
+    this._code  = _loginPerson.address.code;
+    this._regionConfig.controller.text = _loginPerson.address.state;
+    this._cityConfig.controller.text = _loginPerson.address.city;
+  }
   @override
   void initState() {
     // TODO: implement initState
     super.initState();
-    this.isDonorFilter = this.widget.getData('is_donor') ?? true;
+    this.isDonorFilter = this.widget.getData('is_donor') ?? false;
   }
 
   @override
@@ -78,8 +86,8 @@ class _FilterState extends BaseKeyboardState<FilterWidget> {
       return 'SEARCH DONOR';
     }
     return 'SEARCH BLOOD SEEKER';
-
   }
+
   @override
   onSubmitData() {
     _startFiltering();
@@ -114,16 +122,8 @@ class _FilterState extends BaseKeyboardState<FilterWidget> {
               _getCountry(),
               _getRegion(),
               _getCity(),
-              _geStreet(),
-              Padding(
-                padding: EdgeInsets.only(
-                  top: 12,
-                ),
-                child: Divider(),
-              ),
-              SizedBox(
-                height: 24,
-              ),
+              SizedBox(height: 24,),
+
               Text(
                 'You can also search or filter persons depending on specific blood group.',
                 textAlign: TextAlign.justify,
@@ -248,30 +248,7 @@ class _FilterState extends BaseKeyboardState<FilterWidget> {
 
   _onPopupClosed() {}
 
-  Widget _geStreet() {
-    return Row(
-      children: [
-        Expanded(
-          child: WidgetTemplate.getCustomTextField(
-            this._streetConfig,
-            () => super.onTextFieldTapped(this._streetConfig),
-          ),
-        ),
-        SizedBox(
-          width: AppStyle.PADDING_S,
-        ),
 
-        //locationProvider.gpsCity
-        Container(
-          width: 65,
-          child: WidgetTemplate.getCustomTextField(
-            this._zipConfig,
-            () => super.onTextFieldTapped(this._zipConfig),
-          ),
-        ),
-      ],
-    );
-  }
 
   _startFiltering() {
 //    Navigator.pop(context);
@@ -296,12 +273,10 @@ class _FilterState extends BaseKeyboardState<FilterWidget> {
     _data.code = _code;
     _data.region =
         LocationProvider.clearCasedPlace(_regionConfig.controller.text);
-    _data.city = _cityConfig.controller.text;
-    _data.zipCode = _zipConfig.controller.text;
+    _data.city = LocationProvider.clearCasedPlace(_cityConfig.controller.text);
     _data.bloodGroup = _bloodConfig.controller.text;
-    _data.areaName = _streetConfig.controller.text;
     Navigator.pushNamed(context, AppRoutes.pageDonorList,
-        arguments: {'filter_data': _data, 'is_donor' : this.isDonorFilter});
+        arguments: {'filter_data': _data, 'is_donor' : this.isDonorFilter, 'is_blood': widget.getData('is_blood')});
 //    _onFilterSelected(_data);
   }
 

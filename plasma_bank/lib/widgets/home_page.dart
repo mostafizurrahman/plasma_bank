@@ -181,9 +181,25 @@ class _HomePageState extends State<HomePageWidget> {
             mainAxisAlignment: MainAxisAlignment.start,
             crossAxisAlignment: CrossAxisAlignment.center,
             children: [
+
               CoronavirusWidget(
                   this._db.getGlobalCovidData(), displayData.width),
               HomePlasmaWidget(_profileHeight, _onTapDonor),
+
+              SizedBox(height: 12,),
+              WidgetProvider.getBloodActionButton(
+                    (){
+                  Navigator.pushNamed(context, AppRoutes.pageFilterDonor, arguments: {'is_blood' : true});
+                },
+                'POST A BLOOD REQUEST',
+                Icon(
+                  Icons.place,
+                  color: Colors.white, //Color.fromARGB(255, 240, 10, 80),
+                  size: 30,
+                ),
+              ),
+
+              SizedBox(height: 12,),
               HomePlasmaWidget(_profileHeight, _onTapDonor, isBloodDonor: true),
             ],
           ),
@@ -211,7 +227,7 @@ class _HomePageState extends State<HomePageWidget> {
         this._segmentBehavior.sink.add(2);
       });
     } else {
-      Navigator.pushNamed(context, AppRoutes.pagePostBlood);
+      _openAddress(isBlood: true);
     }
   }
 
@@ -420,21 +436,23 @@ class _HomePageState extends State<HomePageWidget> {
     _loginSubscription = donorHandler.loginEmailBehavior.listen((value) {
       this._loginBehavior.sink.add(value);
       this._segmentBehavior.sink.add(1);
-      donorHandler.verificationEmail = null;
+      donorHandler.setVerificationEmail(null, false);
     });
   }
 
-  _openAddress({bool isBloodTaker = false}) async {
+  _openAddress({bool isBloodTaker = false, final bool isBlood = false}) async {
     WidgetProvider.loading(context);
     final _countryList =
         await locationProvider.getCountryList().catchError((_error) {
       return null;
     });
+//    Navigator.pushNamed(context, AppRoutes.pagePostBlood);
+
     Navigator.pop(context);
-    final Map _map = isBloodTaker
+    final Map _map = isBloodTaker || isBlood
         ? {'login_tap': _onLoginTaped, 'country_list': _countryList}
         : {'country_list': _countryList};
-    final _route =
+    final _route = isBlood ? AppRoutes.pagePostBlood :
         isBloodTaker ? AppRoutes.pageBloodTaker : AppRoutes.pageAddressData;
     if (_countryList != null) {
       Future.delayed(Duration(milliseconds: 100), () {
@@ -455,8 +473,8 @@ class _HomePageState extends State<HomePageWidget> {
         context, "The account associated with $_email is logout successfully!");
   }
 
-  _onSwitched(String _email) {
-    donorHandler.verificationEmail = _email;
-//    this._openLoginWidget(_email);
+  _onSwitched(String _email)  async {
+    bool _isDonor = await donorHandler.isEmailRegisteredAsDonor(_email);
+    donorHandler.setVerificationEmail(_email, _isDonor);
   }
 }

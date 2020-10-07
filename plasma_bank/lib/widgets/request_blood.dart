@@ -5,6 +5,7 @@ import 'package:intl/intl.dart';
 import 'package:plasma_bank/app_utils/app_constants.dart';
 import 'package:plasma_bank/app_utils/widget_providers.dart';
 import 'package:plasma_bank/app_utils/widget_templates.dart';
+import 'package:plasma_bank/network/firebase_repositories.dart';
 import 'package:plasma_bank/network/models/abstract_person.dart';
 import 'package:plasma_bank/network/person_handler.dart';
 import 'package:plasma_bank/widgets/base/base_address_state.dart';
@@ -26,7 +27,7 @@ class _RequestBloodState extends BaseAddressState<RequestBloodWidget> {
   final TextConfig _countConfig =
       TextConfig('blood bags count', isDigit: true, maxLen: 1);
   final TextConfig _bloodConfig = TextConfig('blood group');
-  final TextConfig _dateConfig = TextConfig('date for blood');
+  final TextConfig _dateConfig = TextConfig('injection date');
   @override
   double getContentHeight() {
     // TODO: implement getContentHeight
@@ -37,6 +38,11 @@ class _RequestBloodState extends BaseAddressState<RequestBloodWidget> {
   String getAppBarTitle() {
     // TODO: implement getAppBarTitle
     return 'REQUEST BLOOD';
+  }
+
+  @override
+  String getActionTitle() {
+    return "REQUEST BLOOD";
   }
 
   _onTap() {
@@ -129,5 +135,43 @@ class _RequestBloodState extends BaseAddressState<RequestBloodWidget> {
   Widget build(BuildContext context) {
     // TODO: implement build
     return super.build(context);
+  }
+
+  @override
+  onAddressCompleted(Map _address) {
+   debugPrint('$_address');
+   final String _bags = this._countConfig.controller.text;
+   final String _disease = _diseaseConfig.controller.text;
+   final String _group = _bloodConfig.controller.text;
+   final String _injection = _dateConfig.controller.text;
+   if(_bags.isEmpty){
+     super.setError(this._countConfig);
+   }
+   else if(_disease.isEmpty){
+     super.setError(this._diseaseConfig);
+   } else if (_group.isEmpty){
+     super.setError(this._bloodConfig);
+   } else if (_injection.isEmpty){
+     super.setError(_dateConfig);
+   } else {
+     WidgetProvider.loading(context);
+     final _data = {
+       'address' : _address,
+       'bag_count' : _bags,
+       'disease' : _disease,
+       'blood_group' : _group,
+       'injection_date' : _injection,
+
+     };
+
+     Future.delayed(Duration(seconds: 2), () async {
+       final FirebaseRepositories _repository = FirebaseRepositories();
+       final bool isUpdated = await _repository.uploadBloodRequest(_data);
+       Navigator.pop(context);
+       if (isUpdated){
+         WidgetTemplate.message(context, 'your blood request is updated successfully! anyone, who are willing to donate blood may response to your request! It is wise to made your contact info public');
+       }
+     });
+   }
   }
 }
