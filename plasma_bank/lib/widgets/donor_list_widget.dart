@@ -10,7 +10,7 @@ import 'package:plasma_bank/network/imgur_handler.dart';
 import 'package:plasma_bank/network/models/abstract_person.dart';
 import 'package:plasma_bank/network/models/blood_donor.dart';
 import 'package:plasma_bank/network/models/plasma_donor.dart';
-import 'package:plasma_bank/widgets/base_widget.dart';
+import 'package:plasma_bank/widgets/base/base_widget.dart';
 import 'package:rxdart/rxdart.dart';
 
 import 'messaging/filter_widget.dart';
@@ -47,6 +47,7 @@ class _DonorListState extends State<DonorListWidget> {
     super.initState();
     this.isDonorList = widget.getData('is_donor') ?? false;
     this.isBloodInfo = widget.getData('is_blood') ?? false;
+    debugPrint('done');
   }
 
   @override
@@ -83,7 +84,7 @@ class _DonorListState extends State<DonorListWidget> {
           body: Column(
             children: <Widget>[
               WidgetProvider.getCustomAppBar(
-                  context, this.isBloodInfo ? 'BLOOD SEEKERS' : 'BLOOD DONORS', ''),
+                  context, this.isBloodInfo ? 'BLOOD REQUESTS' : this.isDonorList? 'BLOOD DONORS' : 'BLOOD SEEKERS', ''),
               Expanded(
                 child: Padding(
                   padding: EdgeInsets.only(

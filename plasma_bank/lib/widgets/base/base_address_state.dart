@@ -8,7 +8,7 @@ import 'package:plasma_bank/app_utils/widget_providers.dart';
 import 'package:plasma_bank/network/models/abstract_person.dart';
 import 'package:plasma_bank/widgets/base/base_state.dart';
 
-import '../base_widget.dart';
+import 'base_widget.dart';
 
 
 class BaseAddressState<T extends BaseWidget> extends BaseKeyboardState {
@@ -296,22 +296,22 @@ class BaseAddressState<T extends BaseWidget> extends BaseKeyboardState {
     return 'Address';
   }
 
-  @override
-  List<Widget> getLeftActionItems() {
-    return [
-      Padding(
-        padding: EdgeInsets.only(right: AppStyle.PADDING),
-        child: GestureDetector(
-          onTap: _setLocation,
-          child: Icon(
-            Icons.refresh,
-            color: AppStyle.theme(),
-            size: AppStyle.ICON_SIZE_S,
-          ),
-        ),
-      ),
-    ];
-  }
+//  @override
+//  List<Widget> getLeftActionItems() {
+//    return [
+//      Padding(
+//        padding: EdgeInsets.only(right: AppStyle.PADDING),
+//        child: GestureDetector(
+//          onTap: _setLocation,
+//          child: Icon(
+//            Icons.refresh,
+//            color: AppStyle.theme(),
+//            size: AppStyle.ICON_SIZE_S,
+//          ),
+//        ),
+//      ),
+//    ];
+//  }
 
   Widget getBottomWidget(){
     return SizedBox();

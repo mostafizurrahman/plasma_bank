@@ -7,7 +7,9 @@ import 'package:plasma_bank/app_utils/widget_providers.dart';
 class CollectorWidget extends StatelessWidget {
   final bool visible;
   final Function(bool) _onCollectTap;
-  CollectorWidget(this.visible, this._onCollectTap);
+  final Function _onBloodRequested;
+  final Function _onListOfRequests;
+  CollectorWidget(this.visible, this._onCollectTap, this._onBloodRequested, this._onListOfRequests);
 
   @override
   Widget build(BuildContext context) {
@@ -51,6 +53,7 @@ class CollectorWidget extends StatelessWidget {
                       style: TextStyle(
                         fontSize: 28,
                         fontFamily: AppStyle.fontBold,
+                        color: AppStyle.theme(),
                       ),
                     ),
                   ),
@@ -74,7 +77,7 @@ class CollectorWidget extends StatelessWidget {
                       children: [
                         WidgetProvider.getBloodActionButton(
                               () => this._onCollectTap(false),
-                          'BLOOD SEEKERS',
+                          'LIST OF PEOPLE WHO ARE LOOKING FOR BLOODS',
                           Icon(
                             Icons.group,
                             color: Colors
@@ -83,11 +86,11 @@ class CollectorWidget extends StatelessWidget {
                           ),
                         ),
                         SizedBox(
-                          height: 12,
+                          height: 16,
                         ),
                         WidgetProvider.getBloodActionButton(
                               () => this._onCollectTap(true),
-                          'REGISTER TO GET BLOOD',
+                          'REGISTER TO POST A BLOOD REQUEST',
                           Icon(
                             Icons.add,
                             color: Colors
@@ -96,7 +99,33 @@ class CollectorWidget extends StatelessWidget {
                           ),
                         ),
                         SizedBox(
-                          height: 12,
+                          height: 16,
+                        ),
+                        WidgetProvider.getBloodActionButton(
+                              this._onListOfRequests,
+                          'LIST OF BLOOD REQUESTS IN A SPECIFIC AREA',
+                          Icon(
+                            Icons.format_list_bulleted,
+                            color: Colors
+                                .white, //Color.fromARGB(255, 240, 10, 80),
+                            size: 30,
+                          ),
+                        ),
+                        SizedBox(
+                          height: 16,
+                        ),
+                        WidgetProvider.getBloodActionButton(
+                              this._onBloodRequested,
+                          'POST A REQUEST TO GET BLOOD',
+                          Icon(
+                            Icons.add_circle,
+                            color: Colors
+                                .white, //Color.fromARGB(255, 240, 10, 80),
+                            size: 30,
+                          ),
+                        ),
+                        SizedBox(
+                          height: 16,
                         ),
                       ],
                     ),

@@ -10,7 +10,7 @@ import 'package:plasma_bank/network/api_client.dart';
 import 'package:plasma_bank/network/person_handler.dart';
 import 'package:plasma_bank/network/firebase_repositories.dart';
 import 'package:plasma_bank/widgets/base/base_state.dart';
-import 'package:plasma_bank/widgets/base_widget.dart';
+import 'package:plasma_bank/widgets/base/base_widget.dart';
 import 'package:rxdart/rxdart.dart';
 
 class ProfileWidget extends BaseWidget {

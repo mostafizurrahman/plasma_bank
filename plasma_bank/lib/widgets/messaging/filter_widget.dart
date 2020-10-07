@@ -8,7 +8,7 @@ import 'package:plasma_bank/app_utils/widget_templates.dart';
 import 'package:plasma_bank/network/models/abstract_person.dart';
 import 'package:plasma_bank/network/person_handler.dart';
 import 'package:plasma_bank/widgets/base/base_state.dart';
-import 'package:plasma_bank/widgets/base_widget.dart';
+import 'package:plasma_bank/widgets/base/base_widget.dart';
 
 class FilterData {
   String bloodGroup;

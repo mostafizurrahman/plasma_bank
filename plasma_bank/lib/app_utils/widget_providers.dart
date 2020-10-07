@@ -462,12 +462,15 @@ class WidgetProvider {
             SizedBox(
               width: 12,
             ),
-            Text(
-              _title,
-              textAlign: TextAlign.center,
-              style: TextStyle(
-                color: Colors.white,
-                fontSize: 12,
+            Expanded(
+              child: Text(
+                _title,
+                textAlign: TextAlign.center,
+                style: TextStyle(
+                  color: Colors.white,
+                  fontWeight: FontWeight.w600,
+                  fontSize: 12,
+                ),
               ),
             )
           ],

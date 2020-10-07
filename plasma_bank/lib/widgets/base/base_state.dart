@@ -4,7 +4,7 @@ import 'package:flutter_statusbarcolor/flutter_statusbarcolor.dart';
 import 'package:keyboard_visibility/keyboard_visibility.dart';
 import 'package:plasma_bank/app_utils/app_constants.dart';
 import 'package:plasma_bank/app_utils/widget_providers.dart';
-import 'package:plasma_bank/widgets/base_widget.dart';
+import 'package:plasma_bank/widgets/base/base_widget.dart';
 import 'package:plasma_bank/widgets/stateful/dynamic_keyboard.dart';
 import 'package:plasma_bank/widgets/stateful/keyboard_widget.dart';
 import 'package:rxdart/rxdart.dart';

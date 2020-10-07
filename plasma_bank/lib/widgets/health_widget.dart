@@ -13,7 +13,7 @@ import 'package:plasma_bank/media/dash_painter.dart';
 import 'package:plasma_bank/network/person_handler.dart';
 import 'package:plasma_bank/network/models/blood_donor.dart';
 import 'package:plasma_bank/network/models/plasma_donor.dart';
-import 'package:plasma_bank/widgets/base_widget.dart';
+import 'package:plasma_bank/widgets/base/base_widget.dart';
 import 'package:plasma_bank/widgets/stateful/data_picker_widget.dart';
 import 'package:plasma_bank/widgets/stateful/uploader_widget.dart';
 import 'package:rxdart/rxdart.dart';

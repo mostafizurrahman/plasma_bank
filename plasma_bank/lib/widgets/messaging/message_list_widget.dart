@@ -30,7 +30,7 @@ class _MessageListState extends State<MessageListWidget> {
       ),
       backgroundColor: Colors.transparent,
       leading: Padding(
-        padding: const EdgeInsets.only(left: 12),
+        padding: const EdgeInsets.only(left: 20),
         child: Icon(
           Icons.mail,
           size: 35,

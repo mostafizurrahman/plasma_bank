@@ -9,7 +9,7 @@ import 'package:plasma_bank/network/firebase_repositories.dart';
 import 'package:plasma_bank/network/models/abstract_person.dart';
 import 'package:plasma_bank/network/person_handler.dart';
 import 'package:plasma_bank/widgets/base/base_address_state.dart';
-import 'package:plasma_bank/widgets/base_widget.dart';
+import 'package:plasma_bank/widgets/base/base_widget.dart';
 
 class RequestBloodWidget extends BaseWidget {
   RequestBloodWidget(Map arguments) : super(arguments);

@@ -357,7 +357,7 @@ class _HomePageState extends State<HomePageWidget> {
         this._bottomNavigationBehavior.sink.add(1);
       });
     }
-    return CollectorWidget(this.visible, _onCollectTap);
+    return CollectorWidget(this.visible, _onCollectTap,_openBloodRequest,()=>Navigator.pushNamed(context, AppRoutes.pageFilterDonor, arguments: {'is_blood' : true}));
   }
 
   Widget _getDonateScreen(BuildContext _context) {
