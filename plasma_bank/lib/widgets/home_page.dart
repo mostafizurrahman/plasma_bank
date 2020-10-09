@@ -24,6 +24,7 @@ import 'package:rxdart/rxdart.dart';
 import 'package:shared_preferences/shared_preferences.dart';
 
 import 'messaging/message_list_widget.dart';
+import 'stateful/home_widget.dart';
 import 'verification_widget.dart';
 
 class HomePageWidget extends StatefulWidget {
@@ -120,7 +121,7 @@ class _HomePageState extends State<HomePageWidget> {
           color: Colors.blue,
         );
         if (_snap.data == 2) {
-          _widget = _getHomeScreen(_context);
+          _widget = HomeWidget();
         } else if (_snap.data == 0) {
           _widget = _getDonateScreen(_context);
         } else if (_snap.data == 1) {

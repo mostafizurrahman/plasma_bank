@@ -342,7 +342,7 @@ class WidgetTemplate {
               color: Colors.grey,
               height: proHeight,
               width: proHeight,
-              child: WidgetTemplate.getImageWidget(_donor.profilePicture),
+              child: WidgetTemplate.getImageWidget(response:_donor.profilePicture),
             )
           : Center(
               child: Text(
@@ -356,11 +356,12 @@ class WidgetTemplate {
     );
   }
 
-  static Widget getImageWidget(final ImgurResponse _response) {
+  static Widget getImageWidget({final ImgurResponse response, final String imagePath}) {
 
     return Image.network(
-      _response.thumbUrl,
-      fit: BoxFit.cover,
+      imagePath != null ? imagePath :
+      response.thumbUrl,
+      fit: BoxFit.fitWidth,
       loadingBuilder: (BuildContext context, Widget child,
           ImageChunkEvent loadingProgress) {
         if (loadingProgress == null) return child;

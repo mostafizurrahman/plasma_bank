@@ -47,7 +47,7 @@ class _BloodDetailsState extends State<BloodDetails> {
                               width: 65,
                               height: 65,
                               child: widget.bloodInfo.clientPicture != null
-                                  ? WidgetTemplate.getImageWidget(
+                                  ? WidgetTemplate.getImageWidget(response:
                                       ImgurResponse.fromThumb(
                                           widget.bloodInfo.clientPicture))
                                   : Center(

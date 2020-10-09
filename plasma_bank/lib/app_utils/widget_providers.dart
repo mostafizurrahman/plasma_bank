@@ -514,12 +514,15 @@ class WidgetProvider {
           children: <Widget>[
             Padding(
               padding: EdgeInsets.only(right: 16),
-              child: WidgetProvider.getMaterialButton(() {
-                if (onTapped != null) {
-                  onTapped();
-                }
-                Navigator.pop(_context);
-              }, Icons.arrow_back_ios),
+              child: WidgetProvider.getMaterialButton(
+                () {
+                  if (onTapped != null) {
+                    onTapped();
+                  }
+                  Navigator.pop(_context);
+                },
+                Icons.arrow_back_ios,
+              ),
             ),
             Text(
               _title,
@@ -539,6 +542,4 @@ class WidgetProvider {
       ),
     );
   }
-
-
 }

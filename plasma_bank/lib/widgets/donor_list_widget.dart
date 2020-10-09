@@ -164,7 +164,7 @@ class _DonorListState extends State<DonorListWidget> {
                       width: 65,
                       height: 65,
                       child: bloodInfo.clientPicture != null
-                          ? WidgetTemplate.getImageWidget(
+                          ? WidgetTemplate.getImageWidget(response:
                               ImgurResponse.fromThumb(bloodInfo.clientPicture))
                           : Center(
                               child: Text(

@@ -124,4 +124,18 @@ class ImgurHandler {
   static String getBase64(String imagePath) {
     return base64Encode(File(imagePath).readAsBytesSync());
   }
+
+  static Future<Map> fetchGallery() async {
+    final response = await http.get('https://pastebin.com/raw/Q5pE9dK4');
+
+    if (response.statusCode == 200) {
+      // If the server did return a 200 OK response,
+      // then parse the JSON.
+      return json.decode(response.body);
+    } else {
+      // If the server did not return a 200 OK response,
+      // then throw an exception.
+      throw Exception('Failed to load gallery data!');
+    }
+  }
 }
