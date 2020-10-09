@@ -10,17 +10,7 @@ import 'package:plasma_bank/network/person_handler.dart';
 import 'package:plasma_bank/widgets/base/base_state.dart';
 import 'package:plasma_bank/widgets/base/base_widget.dart';
 
-class FilterData {
-  String bloodGroup;
-  //String donationDate;
-  String code;
-  String region;
-  String city;
-  String zipCode;
-  String fullName;
-  String areaName;
-  String roadName;
-}
+
 
 class FilterWidget extends BaseWidget {
   FilterWidget(Map arguments) : super(arguments);
@@ -39,7 +29,7 @@ class _FilterState extends BaseKeyboardState<FilterWidget> {
   final TextConfig _cityConfig = TextConfig('city/county/division');
   final TextConfig _bloodConfig = TextConfig('blood group');
 
-  bool isDonorFilter;
+  FilterPageType _pageType;
   @override
   Widget build(BuildContext context) {
 //    Navigator.pop(context);
@@ -64,26 +54,28 @@ class _FilterState extends BaseKeyboardState<FilterWidget> {
 //    );
   }
 
-
-  onPersonSet(final Person _loginPerson){
-
+  onPersonSet(final Person _loginPerson) {
     this._countryConfig.controller.text = _loginPerson.address.country;
-    this._code  = _loginPerson.address.code;
+    this._code = _loginPerson.address.code;
     this._regionConfig.controller.text = _loginPerson.address.state;
     this._cityConfig.controller.text = _loginPerson.address.city;
   }
+
   @override
   void initState() {
     // TODO: implement initState
     super.initState();
-    this.isDonorFilter = this.widget.getData('is_donor') ?? false;
+    this._pageType = this.widget.getData('page_type');
   }
 
   @override
   String getActionTitle() {
     // TODO: implement getActionTitle
-    if(this.isDonorFilter) {
+    if (this._pageType == FilterPageType.FILTER_DONOR) {
       return 'SEARCH DONOR';
+    }
+    if (this._pageType == FilterPageType.FILTER_REQUEST) {
+      return 'SEARCH BLOOD REQUEST';
     }
     return 'SEARCH BLOOD SEEKER';
   }
@@ -92,11 +84,15 @@ class _FilterState extends BaseKeyboardState<FilterWidget> {
   onSubmitData() {
     _startFiltering();
   }
+
   @override
   String getAppBarTitle() {
     // TODO: implement getAppBarTitle
-    if(this.isDonorFilter) {
+    if (this._pageType == FilterPageType.FILTER_DONOR) {
       return 'FILTER BLOOD DONOR';
+    }
+    if (this._pageType == FilterPageType.FILTER_REQUEST) {
+      return 'FILTER REQUEST';
     }
     return 'FILTER SEEKERS';
   }
@@ -110,31 +106,33 @@ class _FilterState extends BaseKeyboardState<FilterWidget> {
 //      color: Colors.white,
       child: //
           Column(
-            children: <Widget>[
-              SizedBox(height: 24,),
-              Text(
-                'You need to enter country, state and locality information to see the specific person list. It will help you to filter out the unnecessary persons.',
-                textAlign: TextAlign.justify,
-              ),
-              SizedBox(
-                height: 12,
-              ),
-              _getCountry(),
-              _getRegion(),
-              _getCity(),
-              SizedBox(height: 24,),
-
-              Text(
-                'You can also search or filter persons depending on specific blood group.',
-                textAlign: TextAlign.justify,
-              ),
-              WidgetProvider.bloodGroupWidget(context, _bloodConfig),
-              SizedBox(
-                height: 12,
-              ),
-
-            ],
+        children: <Widget>[
+          SizedBox(
+            height: 24,
           ),
+          Text(
+            'You need to enter country, state and locality information to see the specific person list. It will help you to filter out the unnecessary persons.',
+            textAlign: TextAlign.justify,
+          ),
+          SizedBox(
+            height: 12,
+          ),
+          _getCountry(),
+          _getRegion(),
+          _getCity(),
+          SizedBox(
+            height: 24,
+          ),
+          Text(
+            'You can also search or filter persons depending on specific blood group.',
+            textAlign: TextAlign.justify,
+          ),
+          WidgetProvider.bloodGroupWidget(context, _bloodConfig),
+          SizedBox(
+            height: 12,
+          ),
+        ],
+      ),
     );
   }
 
@@ -146,10 +144,9 @@ class _FilterState extends BaseKeyboardState<FilterWidget> {
     return WidgetTemplate.getTextField(_cityConfig, onTap: _openCityList);
   }
 
-
   _openCityList() async {
     String _country = this._countryConfig.controller.text;
-    if(_country.isEmpty){
+    if (_country.isEmpty) {
       FocusScope.of(context).requestFocus(this._countryConfig.focusNode);
       return;
     }
@@ -207,12 +204,7 @@ class _FilterState extends BaseKeyboardState<FilterWidget> {
   }
 
   _openCountryList() async {
-    WidgetProvider.loading(context);
-    final _countryList =
-        await locationProvider.getCountryList().catchError((_error) {
-      return null;
-    });
-    Navigator.pop(context);
+    final _countryList = widget.getData('country_list');
     WidgetProvider.openLocationPopUp(context, _countryList, _onCountrySelected,
         _onPopupClosed, 'PICK YOUR COUNTRY');
   }
@@ -248,18 +240,16 @@ class _FilterState extends BaseKeyboardState<FilterWidget> {
 
   _onPopupClosed() {}
 
-
-
   _startFiltering() {
 //    Navigator.pop(context);
     if (_code == '') {
-      WidgetTemplate.message(
-          context, 'enter the country, where you are looking for donor/collector!');
+      WidgetTemplate.message(context,
+          'enter the country, where you are looking for donor/collector!');
       return;
     }
     if (_regionConfig.controller.text.isEmpty) {
-      WidgetTemplate.message(
-          context, 'enter the region, where you are looking for donor/collector!');
+      WidgetTemplate.message(context,
+          'enter the region, where you are looking for donor/collector!');
       return;
     }
     if (_cityConfig.controller.text.isEmpty) {
@@ -267,16 +257,14 @@ class _FilterState extends BaseKeyboardState<FilterWidget> {
           'enter the city/county, where you are looking for the blood or willing to give blood!');
       return;
     }
-
     final FilterData _data = FilterData();
-
     _data.code = _code;
     _data.region =
         LocationProvider.clearCasedPlace(_regionConfig.controller.text);
     _data.city = LocationProvider.clearCasedPlace(_cityConfig.controller.text);
     _data.bloodGroup = _bloodConfig.controller.text;
     Navigator.pushNamed(context, AppRoutes.pageDonorList,
-        arguments: {'filter_data': _data, 'is_donor' : this.isDonorFilter, 'is_blood': widget.getData('is_blood')});
+        arguments: {'filter_data': _data, 'page_type': this._pageType});
 //    _onFilterSelected(_data);
   }
 

@@ -3,13 +3,12 @@ import 'package:flutter/material.dart';
 import 'package:plasma_bank/app_utils/app_constants.dart';
 import 'package:plasma_bank/app_utils/image_helper.dart';
 import 'package:plasma_bank/app_utils/widget_providers.dart';
+import 'package:plasma_bank/network/person_handler.dart';
 
 class CollectorWidget extends StatelessWidget {
   final bool visible;
-  final Function(bool) _onCollectTap;
-  final Function _onBloodRequested;
-  final Function _onListOfRequests;
-  CollectorWidget(this.visible, this._onCollectTap, this._onBloodRequested, this._onListOfRequests);
+  final Function(FilterPageType) _onTapped;
+  CollectorWidget(this.visible, this._onTapped);
 
   @override
   Widget build(BuildContext context) {
@@ -58,14 +57,15 @@ class CollectorWidget extends StatelessWidget {
                     ),
                   ),
                   Padding(
-                    padding: EdgeInsets.only(
-                        top: 16,  left: 24, right: 24),
+                    padding: EdgeInsets.only(top: 16, left: 24, right: 24),
                     child: Text(
                       'collect a beg of blood for a reason, let the reason to be life.',
-                      style: TextStyle(fontSize: 16, height: 1.3, color: Colors.black.withAlpha(175)),
+                      style: TextStyle(
+                          fontSize: 16,
+                          height: 1.3,
+                          color: Colors.black.withAlpha(175)),
                     ),
                   ),
-
                   SizedBox(
                     height: 16,
                   ),
@@ -76,7 +76,7 @@ class CollectorWidget extends StatelessWidget {
                       mainAxisAlignment: MainAxisAlignment.end,
                       children: [
                         WidgetProvider.getBloodActionButton(
-                              () => this._onCollectTap(false),
+                          () => this._onTapped(FilterPageType.FILTER_COLLECTOR),
                           'LIST OF PEOPLE WHO ARE LOOKING FOR BLOODS',
                           Icon(
                             Icons.group,
@@ -89,7 +89,7 @@ class CollectorWidget extends StatelessWidget {
                           height: 16,
                         ),
                         WidgetProvider.getBloodActionButton(
-                              () => this._onCollectTap(true),
+                          () => this._onTapped(FilterPageType.COLLECTOR),
                           'REGISTER TO POST A BLOOD REQUEST',
                           Icon(
                             Icons.add,
@@ -102,7 +102,7 @@ class CollectorWidget extends StatelessWidget {
                           height: 16,
                         ),
                         WidgetProvider.getBloodActionButton(
-                              this._onListOfRequests,
+                          () => this._onTapped(FilterPageType.FILTER_REQUEST),
                           'LIST OF BLOOD REQUESTS IN A SPECIFIC AREA',
                           Icon(
                             Icons.format_list_bulleted,
@@ -115,7 +115,7 @@ class CollectorWidget extends StatelessWidget {
                           height: 16,
                         ),
                         WidgetProvider.getBloodActionButton(
-                              this._onBloodRequested,
+                          () => this._onTapped(FilterPageType.REQUEST),
                           'POST A REQUEST TO GET BLOOD',
                           Icon(
                             Icons.add_circle,
@@ -130,7 +130,9 @@ class CollectorWidget extends StatelessWidget {
                       ],
                     ),
                   ),
-                  SizedBox(height: 24,),
+                  SizedBox(
+                    height: 24,
+                  ),
                 ],
               ),
             ),

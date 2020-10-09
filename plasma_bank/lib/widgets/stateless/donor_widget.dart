@@ -3,12 +3,13 @@ import 'package:flutter/material.dart';
 import 'package:plasma_bank/app_utils/app_constants.dart';
 import 'package:plasma_bank/app_utils/image_helper.dart';
 import 'package:plasma_bank/app_utils/widget_providers.dart';
+import 'package:plasma_bank/network/person_handler.dart';
 
 class DonorWidget extends StatelessWidget {
   final bool visible;
 
-  final Function(bool) _onTap;
-  DonorWidget(this.visible, this._onTap);
+  final Function(FilterPageType) _onTapped;
+  DonorWidget(this.visible, this._onTapped);
 
   @override
   Widget build(BuildContext context) {
@@ -67,7 +68,7 @@ class DonorWidget extends StatelessWidget {
                         mainAxisAlignment: MainAxisAlignment.end,
                         children: [
                           WidgetProvider.getBloodActionButton(
-                            () => this._onTap(false),
+                            () => this._onTapped(FilterPageType.FILTER_DONOR),
                             'FIND A DONOR',
                             Icon(
                               Icons.group,
@@ -80,7 +81,7 @@ class DonorWidget extends StatelessWidget {
                             height: 12,
                           ),
                           WidgetProvider.getBloodActionButton(
-                            () => this._onTap(true),
+                            () => this._onTapped(FilterPageType.DONOR),
                             'REGISTER AS DONOR',
                             Icon(
                               Icons.add,

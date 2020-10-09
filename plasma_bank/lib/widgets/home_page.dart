@@ -165,72 +165,12 @@ class _HomePageState extends State<HomePageWidget> {
     );
   }
 
-  _getHomeScreen(BuildContext _context) {
-    double _top = displayData.top;
-    final _height = 1340.0;
+//  _openBloodRequest() {
 
-    final _profileWidth = displayData.width * 0.2;
-    final _profileHeight = _profileWidth * 4 / 3.0;
-    return Container(
-      width: displayData.width,
-      height: _height,
-      child: Padding(
-        padding: EdgeInsets.only(
-            left: 24, right: 24, top: (_top + 24.0), bottom: 24),
-        child: Scaffold(
-          body: Column(
-            mainAxisAlignment: MainAxisAlignment.start,
-            crossAxisAlignment: CrossAxisAlignment.center,
-            children: [
-
-              CoronavirusWidget(
-                  this._db.getGlobalCovidData(), displayData.width),
-              HomePlasmaWidget(_profileHeight, _onTapDonor),
-
-              SizedBox(height: 12,),
-              WidgetProvider.getBloodActionButton(
-                    (){
-                  Navigator.pushNamed(context, AppRoutes.pageFilterDonor, arguments: {'is_blood' : true});
-                },
-                'POST A BLOOD REQUEST',
-                Icon(
-                  Icons.place,
-                  color: Colors.white, //Color.fromARGB(255, 240, 10, 80),
-                  size: 30,
-                ),
-              ),
-
-              SizedBox(height: 12,),
-              HomePlasmaWidget(_profileHeight, _onTapDonor, isBloodDonor: true),
-            ],
-          ),
-          floatingActionButton: WidgetProvider.getBloodActionButton(
-            () => this._openBloodRequest(),
-            'POST A BLOOD REQUEST',
-            Icon(
-              Icons.place,
-              color: Colors.white, //Color.fromARGB(255, 240, 10, 80),
-              size: 30,
-            ),
-          ),
-        ),
-      ),
-    );
-  }
-
-  _openBloodRequest() {
-    if (donorHandler.loginEmail == null) {
-      WidgetTemplate.message(context,
-          'you are not logged in, please login as blood donor or blood collector then post a blood request',
-          onActionTap: () {
-        Navigator.pop(context);
-        this._bottomNavigationBehavior.sink.add(4);
-        this._segmentBehavior.sink.add(2);
-      });
-    } else {
-      _openAddress(isBlood: true);
-    }
-  }
+//    else {
+//      _openAddress(isBlood: true);
+//    }
+//  }
 
   Widget _getSettingsWidget(
       BuildContext _context, final double _navigatorHeight) {
@@ -358,7 +298,7 @@ class _HomePageState extends State<HomePageWidget> {
         this._bottomNavigationBehavior.sink.add(1);
       });
     }
-    return CollectorWidget(this.visible, _onCollectTap,_openBloodRequest,()=>Navigator.pushNamed(context, AppRoutes.pageFilterDonor, arguments: {'is_blood' : true}));
+    return CollectorWidget(this.visible, this._openPage);
   }
 
   Widget _getDonateScreen(BuildContext _context) {
@@ -368,7 +308,7 @@ class _HomePageState extends State<HomePageWidget> {
         this._bottomNavigationBehavior.sink.add(0);
       });
     }
-    return DonorWidget(this.visible, _registerDonorTap);
+    return DonorWidget(this.visible, this._openPage);
   }
 
   Widget _getMessageWidget() {
@@ -386,18 +326,18 @@ class _HomePageState extends State<HomePageWidget> {
     this._segmentBehavior.sink.add(2);
   }
 
-  _registerDonorTap(final bool isRegistration) async {
-    if (isRegistration) {
-      _openAddress();
-//      Navigator.pushNamed(context, AppRoutes.pageLocateTerms);
-      //star registration
-    } else {
-      Navigator.pushNamed(context, AppRoutes.pageFilterDonor,
-          arguments: {'is_donor': true});
-
-      //display donor list
-    }
-  }
+//  _registerDonorTap(final bool isRegistration) async {
+//    if (isRegistration) {
+//      _openAddress();
+////      Navigator.pushNamed(context, AppRoutes.pageLocateTerms);
+//      //star registration
+//    } else {
+//      Navigator.pushNamed(context, AppRoutes.pageFilterDonor,
+//          arguments: {'is_donor': true});
+//
+//      //display donor list
+//    }
+//  }
 
   _onProgress(File _dataFile) {
     this._downloader.readCovidJSON(_dataFile);
@@ -410,19 +350,20 @@ class _HomePageState extends State<HomePageWidget> {
     this._bottomNavigationBehavior.sink.add(i);
   }
 
-  _onCollectTap(bool isCollection) {
-    if (isCollection) {
-      this._openAddress(isBloodTaker: true);
-      //register collection
-    } else {
-      Navigator.pushNamed(context, AppRoutes.pageFilterDonor,
-          arguments: {'is_donor': false});
-//      _openAddress(isBloodTaker: true);
-//      sdfs
-//      Navigator.pushNamed(context, AppRoutes.pageBloodTaker);
-      //show previous list
-    }
-  }
+//  _onCollectTap(bool isCollection) {
+//    if (isCollection) {
+//      this._openAddress(isBloodTaker: true);
+//      //register collection
+//    } else {
+//      this._openAddress(isBloodTaker: false, isBlood: false);
+////      Navigator.pushNamed(context, AppRoutes.pageFilterDonor,
+////          arguments: {'is_donor': false});
+////      _openAddress(isBloodTaker: true);
+////      sdfs
+////      Navigator.pushNamed(context, AppRoutes.pageBloodTaker);
+//      //show previous list
+//    }
+//  }
 
   _onLoginTaped() {
     debugPrint('please login to collector');
@@ -441,27 +382,6 @@ class _HomePageState extends State<HomePageWidget> {
     });
   }
 
-  _openAddress({bool isBloodTaker = false, final bool isBlood = false}) async {
-    WidgetProvider.loading(context);
-    final _countryList =
-        await locationProvider.getCountryList().catchError((_error) {
-      return null;
-    });
-//    Navigator.pushNamed(context, AppRoutes.pagePostBlood);
-
-    Navigator.pop(context);
-    final Map _map = isBloodTaker || isBlood
-        ? {'login_tap': _onLoginTaped, 'country_list': _countryList}
-        : {'country_list': _countryList};
-    final _route = isBlood ? AppRoutes.pagePostBlood :
-        isBloodTaker ? AppRoutes.pageBloodTaker : AppRoutes.pageAddressData;
-    if (_countryList != null) {
-      Future.delayed(Duration(milliseconds: 100), () {
-        Navigator.pushNamed(context, _route, arguments: _map);
-      });
-    }
-  }
-
   _resendOTP() {
     this._openLoginWidget(donorHandler.verificationEmail);
   }
@@ -474,8 +394,52 @@ class _HomePageState extends State<HomePageWidget> {
         context, "The account associated with $_email is logout successfully!");
   }
 
-  _onSwitched(String _email)  async {
+  _onSwitched(String _email) async {
     bool _isDonor = await donorHandler.isEmailRegisteredAsDonor(_email);
     donorHandler.setVerificationEmail(_email, _isDonor);
+  }
+
+  _openPage(FilterPageType _pageType) async {
+    final bool _isFiltering = [
+      FilterPageType.FILTER_DONOR,
+      FilterPageType.FILTER_REQUEST,
+      FilterPageType.FILTER_COLLECTOR
+    ].contains(_pageType);
+    if (donorHandler.loginEmail == null && _isFiltering) {
+      WidgetTemplate.message(
+        context,
+        'you are not logged in, please login as blood donor or blood collector then continue',
+        onActionTap: () {
+          Navigator.pop(context);
+          this._bottomNavigationBehavior.sink.add(4);
+          this._segmentBehavior.sink.add(2);
+        },
+      );
+      return;
+    }
+
+    WidgetProvider.loading(context);
+    final _countryList =
+        await locationProvider.getCountryList().catchError((_error) {
+      return null;
+    });
+    Navigator.pop(context);
+    final Map _map = {
+      'login_tap': _onLoginTaped,
+      'country_list': _countryList,
+      'page_type': _pageType
+    };
+    final _route = _isFiltering
+        ? AppRoutes.pageFilterDonor
+        : FilterPageType.DONOR == _pageType
+            ? AppRoutes.pageAddressData
+            : FilterPageType.COLLECTOR == _pageType
+                ? AppRoutes.pageBloodTaker
+                : AppRoutes.pagePostBlood;
+    if (_countryList != null) {
+      Future.delayed(Duration(milliseconds: 100), () {
+        Navigator.pushNamed(context, _route, arguments: _map);
+      });
+    }
   }
 }

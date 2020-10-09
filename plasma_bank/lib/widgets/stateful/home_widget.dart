@@ -112,8 +112,6 @@ class _HomeState extends State<HomeWidget> {
                           }
                           final _data = dataList[_index];
                           return _getStoryWidget(_data);
-
-//                            this.getCountryItem(_data);
                         },
                       );
                     } else {

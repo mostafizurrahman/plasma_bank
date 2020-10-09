@@ -5,6 +5,8 @@ import 'package:flutter/cupertino.dart';
 import 'package:plasma_bank/network/api_client.dart';
 import 'package:plasma_bank/network/auth.dart';
 import 'package:plasma_bank/network/models/zip_data.dart';
+
+import '../network/auth.dart';
 //import 'package:restcountries/restcountries.dart';
 
 class LocationProvider {
@@ -79,35 +81,69 @@ class LocationProvider {
     return _location;
   }
 
-  final List<Country> _response = List();
+  final List<Country> _countryList = List();
   Future<List<Country>> getCountryList() async {
-    if (_response.length > 0) {
-      return _response;
+    if (_countryList.length > 0) {
+      return _countryList;
     }
     final _client = ApiClient();
     final String _url = this.getUrl();
     final List _data = await _client.getGlobList(_url);
     if (_data == null) {
+      final String _url = this.getUrl(isNext: true);
+      final List _nextData = await _client.getGlobList(_url);
+      if(_nextData != null){
+        for (final _item in _nextData) {
+          Country _c = tryCast(_item);
+          _countryList.add(_c);
+        }
+        return _countryList;
+      }
       return List<Country>();
     }
     for (final _item in _data) {
       Country _c = tryCast(_item);
-      _response.add(_c);
+      _countryList.add(_c);
     }
-    return _response;
+    return _countryList;
   }
 
+
+
+
+  Map<String, List<Region>> _regionMap = Map();
+
   Future<List<Region>> getRegionList(final Country country) async {
+
+    if(_regionMap != null && _regionMap.isNotEmpty){
+      if(_regionMap.keys.contains(country.countryCode)){
+        return _regionMap[country.countryCode];
+      }
+    }
     final _client = ApiClient();
     final String _url = this.getUrl(country: country);
     final _response = await _client.getGlobList(_url, region: true);
     final List<Region> _data = List();
     if (_response == null) {
-      return _data;
+      final String _url = this.getUrl(country: country, isNext: true);
+      final List _nextData = await _client.getGlobList(_url, region: true);
+      if(_nextData != null){
+        for (final _item in _nextData) {
+          Region _c = tryCast(_item);
+          _data.add(_c);
+        }
+        if(_data.isNotEmpty){
+          _regionMap[country.countryCode] = _data;
+        }
+        return _data;
+      }
     }
     for (final _item in _response) {
       Region _c = tryCast(_item);
       _data.add(_c);
+    }
+    if(_data.isNotEmpty){
+      _regionMap[country.countryCode] = _data;
     }
     return _data;
   }
@@ -121,13 +157,34 @@ class LocationProvider {
     }
   }
 
+
+  Map<String, List<City>> _cityMap = Map();
+
   Future<List<City>> getCityList(final Region region) async {
+    String _regionName = "${region.countryName}_${region.regionName}";
+    if(_cityMap != null && _cityMap.isNotEmpty){
+      if(_cityMap.keys.contains(_regionName)){
+        return _cityMap[_regionName];
+      }
+    }
     final _client = ApiClient();
     final String _url = this.getUrl(region: region);
     final _response = await _client.getGlobList(_url, city: true);
     //check the list empty or not
     final _cityList = List<City>();
     if (_response == null || _response.isEmpty) {
+      final String _url = this.getUrl(region: region, isNext: true);
+      final List _nextData = await _client.getGlobList(_url, city: true);
+      if(_nextData != null){
+        for (final _item in _nextData) {
+          City _c = tryCast(_item);
+          _cityList.add(_c);
+        }
+        if(_cityList.isNotEmpty){
+          _cityMap[_regionName] = _cityList;
+        }
+        return _cityList;
+      }
       return _cityList;
     } else {
       for (final _item in _response) {
@@ -135,11 +192,14 @@ class LocationProvider {
         _cityList.add(_c);
       }
     }
+    if(_response.isNotEmpty){
+      _cityMap[_regionName] = _response;
+    }
     return _cityList;
   }
 
-  String getUrl({Region region, Country country}) {
-    final _key = Auth.RegionKey;
+  String getUrl({Region region, Country country, bool isNext = false}) {
+    final _key = isNext ? Auth.RegionKey_1 : Auth.RegionKey;
     if (country != null) {
       return "http://battuta.medunes.net/api/region/${country.countryCode}/all/?key=$_key";
     }

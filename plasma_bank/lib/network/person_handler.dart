@@ -7,6 +7,27 @@ import 'package:plasma_bank/network/models/abstract_person.dart';
 import 'package:rxdart/rxdart.dart';
 import 'package:shared_preferences/shared_preferences.dart';
 
+enum FilterPageType{
+  DONOR,
+  REQUEST,
+  COLLECTOR,
+  FILTER_DONOR,
+  FILTER_REQUEST,
+  FILTER_COLLECTOR,
+}
+
+class FilterData {
+  String bloodGroup;
+  //String donationDate;
+  String code;
+  String region;
+  String city;
+  String zipCode;
+  String fullName;
+  String areaName;
+  String roadName;
+}
+
 class PersonHandler {
   static final _personHandler = PersonHandler._internal();
   PersonHandler._internal();

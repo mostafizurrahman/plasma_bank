@@ -10,6 +10,7 @@ import 'package:plasma_bank/network/imgur_handler.dart';
 import 'package:plasma_bank/network/models/abstract_person.dart';
 import 'package:plasma_bank/network/models/blood_donor.dart';
 import 'package:plasma_bank/network/models/plasma_donor.dart';
+import 'package:plasma_bank/network/person_handler.dart';
 import 'package:plasma_bank/widgets/base/base_widget.dart';
 import 'package:rxdart/rxdart.dart';
 
@@ -31,9 +32,8 @@ class _DonorListState extends State<DonorListWidget> {
   BehaviorSubject<List<BloodDonor>> _listBehavior = BehaviorSubject();
   final _repository = FirebaseRepositories();
 
-  bool isDonorList;
+  FilterPageType _pageType;
 
-  bool isBloodInfo;
   @override
   void dispose() {
     // TODO: implement dispose
@@ -45,9 +45,23 @@ class _DonorListState extends State<DonorListWidget> {
   void initState() {
     // TODO: implement initState
     super.initState();
-    this.isDonorList = widget.getData('is_donor') ?? false;
-    this.isBloodInfo = widget.getData('is_blood') ?? false;
-    debugPrint('done');
+    this._pageType = widget.getData('page_type');
+  }
+
+  String _getAppBarTitle() {
+    return this._pageType == FilterPageType.FILTER_REQUEST
+        ? 'BLOOD REQUESTS'
+        : this._pageType == FilterPageType.FILTER_DONOR
+            ? 'BLOOD DONORS'
+            : 'BLOOD SEEKERS';
+  }
+
+  Stream<QuerySnapshot> _getStream() {
+    return this._pageType == FilterPageType.FILTER_REQUEST
+        ? _repository.getBloodRequestList(this.widget.getData('filter_data'))
+        : this._pageType == FilterPageType.FILTER_DONOR
+            ? _repository.getDonorList(this.widget.getData('filter_data'))
+            : _repository.getCollectorList(this.widget.getData('filter_data'));
   }
 
   @override
@@ -83,21 +97,14 @@ class _DonorListState extends State<DonorListWidget> {
 
           body: Column(
             children: <Widget>[
-              WidgetProvider.getCustomAppBar(
-                  context, this.isBloodInfo ? 'BLOOD REQUESTS' : this.isDonorList? 'BLOOD DONORS' : 'BLOOD SEEKERS', ''),
+              WidgetProvider.getCustomAppBar(context, _getAppBarTitle(), ''),
               Expanded(
                 child: Padding(
                   padding: EdgeInsets.only(
                     bottom: displayData.bottom,
                   ),
                   child: StreamBuilder<QuerySnapshot>(
-                    stream: this.isDonorList
-                        ? _repository.getDonorList(this.widget.getData('filter_data'))
-                        : this.isBloodInfo
-                            ? _repository
-                                .getBloodRequestList(this.widget.getData('filter_data'))
-                            : _repository
-                                .getCollectorList(this.widget.getData('filter_data')),
+                    stream: _getStream(),
                     builder: (context, snapshot) {
                       final QuerySnapshot _documentData = snapshot.data;
                       if (snapshot.data == null) {
@@ -107,7 +114,6 @@ class _DonorListState extends State<DonorListWidget> {
                       }
                       debugPrint(_documentData.documents.toString());
                       return ListView.builder(
-
                         scrollDirection: Axis.vertical,
                         itemCount: _documentData.documents.length + 1,
                         itemBuilder: (_context, _index) {
@@ -116,8 +122,9 @@ class _DonorListState extends State<DonorListWidget> {
                               height: 24,
                             ); //WidgetTemplate.getPageAppBar(context);
                           }
-                          final _data = _documentData.documents[_index - 1].data;
-                          if (this.isBloodInfo) {
+                          final _data =
+                              _documentData.documents[_index - 1].data;
+                          if (this._pageType == FilterPageType.FILTER_REQUEST) {
                             final _donor = BloodInfo.fromJson(_data);
                             return _getBloodInfo(_donor);
                           } else {
@@ -164,8 +171,9 @@ class _DonorListState extends State<DonorListWidget> {
                       width: 65,
                       height: 65,
                       child: bloodInfo.clientPicture != null
-                          ? WidgetTemplate.getImageWidget(response:
-                              ImgurResponse.fromThumb(bloodInfo.clientPicture))
+                          ? WidgetTemplate.getImageWidget(
+                              response: ImgurResponse.fromThumb(
+                                  bloodInfo.clientPicture))
                           : Center(
                               child: Text(
                                 bloodInfo.clientName
