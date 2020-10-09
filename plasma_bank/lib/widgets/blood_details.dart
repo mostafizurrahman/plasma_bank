@@ -3,8 +3,10 @@ import 'package:flutter/material.dart';
 import 'package:plasma_bank/app_utils/app_constants.dart';
 import 'package:plasma_bank/app_utils/widget_providers.dart';
 import 'package:plasma_bank/app_utils/widget_templates.dart';
+import 'package:plasma_bank/network/firebase_repositories.dart';
 import 'package:plasma_bank/network/imgur_handler.dart';
 import 'package:plasma_bank/network/models/abstract_person.dart';
+import 'package:url_launcher/url_launcher.dart';
 
 class BloodDetails extends StatefulWidget {
   final BloodInfo bloodInfo;
@@ -26,7 +28,8 @@ class _BloodDetailsState extends State<BloodDetails> {
         child: Scaffold(
           body: Column(
             children: <Widget>[
-              WidgetProvider.getCustomAppBar(context, ' BLOOD REQUIRED', widget.bloodInfo.bloodGroup),
+              WidgetProvider.getCustomAppBar(
+                  context, widget.bloodInfo.bloodGroup, ' BLOOD REQUIRED'),
               Padding(
                 padding: EdgeInsets.only(left: 24, right: 24),
                 child: Container(
@@ -35,20 +38,20 @@ class _BloodDetailsState extends State<BloodDetails> {
                   child: Column(
                     crossAxisAlignment: CrossAxisAlignment.start,
                     children: <Widget>[
-
                       SizedBox(
                         height: 24,
                       ),
                       Row(
                         children: <Widget>[
                           ClipRRect(
-                            borderRadius: BorderRadius.all(Radius.circular(110)),
+                            borderRadius:
+                                BorderRadius.all(Radius.circular(110)),
                             child: Container(
                               width: 65,
                               height: 65,
                               child: widget.bloodInfo.clientPicture != null
-                                  ? WidgetTemplate.getImageWidget(response:
-                                      ImgurResponse.fromThumb(
+                                  ? WidgetTemplate.getImageWidget(
+                                      response: ImgurResponse.fromThumb(
                                           widget.bloodInfo.clientPicture))
                                   : Center(
                                       child: Text(
@@ -72,7 +75,8 @@ class _BloodDetailsState extends State<BloodDetails> {
                               text: TextSpan(
                                 children: <TextSpan>[
                                   TextSpan(
-                                    text: widget.bloodInfo.clientName.toUpperCase(),
+                                    text: widget.bloodInfo.clientName
+                                        .toUpperCase(),
                                     style: TextStyle(
                                       fontSize: 16,
                                       fontWeight: FontWeight.w600,
@@ -83,7 +87,7 @@ class _BloodDetailsState extends State<BloodDetails> {
                                     text: '\nis looking for ',
                                     style: TextStyle(
                                       fontSize: 13,
-                                      fontWeight: FontWeight.w600,
+//                                      fontWeight: FontWeight.w600,
                                       color: Colors.black,
                                     ),
                                   ),
@@ -99,7 +103,7 @@ class _BloodDetailsState extends State<BloodDetails> {
                                     text: ' bags of ',
                                     style: TextStyle(
                                       fontSize: 13,
-                                      fontWeight: FontWeight.w600,
+//                                      fontWeight: FontWeight.w600,
                                       color: Colors.black,
                                     ),
                                   ),
@@ -114,7 +118,7 @@ class _BloodDetailsState extends State<BloodDetails> {
                                   TextSpan(
                                     style: TextStyle(
                                       fontSize: 13,
-                                      fontWeight: FontWeight.w600,
+//                                      fontWeight: FontWeight.w600,
                                       color: Colors.black,
                                     ),
                                     text:
@@ -164,7 +168,8 @@ class _BloodDetailsState extends State<BloodDetails> {
                               ),
                             ),
                             WidgetProvider.getMaterialButton(
-                                () => _makePhoneCall(widget.bloodInfo.clientMobile),
+                                () => _makePhoneCall(
+                                    widget.bloodInfo.clientMobile),
                                 Icons.phone),
                             SizedBox(
                               width: 8,
@@ -206,7 +211,8 @@ class _BloodDetailsState extends State<BloodDetails> {
                               ),
                             ),
                             WidgetProvider.getMaterialButton(
-                                () => _makeEmailCall(widget.bloodInfo.clientEmail),
+                                () => _makeEmailCall(
+                                    widget.bloodInfo.clientEmail),
                                 Icons.mail),
                             SizedBox(
                               width: 8,
@@ -266,8 +272,40 @@ class _BloodDetailsState extends State<BloodDetails> {
     );
   }
 
-  _makeEmailCall(String _emailID) {}
-  _makePhoneCall(String _mobileNumber) {}
+  _makeEmailCall(String _emailID) async {
+    final Uri params = Uri(
+      scheme: 'mailto',
+      path: _emailID,
+    );
+    String url = params.toString();
+    if (await canLaunch('mailto://$_emailID')) {
+      await launch(url);
+    } else {
+      print('Could not launch $url');
+    }
+  }
 
-  _makeChatCall() {}
+  _makePhoneCall(String _mobileNumber) {
+    launch("tel://$_mobileNumber");
+  }
+
+  _makeChatCall() async {
+    WidgetProvider.loading(context);
+    final _repository = FirebaseRepositories();
+    final _emailID = this.widget.bloodInfo.clientEmail;
+    Person _person = await _repository.getDonorData(_emailID);
+    if (_person == null) {
+      _person = await _repository.getCollectorData(_emailID);
+    }
+    if (_person != null) {
+      Future.delayed(Duration(seconds: 1), () {
+        Navigator.pop(context);
+        Navigator.pushNamed(context, AppRoutes.pagePrivateChat,
+            arguments: {'donor': _person});
+      });
+    } else {
+      Navigator.pop(context);
+      WidgetTemplate.message(context, 'the person information could not be found or who has requested the blood does not found right now.');
+    }
+  }
 }

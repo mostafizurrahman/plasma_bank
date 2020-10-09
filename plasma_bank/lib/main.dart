@@ -13,7 +13,6 @@ import 'package:plasma_bank/widgets/home_page.dart';
 import 'package:plasma_bank/widgets/launch_screen.dart';
 import 'package:plasma_bank/widgets/location_terms.dart';
 import 'package:plasma_bank/widgets/messaging/private_chat_widget.dart';
-import 'package:plasma_bank/widgets/patient_info.dart';
 import 'package:flutter_statusbarcolor/flutter_statusbarcolor.dart';
 import 'package:plasma_bank/widgets/profile_widget.dart';
 import 'package:plasma_bank/widgets/request_blood.dart';
@@ -126,9 +125,8 @@ class _PlasmaState extends State<PlasmaBank> {
       _widget = LocationTerms();
     } else if (settings.name == AppRoutes.pageRouteCamera) {
       _widget = CameraWidget(settings.arguments);
-    } else if (settings.name == AppRoutes.pageRouteDonor) {
-      _widget = PatientInfoWidget();
-    } else if (settings.name == AppRoutes.pageRouteHome) {
+    }
+    else if (settings.name == AppRoutes.pageRouteHome) {
       _widget = HomePageWidget();
     } else if (settings.name == AppRoutes.pageRouteImage) {
       if (settings.arguments is Map<String, dynamic>) {
