@@ -68,6 +68,7 @@ class _DonorListState extends State<DonorListWidget> {
   Widget build(BuildContext context) {
     // TODO: implement build
 //    Navigator.pop(context);
+    final _isDonor = this._pageType == FilterPageType.FILTER_DONOR;
     return Container(
       color: Colors.white,
       child: SafeArea(
@@ -97,7 +98,7 @@ class _DonorListState extends State<DonorListWidget> {
 
           body: Column(
             children: <Widget>[
-              WidgetProvider.getCustomAppBar(context, _getAppBarTitle(), ''),
+              WidgetProvider.getCustomAppBar(context, '', _getAppBarTitle()),
               Expanded(
                 child: Padding(
                   padding: EdgeInsets.only(
@@ -129,6 +130,7 @@ class _DonorListState extends State<DonorListWidget> {
                             return _getBloodInfo(_donor);
                           } else {
                             final _donor = Person(_data);
+                            _donor.isDonor = _isDonor;
                             return _getDonorWidget(_donor);
                           }
                         },
@@ -264,8 +266,6 @@ class _DonorListState extends State<DonorListWidget> {
   }
 
   Widget _getDonorWidget(final Person bloodDonor) {
-    bool _isPlasmaDonor = bloodDonor is PlasmaDonor;
-
     return Padding(
       padding: const EdgeInsets.only(left: 18, right: 18, top: 0, bottom: 24),
       child: Container(
@@ -274,77 +274,113 @@ class _DonorListState extends State<DonorListWidget> {
         height: 90,
         child: Material(
           color: Colors.transparent,
-          child: Row(
-            children: <Widget>[
-              SizedBox(
-                width: 12,
-              ),
-              ClipRRect(
-                borderRadius: BorderRadius.all(Radius.circular(110)),
-                child:
-                    WidgetTemplate.getProfilePicture(bloodDonor, proHeight: 65),
-              ),
-              SizedBox(
-                width: 12,
-              ),
-              Expanded(
-                child: Row(
-                  children: <Widget>[
-                    Expanded(
-                      child: Column(
-                        crossAxisAlignment: CrossAxisAlignment.start,
-                        mainAxisAlignment: MainAxisAlignment.end,
-                        children: <Widget>[
-                          Text(
-                            bloodDonor.fullName.toUpperCase(),
-                            style: TextStyle(fontSize: 13),
-                          ),
-                          Container(
-                            height: 60,
-                            width: displayData.width - 160,
-                            child: Row(
-                              mainAxisAlignment: MainAxisAlignment.start,
-                              crossAxisAlignment: CrossAxisAlignment.center,
-                              children: <Widget>[
-                                _getAction(Icons.phone, 0, bloodDonor),
-                                SizedBox(
-                                  width: 16,
+          child: Ink(
+            child: InkWell(
+              onTap: () {
+                final bloodInfo = BloodInfo();
+                bloodInfo.hospitalAddress = bloodDonor.address;
+                bloodInfo.clientName = bloodDonor.fullName;
+                bloodInfo.clientEmail = bloodDonor.emailAddress;
+                bloodInfo.clientMobile = bloodDonor.mobileNumber;
+                bloodInfo.isDonor = bloodDonor.isDonor;
+                bloodInfo.bloodGroup = bloodDonor.bloodGroup;
+                Navigator.pushNamed(context, AppRoutes.pageBloodDetails,
+                    arguments: bloodInfo);
+              },
+              child: Row(
+                children: <Widget>[
+                  SizedBox(
+                    width: 12,
+                  ),
+                  ClipRRect(
+                    borderRadius: BorderRadius.all(Radius.circular(110)),
+                    child: WidgetTemplate.getProfilePicture(bloodDonor,
+                        proHeight: 65),
+                  ),
+                  SizedBox(
+                    width: 12,
+                  ),
+                  Expanded(
+                    child: Row(
+                      children: <Widget>[
+                        Expanded(
+                          child: _getPersonDescription(bloodDonor),
+                        ),
+                        this._pageType == FilterPageType.FILTER_COLLECTOR
+                            ? SizedBox()
+                            : Container(
+                                width: 50,
+                                height: 90,
+                                child: Center(
+                                  child: Text(
+                                    bloodDonor.bloodGroup ?? "",
+                                    style: TextStyle(
+                                        fontSize: 20, color: Colors.white),
+                                  ),
                                 ),
-                                _getAction(Icons.mail_outline, 1, bloodDonor),
-                                SizedBox(
-                                  width: 16,
+                                decoration: BoxDecoration(
+                                  color: Colors.red,
+                                  borderRadius: BorderRadius.only(
+                                    topRight: Radius.circular(8),
+                                    bottomRight: Radius.circular(8),
+                                  ),
                                 ),
-                                _getAction(
-                                    Icons.chat_bubble_outline, 2, bloodDonor)
-                              ],
-                            ),
-                          ),
-                        ],
-                      ),
+                              ),
+                      ],
                     ),
-                    Container(
-                      width: 50,
-                      height: 90,
-                      child: Center(
-                        child: Text(
-                          bloodDonor.bloodGroup ?? "",
-                          style: TextStyle(fontSize: 20, color: Colors.white),
-                        ),
-                      ),
-                      decoration: BoxDecoration(
-                        color: Colors.red,
-                        borderRadius: BorderRadius.only(
-                          topRight: Radius.circular(8),
-                          bottomRight: Radius.circular(8),
-                        ),
-                      ),
-                    )
-                  ],
-                ),
+                  ),
+                ],
               ),
-            ],
+            ),
           ),
         ),
+      ),
+    );
+  }
+
+  Widget _getPersonDescription(final Person _person) {
+    return RichText(
+      text: TextSpan(
+        children: <TextSpan>[
+          TextSpan(
+            text: _person.fullName.toUpperCase(),
+            style: TextStyle(
+              fontSize: 16,
+              fontWeight: FontWeight.w600,
+              color: AppStyle.theme(),
+            ),
+          ),
+          TextSpan(
+            text: _person.isDonor
+                ? '\n is a donor, willing to donate a bag of '
+                : '\nis looking for blood near by his address : ',
+            style: TextStyle(
+              fontSize: 13,
+//                                      fontWeight: FontWeight.w600,
+              color: Colors.black,
+            ),
+          ),
+          TextSpan(
+            text: _person.isDonor
+                ? _person.bloodGroup
+                : _person.address.toString(),
+            style: TextStyle(
+              fontSize: 13,
+              fontWeight: FontWeight.w600,
+              color: AppStyle.theme(),
+            ),
+          ),
+//          TextSpan(
+//            text: _person.isDonor
+//                ? ' if you are searching for blood then you can contact him and convince hit to donate. '
+//                : ' if you are willing to donate blood, please contact him for further details about the blood he/she needs.',
+//            style: TextStyle(
+//              fontSize: 13,
+////                                      fontWeight: FontWeight.w600,
+//              color: Colors.black,
+//            ),
+//          ),
+        ],
       ),
     );
   }
@@ -353,7 +389,8 @@ class _DonorListState extends State<DonorListWidget> {
     if (index == 2) {
       Navigator.pushNamed(context, AppRoutes.pagePrivateChat,
           arguments: {'donor': bloodDonor});
-    }
+    } else if (index == 0) {
+    } else if (index == 1) {}
   }
 
   Widget _getAction(IconData _iconData, int index, Person bloodDonor) {

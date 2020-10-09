@@ -186,6 +186,14 @@ class AppStyle {
     return Color.fromARGB(255, 60, 50, 70);
   }
 
+  static BoxDecoration circleBorder(){
+    return BoxDecoration(
+      borderRadius: BorderRadius.all(
+        Radius.circular(1000),
+      ),
+      border: Border.all(
+          width: 0.85, color: Colors.red, style: BorderStyle.solid),);
+  }
   static BoxDecoration getLightBox() {
     return BoxDecoration(
       color: Colors.white,

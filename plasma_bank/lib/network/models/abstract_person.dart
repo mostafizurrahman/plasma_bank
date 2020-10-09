@@ -16,6 +16,8 @@ class BloodInfo
   String bloodBags;
   String diseaseName;
   String injectionDate;
+  bool isDonor = false;
+  BloodInfo();
   BloodInfo.fromJson(final Map _inputData){
     if(_inputData != null){
       hospitalAddress = Address.fromMap(_inputData['address']);
@@ -54,7 +56,10 @@ class Address {
   String street;
   String house;
   String postalCode;
-
+  @override
+  String toString(){
+    return '${house != null  ? 'house : $house'  : ''} $city, $state, $country ';
+  }
   Address(
       {this.country,
       this.code,
@@ -102,6 +107,8 @@ class Person {
   String birthDate;
   bool isDonor;
   DocumentReference reference;
+
+
 
   Person(final Map<dynamic, dynamic> _map) {
     this.fullName = _map['name'];

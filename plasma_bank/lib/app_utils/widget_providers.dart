@@ -138,7 +138,7 @@ class WidgetProvider {
             Radius.circular(1000),
           ),
           border: Border.all(
-              width: 0.85, color: Colors.red, style: BorderStyle.solid)),
+              width: 0.85, color: Colors.red, style: BorderStyle.solid),),
       child: _icon,
     );
   }
@@ -525,7 +525,7 @@ class WidgetProvider {
               ),
             ),
             Text(
-              _title,
+              _title ?? "",
 //              '_title${this.widget.bloodInfo.bloodGroup}',
               style: TextStyle(
                 fontFamily: AppStyle.fontBold,
