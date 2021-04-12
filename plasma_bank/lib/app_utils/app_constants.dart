@@ -23,7 +23,7 @@ class AppRoutes {
   static const String pageHealthData = '/home/personal/health';
 
   static const String pageDonorList = '/home/donor/list';
-  static const String pagePrivateChat =  '/home/private/chat';
+  static const String pagePrivateChat = '/home/private/chat';
   static const String pageFilterDonor = '/home/filter/donor';
 }
 
@@ -186,14 +186,19 @@ class AppStyle {
     return Color.fromARGB(255, 60, 50, 70);
   }
 
-  static BoxDecoration circleBorder(){
+  static BoxDecoration circleBorder() {
     return BoxDecoration(
       borderRadius: BorderRadius.all(
         Radius.circular(1000),
       ),
       border: Border.all(
-          width: 0.85, color: Colors.red, style: BorderStyle.solid),);
+        width: 0.85,
+        color: Colors.red,
+        style: BorderStyle.solid,
+      ),
+    );
   }
+
   static BoxDecoration getLightBox() {
     return BoxDecoration(
       color: Colors.white,
@@ -268,12 +273,14 @@ class TextConfig {
   final FocusNode focusNode = FocusNode();
   final String labelText;
   String errorText;
-  TextConfig(this.labelText, {this.isDigit = false, this.maxLen = 75, this.maxLine = 1, this.animateLen = 0.0});
+  TextConfig(this.labelText,
+      {this.isDigit = false,
+      this.maxLen = 75,
+      this.maxLine = 1,
+      this.animateLen = 0.0});
 }
 
 class DisplayData {
-  
-  
   double _height = 0;
   double _width = 0;
   double _navHeight = 0;
@@ -284,9 +291,8 @@ class DisplayData {
   factory DisplayData() {
     return _device;
   }
-  
-  
-  setData(final BuildContext _context){
+
+  setData(final BuildContext _context) {
     _padTop = MediaQuery.of(_context).padding.top;
     _height = MediaQuery.of(_context).size.height;
     _width = MediaQuery.of(_context).size.width;
@@ -297,8 +303,7 @@ class DisplayData {
 //    double _width = MediaQuery.of(_context).size.width;
   }
 
-
-  double get height  {
+  double get height {
     return _height;
   }
 
@@ -314,10 +319,9 @@ class DisplayData {
     return _width;
   }
 
-  double get navHeight{
+  double get navHeight {
     return _navHeight;
   }
-
 }
 
 final DisplayData displayData = DisplayData();
